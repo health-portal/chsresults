@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import * as schema from '../../drizzle/schema';
-import { createDatabaseClient } from 'src/lib/db';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { db, pool } from 'src/lib/db';
 
 @Injectable()
-export class DatabaseService {
-  private client: NodePgDatabase<typeof schema>;
-  constructor() {
-    this.client = createDatabaseClient();
+export class DatabaseService implements OnModuleDestroy {
+  public readonly client = db;
+
+  constructor() {}
+
+  async onModuleDestroy() {
+    await pool.end();
   }
 }

@@ -88,7 +88,6 @@ export const lecturer = pgTable('lecturer', {
 
 export const student = pgTable('student', {
   id: uuid('id').defaultRandom().primaryKey(),
-  matricNumber: text('matric_number').unique(),
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
   otherName: text('other_name'),
