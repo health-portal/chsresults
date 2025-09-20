@@ -80,13 +80,14 @@ export class AuthService {
   }
 
   async activateStudentAccount({
-    email,
-    matricNumber,
+    studentIdentifier,
+    identifierType,
     password,
   }: AuthStudentBody) {
-    const whereCondition = email
-      ? eq(student.email, email)
-      : eq(student.matricNumber, matricNumber!);
+    const whereCondition =
+      identifierType === 'email'
+        ? eq(student.email, studentIdentifier)
+        : eq(student.matricNumber, studentIdentifier);
 
     const result = await this.db.client.query.student.findFirst({
       where: whereCondition,
@@ -103,10 +104,15 @@ export class AuthService {
       .where(eq(student.id, result.id));
   }
 
-  async signinStudent({ email, matricNumber, password }: AuthStudentBody) {
-    const whereCondition = email
-      ? eq(student.email, email)
-      : eq(student.matricNumber, matricNumber!);
+  async signinStudent({
+    studentIdentifier,
+    identifierType,
+    password,
+  }: AuthStudentBody) {
+    const whereCondition =
+      identifierType === 'email'
+        ? eq(student.email, studentIdentifier)
+        : eq(student.matricNumber, studentIdentifier);
 
     const result = await this.db.client.query.student.findFirst({
       where: whereCondition,

@@ -1,4 +1,6 @@
-import z from 'zod';
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsString, IsNotEmpty } from 'class-validator';
 
 export type UserRole = 'admin' | 'lecturer' | 'student';
 
@@ -7,19 +9,32 @@ export interface JwtPayload {
   role: UserRole;
 }
 
-export const authUserSchema = z.object({
-  email: z.email(),
-  password: z.string(),
-});
-export type AuthUserBody = z.infer<typeof authUserSchema>;
+export class AuthUserBody {
+  @ApiProperty()
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 
-export const authStudentSchema = z
-  .object({
-    email: z.email().optional(),
-    matricNumber: z.email().optional(),
-    password: z.string(),
-  })
-  .refine((data) => data.email || data.matricNumber, {
-    message: 'Either email or matricNumber must be provided',
-  });
-export type AuthStudentBody = z.infer<typeof authStudentSchema>;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  password: string;
+}
+
+export type StudentIdentifierType = 'email' | 'matricNumber';
+export class AuthStudentBody {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  studentIdentifier: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  identifierType: StudentIdentifierType;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  password: string;
+}
