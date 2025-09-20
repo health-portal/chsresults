@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
+import { course } from 'drizzle/schema';
 import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class LecturerService {
   constructor(private readonly db: DatabaseService) {}
 
-  async listCourses() {}
+  async listCourses() {
+    return await this.db.client.query.course.findMany({
+      where: eq(course.lecturerId, ''),
+    });
+  }
 
   async registerStudentsBulk(courseId: string, file: Express.Multer.File) {}
 
