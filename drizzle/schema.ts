@@ -80,8 +80,8 @@ export const course = pgTable('course', {
   code: text('code').notNull().unique(),
   title: text('title').notNull().unique(),
 
-  departmentId: uuid('department_id')
-    .references(() => department.id)
+  lecturerId: uuid('lecturer_id')
+    .references(() => lecturer.id)
     .notNull(),
 });
 
@@ -98,11 +98,12 @@ export const enrollment = pgTable('enrollment', {
 });
 
 // Relations
-export const lecturerRelations = relations(lecturer, ({ one }) => ({
+export const lecturerRelations = relations(lecturer, ({ one, many }) => ({
   department: one(department, {
     fields: [lecturer.departmentId],
     references: [department.id],
   }),
+  courses: many(course),
 }));
 
 export const studentRelations = relations(student, ({ one, many }) => ({
@@ -124,9 +125,9 @@ export const departmentRelations = relations(department, ({ one, many }) => ({
 }));
 
 export const courseRelations = relations(course, ({ one, many }) => ({
-  department: one(department, {
-    fields: [course.departmentId],
-    references: [department.id],
+  department: one(lecturer, {
+    fields: [course.lecturerId],
+    references: [lecturer.id],
   }),
   enrollments: many(enrollment),
 }));
