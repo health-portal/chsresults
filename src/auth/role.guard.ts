@@ -27,7 +27,7 @@ export class RoleGuard implements CanActivate {
     }
 
     const request: Request = context.switchToHttp().getRequest();
-    this.authService.client.api
+    this.authService.auth.api
       .getSession({
         headers: fromNodeHeaders(request.headers),
       })

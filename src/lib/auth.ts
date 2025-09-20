@@ -4,7 +4,7 @@ import { env } from './environment';
 import { db } from './db';
 import { bearer, openAPI } from 'better-auth/plugins';
 
-export function createAuthClient() {
+export function createAuth() {
   return betterAuth({
     database: drizzleAdapter(db, { provider: 'pg' }),
     secret: env.BETTER_AUTH_SECRET,
@@ -33,4 +33,4 @@ export function createAuthClient() {
 }
 
 // Uncomment to migrate to database
-export const auth = createAuthClient();
+export const auth = createAuth();
