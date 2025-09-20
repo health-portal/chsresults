@@ -7,18 +7,24 @@ import {
   Patch,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LecturerService } from './lecturer.service';
+import { User } from 'src/auth/user.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Role, RolesGuard } from 'src/auth/roles.guard';
 
 @Controller('lecturer')
+@Role('lecturer')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class LecturerController {
   constructor(private readonly lecturerService: LecturerService) {}
 
   @Get('courses')
-  async listCourses() {
-    return await this.lecturerService.listCourses();
+  async listCourses(@User('id') lecturerId: string) {
+    return await this.lecturerService.listCourses(lecturerId);
   }
 
   @Post('courses/:courseId/students/bulk')

@@ -7,9 +7,9 @@ import { DatabaseService } from 'src/database/database.service';
 export class LecturerService {
   constructor(private readonly db: DatabaseService) {}
 
-  async listCourses() {
+  async listCourses(lecturerId: string) {
     return await this.db.client.query.course.findMany({
-      where: eq(course.lecturerId, ''),
+      where: eq(course.lecturerId, lecturerId),
     });
   }
 
