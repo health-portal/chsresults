@@ -30,7 +30,7 @@ export function createAuth() {
       bearer(),
       openAPI(),
       magicLink({
-        disableSignUp: false,
+        disableSignUp: true,
         sendMagicLink: async ({ email, token, url }) => {
           let recipientEmail = email;
           const result = z.email().safeParse(email);
