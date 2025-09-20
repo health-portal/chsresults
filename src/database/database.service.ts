@@ -20,7 +20,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
           return { id: uuidv4(), role: 'admin', ...admin };
         }),
       )
-      .onConflictDoNothing({ target: user.id });
+      .onConflictDoNothing({ target: user.email });
   }
 
   async onModuleDestroy() {

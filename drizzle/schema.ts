@@ -24,6 +24,7 @@ export const user = pgTable('user', {
     .notNull(),
   matricNumber: text('matric_number').unique(),
   role: text('role').notNull(),
+  hasSetPassword: boolean('has_set_password').default(false).notNull(),
 });
 
 export const session = pgTable('session', {
@@ -150,22 +151,13 @@ export const enrollment = pgTable('enrollment', {
 
 // Relations
 export const userRelations = relations(user, ({ one, many }) => ({
-  lecturer: one(lecturer, {
-    fields: [user.id],
-    references: [lecturer.userId],
-  }),
-  student: one(student, {
-    fields: [user.id],
-    references: [student.userId],
-  }),
+  student: one(student, { fields: [user.id], references: [student.userId] }),
+  lecturer: one(lecturer, { fields: [user.id], references: [lecturer.userId] }),
   logs: many(log),
 }));
 
 export const lecturerRelations = relations(lecturer, ({ one }) => ({
-  user: one(user, {
-    fields: [lecturer.userId],
-    references: [user.id],
-  }),
+  user: one(user, { fields: [lecturer.userId], references: [user.id] }),
   department: one(department, {
     fields: [lecturer.departmentId],
     references: [department.id],
@@ -173,10 +165,7 @@ export const lecturerRelations = relations(lecturer, ({ one }) => ({
 }));
 
 export const studentRelations = relations(student, ({ one, many }) => ({
-  user: one(user, {
-    fields: [student.userId],
-    references: [user.id],
-  }),
+  user: one(user, { fields: [student.userId], references: [user.id] }),
   department: one(department, {
     fields: [student.departmentId],
     references: [department.id],
@@ -185,10 +174,7 @@ export const studentRelations = relations(student, ({ one, many }) => ({
 }));
 
 export const logRelations = relations(log, ({ one }) => ({
-  user: one(user, {
-    fields: [log.userId],
-    references: [user.id],
-  }),
+  user: one(user, { fields: [log.userId], references: [user.id] }),
 }));
 
 export const departmentRelations = relations(department, ({ one, many }) => ({
@@ -218,4 +204,8 @@ export const enrollmentRelations = relations(enrollment, ({ one }) => ({
     fields: [enrollment.courseId],
     references: [course.id],
   }),
+}));
+
+export const facultyRelations = relations(faculty, ({ many }) => ({
+  departments: many(department),
 }));
