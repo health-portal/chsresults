@@ -31,7 +31,7 @@ export function createAuth() {
       openAPI(),
       magicLink({
         disableSignUp: true,
-        sendMagicLink: async ({ email, token, url }) => {
+        sendMagicLink: async ({ email, url }) => {
           let recipientEmail = email;
           const result = z.email().safeParse(email);
 
@@ -47,7 +47,7 @@ export function createAuth() {
             recipientEmail = foundUser.email;
           }
 
-          console.log(`Sending ${url}?token=${token} to ${recipientEmail}`);
+          console.log(`Sending ${url} to ${recipientEmail}`);
         },
       }),
     ],
