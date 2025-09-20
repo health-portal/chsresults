@@ -1,14 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { toNodeHandler } from 'better-auth/node';
-import { auth } from './lib/auth';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bodyParser: false });
 
   app.setGlobalPrefix('api');
-  app.getHttpAdapter().all('/api/auth/*splat', toNodeHandler(auth));
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Marksheet API')
