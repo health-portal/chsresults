@@ -14,7 +14,7 @@ export class RegisterStudentBody {
   identifierType: StudentIdentifierType;
 }
 
-export class EditScoreBody {
+export class EditResultBody {
   @ApiProperty()
   @IsNumber()
   continuousAssessment: number;

@@ -7,7 +7,7 @@ import {
 import { and, eq } from 'drizzle-orm';
 import { course, enrollment, student } from 'drizzle/schema';
 import { DatabaseService } from 'src/database/database.service';
-import { EditScoreBody, RegisterStudentBody } from './lecturer.schema';
+import { EditResultBody, RegisterStudentBody } from './lecturer.schema';
 
 @Injectable()
 export class LecturerService {
@@ -101,7 +101,7 @@ export class LecturerService {
     };
   }
 
-  async uploadScores(
+  async uploadResults(
     lecturerId: string,
     courseId: string,
     file: Express.Multer.File,
@@ -126,11 +126,11 @@ export class LecturerService {
     return uploadResults;
   }
 
-  async editScore(
+  async editResult(
     lecturerId: string,
     courseId: string,
     studentId: string,
-    body: EditScoreBody,
+    body: EditResultBody,
   ) {
     const courseRecord = await this.db.client.query.course.findFirst({
       where: and(eq(course.id, courseId), eq(course.lecturerId, lecturerId)),

@@ -15,7 +15,7 @@ import { LecturerService } from './lecturer.service';
 import { User } from 'src/auth/user.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Role, RolesGuard } from 'src/auth/roles.guard';
-import { EditScoreBody, RegisterStudentBody } from './lecturer.schema';
+import { EditResultBody, RegisterStudentBody } from './lecturer.schema';
 
 @Controller('lecturer')
 @Role('lecturer')
@@ -55,24 +55,24 @@ export class LecturerController {
     );
   }
 
-  @Post('courses/:courseId/scores')
+  @Post('courses/:courseId/results')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadScores(
+  async uploadResults(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return await this.lecturerService.uploadScores(lecturerId, courseId, file);
+    return await this.lecturerService.uploadResults(lecturerId, courseId, file);
   }
 
-  @Patch('courses/:courseId/scores/:studentId')
-  async editScore(
+  @Patch('courses/:courseId/results/:studentId')
+  async editResult(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
     @Param('studentId', ParseUUIDPipe) studentId: string,
-    @Body() body: EditScoreBody,
+    @Body() body: EditResultBody,
   ) {
-    return await this.lecturerService.editScore(
+    return await this.lecturerService.editResult(
       lecturerId,
       courseId,
       studentId,
