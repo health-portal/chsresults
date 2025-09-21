@@ -121,11 +121,10 @@ export const departmentRelations = relations(department, ({ one, many }) => ({
   }),
   lecturers: many(lecturer),
   students: many(student),
-  courses: many(course),
 }));
 
 export const courseRelations = relations(course, ({ one, many }) => ({
-  department: one(lecturer, {
+  lecturer: one(lecturer, {
     fields: [course.lecturerId],
     references: [lecturer.id],
   }),
