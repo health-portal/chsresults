@@ -87,7 +87,7 @@ export const course = pgTable('course', {
 
 export const enrollment = pgTable('enrollment', {
   id: uuid('id').defaultRandom().primaryKey(),
-  result: json('result'),
+  scores: json('scores'),
 
   courseId: uuid('course_id')
     .references(() => course.id)

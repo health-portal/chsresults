@@ -3,13 +3,21 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { and, eq } from 'drizzle-orm';
 import { course, enrollment, student } from 'drizzle/schema';
 import { DatabaseService } from 'src/database/database.service';
-import { EditResultBody, RegisterStudentBody } from './lecturer.schema';
+import {
+  EditResultBody,
+  RegisterStudentBody,
+  RegisterStudentRow,
+  StudentResult,
+  UploadResultRow,
+} from './lecturer.schema';
 import * as csv from 'fast-csv';
 import { Readable } from 'stream';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class LecturerService {
@@ -38,22 +46,35 @@ export class LecturerService {
       );
     }
 
-    const registrationResults = {
-      successful: 0,
-      failed: 0,
-      errors: [],
-    };
+    const studentsToRegister: string[] = [];
 
     const stream = Readable.from(file.buffer);
     stream
       .pipe(csv.parse({ headers: true }))
-      .on('error', (error) => console.error(error))
-      .on('data', (row) => {
-        console.log(row);
+      .on('error', (error) => {
+        throw new UnprocessableEntityException(error);
       })
-      .on('end', () => {});
+      .on('data', (row) => {
+        const { matricNumber } = plainToInstance(RegisterStudentRow, row);
+        if (matricNumber) {
+          studentsToRegister.push(matricNumber);
+        }
+      });
 
-    return registrationResults;
+    await this.db.client.transaction(async (tx) => {
+      for (const studentMatricNumber of studentsToRegister) {
+        const studentRecord = await tx.query.student.findFirst({
+          where: eq(student.matricNumber, studentMatricNumber),
+        });
+
+        if (studentRecord) {
+          await tx
+            .insert(enrollment)
+            .values({ courseId, studentId: studentRecord.id })
+            .onConflictDoNothing({ target: enrollment.id });
+        }
+      }
+    });
   }
 
   async registerStudent(
@@ -105,11 +126,7 @@ export class LecturerService {
       })
       .returning();
 
-    return {
-      enrollment: newEnrollment,
-      student: studentRecord,
-      course: courseRecord,
-    };
+    return newEnrollment;
   }
 
   async uploadResults(
@@ -127,14 +144,36 @@ export class LecturerService {
       );
     }
 
-    const uploadResults = {
-      totalProcessed: 0,
-      successful: 0,
-      failed: 0,
-      errors: [],
-    };
+    const studentResults: StudentResult[] = [];
 
-    return uploadResults;
+    const stream = Readable.from(file.buffer);
+    stream
+      .pipe(csv.parse({ headers: true }))
+      .on('error', (error) => {
+        throw new UnprocessableEntityException(error);
+      })
+      .on('data', (row) => {
+        const { matricNumber, continuousAssessment, examination, total } =
+          plainToInstance(UploadResultRow, row);
+        if (matricNumber && continuousAssessment && examination && total) {
+          studentResults.push({
+            matricNumber,
+            scores: { continuousAssessment, examination, total },
+          });
+        }
+      });
+
+    await this.db.client.transaction(async (tx) => {
+      for (const { matricNumber, scores } of studentResults) {
+        const studentRecord = await tx.query.student.findFirst({
+          where: eq(student.matricNumber, matricNumber),
+        });
+
+        if (studentRecord) {
+          await tx.update(enrollment).set({ scores });
+        }
+      }
+    });
   }
 
   async editResult(
@@ -166,7 +205,7 @@ export class LecturerService {
 
     const [updatedEnrollment] = await this.db.client
       .update(enrollment)
-      .set({ result: body })
+      .set({ scores: body })
       .returning();
 
     return updatedEnrollment;

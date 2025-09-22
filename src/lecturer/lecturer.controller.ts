@@ -2,7 +2,9 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Param,
+  ParseFilePipeBuilder,
   ParseUUIDPipe,
   Patch,
   Post,
@@ -54,7 +56,13 @@ export class LecturerController {
   async registerStudentsBulk(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({ fileType: 'csv' })
+        .addMaxSizeValidator({ maxSize: 5 * 1024 })
+        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
+    )
+    file: Express.Multer.File,
   ) {
     return await this.lecturerService.registerStudentsBulk(
       lecturerId,
