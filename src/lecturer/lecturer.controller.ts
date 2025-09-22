@@ -17,7 +17,7 @@ import { LecturerService } from './lecturer.service';
 import { User } from 'src/auth/user.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Role, RolesGuard } from 'src/auth/roles.guard';
-import { EditResultBody, RegisterStudentBody } from './lecturer.schema';
+import { EditScoreBody, RegisterStudentBody } from './lecturer.schema';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -39,7 +39,6 @@ export class LecturerController {
   @ApiOperation({ summary: 'List courses for a lecturer' })
   @ApiOkResponse({ description: 'List of courses' })
   async listCourses(@User('id') lecturerId: string) {
-    console.log(lecturerId);
     return await this.lecturerService.listCourses(lecturerId);
   }
 
@@ -58,7 +57,6 @@ export class LecturerController {
     @Param('courseId', ParseUUIDPipe) courseId: string,
     @UploadedFile(
       new ParseFilePipeBuilder()
-        .addFileTypeValidator({ fileType: 'csv' })
         .addMaxSizeValidator({ maxSize: 5 * 1024 })
         .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
     )
@@ -86,9 +84,9 @@ export class LecturerController {
     );
   }
 
-  @Post('courses/:courseId/results')
+  @Post('courses/:courseId/scores')
   @UseInterceptors(FileInterceptor('file'))
-  @ApiOperation({ summary: 'Upload results for a course' })
+  @ApiOperation({ summary: 'Upload scores for a course' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -96,24 +94,24 @@ export class LecturerController {
       properties: { file: { type: 'string', format: 'binary' } },
     },
   })
-  async uploadResults(
+  async uploadScores(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return await this.lecturerService.uploadResults(lecturerId, courseId, file);
+    return await this.lecturerService.uploadScores(lecturerId, courseId, file);
   }
 
-  @Patch('courses/:courseId/results/:studentId')
+  @Patch('courses/:courseId/scores/:studentId')
   @ApiOperation({ summary: 'Edit a student’s result for a course' })
-  @ApiBody({ type: EditResultBody })
-  async editResult(
+  @ApiBody({ type: EditScoreBody })
+  async editScore(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
     @Param('studentId', ParseUUIDPipe) studentId: string,
-    @Body() body: EditResultBody,
+    @Body() body: EditScoreBody,
   ) {
-    return await this.lecturerService.editResult(
+    return await this.lecturerService.editScore(
       lecturerId,
       courseId,
       studentId,
@@ -121,14 +119,14 @@ export class LecturerController {
     );
   }
 
-  @Get('courses/:courseId/results')
-  @ApiOperation({ summary: 'View results for a course' })
-  @ApiOkResponse({ description: 'Course results' })
-  async viewCourseResults(
+  @Get('courses/:courseId/scores')
+  @ApiOperation({ summary: 'View scores for a course' })
+  @ApiOkResponse({ description: 'Course scores' })
+  async viewCourseScores(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
   ) {
-    return await this.lecturerService.viewCourseResults(lecturerId, courseId);
+    return await this.lecturerService.viewCourseScores(lecturerId, courseId);
   }
 
   @Get('courses/:courseId/students')

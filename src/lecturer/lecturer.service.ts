@@ -9,19 +9,74 @@ import { and, eq } from 'drizzle-orm';
 import { course, enrollment, student } from 'drizzle/schema';
 import { DatabaseService } from 'src/database/database.service';
 import {
-  EditResultBody,
+  BulkStudentRegistrationResult,
+  EditScoreBody,
+  ParseCsvData,
   RegisterStudentBody,
   RegisterStudentRow,
-  StudentResult,
-  UploadResultRow,
+  RowValidationError,
+  UploadScoreRow,
+  UploadScoresResult,
 } from './lecturer.schema';
 import * as csv from 'fast-csv';
 import { Readable } from 'stream';
 import { plainToInstance } from 'class-transformer';
+import { validateSync } from 'class-validator';
 
 @Injectable()
 export class LecturerService {
   constructor(private readonly db: DatabaseService) {}
+
+  private async validateCourseAccess(lecturerId: string, courseId: string) {
+    const courseRecord = await this.db.client.query.course.findFirst({
+      where: and(eq(course.id, courseId), eq(course.lecturerId, lecturerId)),
+    });
+
+    if (!courseRecord) {
+      throw new ForbiddenException(
+        'You are not authorized to access this course',
+      );
+    }
+  }
+
+  private async parseCsvFile<T extends object>(
+    file: Express.Multer.File,
+    validationClass: new () => T,
+  ): Promise<ParseCsvData<T>> {
+    return new Promise((resolve, reject) => {
+      const validRows: T[] = [];
+      const invalidRows: RowValidationError[] = [];
+
+      let currentRow = 0;
+
+      const stream = Readable.from(file.buffer);
+      stream
+        .pipe(csv.parse({ headers: true }))
+        .on('error', (error) => {
+          reject(new UnprocessableEntityException(error.message));
+        })
+        .on('data', (row) => {
+          currentRow++;
+          const transformedRow = plainToInstance(validationClass, row);
+          const validationErrors = validateSync(transformedRow);
+
+          if (validationErrors.length > 0) {
+            validationErrors.map((error) => {
+              invalidRows.push({
+                row: currentRow,
+                errorMessage: error.toString(),
+              });
+              error.toString();
+            });
+          } else {
+            validRows.push(transformedRow);
+          }
+        })
+        .on('end', () => {
+          resolve({ validRows, invalidRows, numberOfRows: currentRow });
+        });
+    });
+  }
 
   async listCourses(lecturerId: string) {
     const courses = await this.db.client.query.course.findMany({
@@ -36,45 +91,34 @@ export class LecturerService {
     courseId: string,
     file: Express.Multer.File,
   ) {
-    const courseRecord = await this.db.client.query.course.findFirst({
-      where: and(eq(course.id, courseId), eq(course.lecturerId, lecturerId)),
-    });
+    await this.validateCourseAccess(lecturerId, courseId);
 
-    if (!courseRecord) {
-      throw new ForbiddenException(
-        'You are not authorized to manage this course',
-      );
-    }
-
-    const studentsToRegister: string[] = [];
-
-    const stream = Readable.from(file.buffer);
-    stream
-      .pipe(csv.parse({ headers: true }))
-      .on('error', (error) => {
-        throw new UnprocessableEntityException(error);
-      })
-      .on('data', (row) => {
-        const { matricNumber } = plainToInstance(RegisterStudentRow, row);
-        if (matricNumber) {
-          studentsToRegister.push(matricNumber);
-        }
-      });
+    const parsedData = await this.parseCsvFile(file, RegisterStudentRow);
+    const result: BulkStudentRegistrationResult = {
+      registeredStudents: [],
+      unregisteredStudents: [],
+      ...parsedData,
+    };
 
     await this.db.client.transaction(async (tx) => {
-      for (const studentMatricNumber of studentsToRegister) {
+      for (const { matricNumber } of parsedData.validRows) {
         const studentRecord = await tx.query.student.findFirst({
-          where: eq(student.matricNumber, studentMatricNumber),
+          where: eq(student.matricNumber, matricNumber),
         });
 
         if (studentRecord) {
           await tx
             .insert(enrollment)
             .values({ courseId, studentId: studentRecord.id })
-            .onConflictDoNothing({ target: enrollment.id });
+            .onConflictDoNothing();
+          result.registeredStudents.push(matricNumber);
+        } else {
+          result.unregisteredStudents.push(matricNumber);
         }
       }
     });
+
+    return result;
   }
 
   async registerStudent(
@@ -82,15 +126,7 @@ export class LecturerService {
     courseId: string,
     { studentIdentifier, identifierType }: RegisterStudentBody,
   ) {
-    const courseRecord = await this.db.client.query.course.findFirst({
-      where: and(eq(course.id, courseId), eq(course.lecturerId, lecturerId)),
-    });
-
-    if (!courseRecord) {
-      throw new ForbiddenException(
-        'You are not authorized to manage this course',
-      );
-    }
+    await this.validateCourseAccess(lecturerId, courseId);
 
     const whereCondition =
       identifierType === 'email'
@@ -129,68 +165,52 @@ export class LecturerService {
     return newEnrollment;
   }
 
-  async uploadResults(
+  async uploadScores(
     lecturerId: string,
     courseId: string,
     file: Express.Multer.File,
   ) {
-    const courseRecord = await this.db.client.query.course.findFirst({
-      where: and(eq(course.id, courseId), eq(course.lecturerId, lecturerId)),
-    });
+    await this.validateCourseAccess(lecturerId, courseId);
 
-    if (!courseRecord) {
-      throw new ForbiddenException(
-        'You are not authorized to manage this course',
-      );
-    }
-
-    const studentResults: StudentResult[] = [];
-
-    const stream = Readable.from(file.buffer);
-    stream
-      .pipe(csv.parse({ headers: true }))
-      .on('error', (error) => {
-        throw new UnprocessableEntityException(error);
-      })
-      .on('data', (row) => {
-        const { matricNumber, continuousAssessment, examination, total } =
-          plainToInstance(UploadResultRow, row);
-        if (matricNumber && continuousAssessment && examination && total) {
-          studentResults.push({
-            matricNumber,
-            scores: { continuousAssessment, examination, total },
-          });
-        }
-      });
+    const parsedData = await this.parseCsvFile(file, UploadScoreRow);
+    const result: UploadScoresResult = {
+      studentsUploadedFor: [],
+      studentsNotFound: [],
+      ...parsedData,
+    };
 
     await this.db.client.transaction(async (tx) => {
-      for (const { matricNumber, scores } of studentResults) {
+      for (const {
+        matricNumber,
+        continuousAssessment,
+        examination,
+      } of parsedData.validRows) {
         const studentRecord = await tx.query.student.findFirst({
           where: eq(student.matricNumber, matricNumber),
         });
 
         if (studentRecord) {
-          await tx.update(enrollment).set({ scores });
+          await tx
+            .update(enrollment)
+            .set({ scores: { continuousAssessment, examination } });
+
+          result.studentsUploadedFor.push(matricNumber);
+        } else {
+          result.studentsNotFound.push(matricNumber);
         }
       }
     });
+
+    return result;
   }
 
-  async editResult(
+  async editScore(
     lecturerId: string,
     courseId: string,
     studentId: string,
-    body: EditResultBody,
+    body: EditScoreBody,
   ) {
-    const courseRecord = await this.db.client.query.course.findFirst({
-      where: and(eq(course.id, courseId), eq(course.lecturerId, lecturerId)),
-    });
-
-    if (!courseRecord) {
-      throw new ForbiddenException(
-        'You are not authorized to manage this course',
-      );
-    }
+    await this.validateCourseAccess(lecturerId, courseId);
 
     const enrollmentRecord = await this.db.client.query.enrollment.findFirst({
       where: and(
@@ -211,7 +231,7 @@ export class LecturerService {
     return updatedEnrollment;
   }
 
-  async viewCourseResults(lecturerId: string, courseId: string) {
+  async viewCourseScores(lecturerId: string, courseId: string) {
     const courseRecord = await this.db.client.query.course.findFirst({
       where: and(eq(course.id, courseId), eq(course.lecturerId, lecturerId)),
     });
@@ -222,11 +242,11 @@ export class LecturerService {
       );
     }
 
-    const courseResults = await this.db.client.query.enrollment.findMany({
+    const courseScores = await this.db.client.query.enrollment.findMany({
       where: eq(enrollment.courseId, courseId),
     });
 
-    return courseResults;
+    return courseScores;
   }
 
   async listCourseStudents(lecturerId: string, courseId: string) {

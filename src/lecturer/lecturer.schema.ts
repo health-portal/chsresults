@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsObject, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { type StudentIdentifierType } from 'src/auth/auth.schema';
 
 export class RegisterStudentBody {
@@ -22,13 +22,9 @@ export class Scores {
   @IsNumber()
   @IsNotEmpty()
   examination: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  total: number;
 }
 
-export class EditResultBody extends Scores {}
+export class EditScoreBody extends Scores {}
 
 export class RegisterStudentRow {
   @IsString()
@@ -40,17 +36,29 @@ export class RegisterStudentRow {
   name: string;
 }
 
-export class UploadResultRow extends Scores {
+export class UploadScoreRow extends Scores {
   @IsString()
   @IsNotEmpty()
   matricNumber: string;
 }
 
-export class StudentResult {
-  @IsString()
-  @IsNotEmpty()
-  matricNumber: string;
+export class RowValidationError {
+  row: number;
+  errorMessage: string;
+}
 
-  @IsObject()
-  scores: Scores;
+export class ParseCsvData<T extends object> {
+  numberOfRows: number;
+  validRows: T[];
+  invalidRows: RowValidationError[];
+}
+
+export class BulkStudentRegistrationResult extends ParseCsvData<RegisterStudentRow> {
+  registeredStudents: string[];
+  unregisteredStudents: string[];
+}
+
+export class UploadScoresResult extends ParseCsvData<UploadScoreRow> {
+  studentsUploadedFor: string[];
+  studentsNotFound: string[];
 }
