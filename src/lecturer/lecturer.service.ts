@@ -8,6 +8,8 @@ import { and, eq } from 'drizzle-orm';
 import { course, enrollment, student } from 'drizzle/schema';
 import { DatabaseService } from 'src/database/database.service';
 import { EditResultBody, RegisterStudentBody } from './lecturer.schema';
+import * as csv from 'fast-csv';
+import { Readable } from 'stream';
 
 @Injectable()
 export class LecturerService {
@@ -41,6 +43,15 @@ export class LecturerService {
       failed: 0,
       errors: [],
     };
+
+    const stream = Readable.from(file.buffer);
+    stream
+      .pipe(csv.parse({ headers: true }))
+      .on('error', (error) => console.error(error))
+      .on('data', (row) => {
+        console.log(row);
+      })
+      .on('end', () => {});
 
     return registrationResults;
   }

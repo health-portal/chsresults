@@ -3,8 +3,9 @@ import { Request } from 'express';
 import { JwtPayload } from './auth.schema';
 
 export const User = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
+  (data: string, ctx: ExecutionContext) => {
     const request: Request = ctx.switchToHttp().getRequest();
-    return request.user as JwtPayload;
+
+    return data ? request.user?.[data] : (request.user as JwtPayload);
   },
 );

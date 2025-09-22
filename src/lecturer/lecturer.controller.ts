@@ -16,7 +16,17 @@ import { User } from 'src/auth/user.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Role, RolesGuard } from 'src/auth/roles.guard';
 import { EditResultBody, RegisterStudentBody } from './lecturer.schema';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Lecturer')
+@ApiBearerAuth('accessToken')
 @Controller('lecturer')
 @Role('lecturer')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -24,12 +34,23 @@ export class LecturerController {
   constructor(private readonly lecturerService: LecturerService) {}
 
   @Get('courses')
+  @ApiOperation({ summary: 'List courses for a lecturer' })
+  @ApiOkResponse({ description: 'List of courses' })
   async listCourses(@User('id') lecturerId: string) {
+    console.log(lecturerId);
     return await this.lecturerService.listCourses(lecturerId);
   }
 
   @Post('courses/:courseId/students/bulk')
   @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Register students in bulk for a course' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
   async registerStudentsBulk(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
@@ -43,6 +64,8 @@ export class LecturerController {
   }
 
   @Post('courses/:courseId/students')
+  @ApiOperation({ summary: 'Register a single student for a course' })
+  @ApiBody({ type: RegisterStudentBody })
   async registerStudent(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
@@ -57,6 +80,14 @@ export class LecturerController {
 
   @Post('courses/:courseId/results')
   @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Upload results for a course' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
   async uploadResults(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
@@ -66,6 +97,8 @@ export class LecturerController {
   }
 
   @Patch('courses/:courseId/results/:studentId')
+  @ApiOperation({ summary: 'Edit a student’s result for a course' })
+  @ApiBody({ type: EditResultBody })
   async editResult(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
@@ -81,6 +114,8 @@ export class LecturerController {
   }
 
   @Get('courses/:courseId/results')
+  @ApiOperation({ summary: 'View results for a course' })
+  @ApiOkResponse({ description: 'Course results' })
   async viewCourseResults(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
@@ -89,6 +124,8 @@ export class LecturerController {
   }
 
   @Get('courses/:courseId/students')
+  @ApiOperation({ summary: 'List students enrolled in a course' })
+  @ApiOkResponse({ description: 'List of students' })
   async listCourseStudents(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
