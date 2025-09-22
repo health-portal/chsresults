@@ -3,6 +3,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, IsNotEmpty } from 'class-validator';
 
 export type UserRole = 'admin' | 'lecturer' | 'student';
+type EUserRole = Record<UserRole, UserRole>
+
+export const EUserRole: EUserRole = {
+  admin: 'admin',
+  lecturer: 'lecturer',
+  student: 'student'
+}
 
 export interface JwtPayload {
   id: string;

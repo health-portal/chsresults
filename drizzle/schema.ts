@@ -97,6 +97,17 @@ export const enrollment = pgTable('enrollment', {
     .notNull(),
 });
 
+export const job = pgTable('job', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  type: text('type').notNull(),
+  createdBy: uuid('created_by').references(() => admin.id).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  finishedAt: timestamp('finished_at', { withTimezone: true }),
+  status: text('status').notNull(),
+  percentageComplete: bigserial('percentage_complete', { mode: 'number' }).default(0),
+  data: json('data'),
+});
+
 // Relations
 export const lecturerRelations = relations(lecturer, ({ one, many }) => ({
   department: one(department, {
