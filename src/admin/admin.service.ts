@@ -11,37 +11,38 @@ import { CreateStudentDto, CreateLecturerDto } from 'src/repository/schema';
 
 @Injectable()
 export class AdminService {
-    constructor(
-        private readonly db: DatabaseService,
-        private readonly lecturerRepo: LecturerRepository,
-        private readonly studentRepo: StudentRepository,
-        private readonly jobService: JobService,
-    ) { }
+  constructor(
+    private readonly db: DatabaseService,
+    private readonly lecturerRepo: LecturerRepository,
+    private readonly studentRepo: StudentRepository,
+    private readonly jobService: JobService,
+  ) {}
 
-    async createCourse({ code, title, lecturerId }: CourseBody) {
-        const fetchedLecturer = await this.db.client.query.lecturer.findFirst({
-            where: eq(lecturer.id, lecturerId)
-        })
-        if (!fetchedLecturer) throw new NotFoundException('Lecturer not found!')
-        return await this.db.client.insert(course).values({
-            code, title,
-            lecturerId
-        })
-    }
+  async createCourse({ code, title, lecturerId }: CourseBody) {
+    const fetchedLecturer = await this.db.client.query.lecturer.findFirst({
+      where: eq(lecturer.id, lecturerId),
+    });
+    if (!fetchedLecturer) throw new NotFoundException('Lecturer not found!');
+    return await this.db.client.insert(course).values({
+      code,
+      title,
+      lecturerId,
+    });
+  }
 
-    async createLecturers(lecturerData: CreateLecturerDto) {
-        return await this.lecturerRepo.createLecturer(lecturerData);
-    }
+  async createLecturers(lecturerData: CreateLecturerDto) {
+    return await this.lecturerRepo.createLecturer(lecturerData);
+  }
 
-    async createLecturersBatch(file: any, createdBy: string) {
-        return await this.jobService.createLecturers(file, createdBy);
-    }
+  async createLecturersBatch(file: any, createdBy: string) {
+    return await this.jobService.createLecturers(file, createdBy);
+  }
 
-    async createStudents(studentData: CreateStudentDto) {
-        return await this.studentRepo.createStudent(studentData);
-    }
+  async createStudents(studentData: CreateStudentDto) {
+    return await this.studentRepo.createStudent(studentData);
+  }
 
-    async createStudentsBatch(file: any, createdBy: string) {
-        return await this.jobService.createStudents(file, createdBy);
-    }
+  async createStudentsBatch(file: any, createdBy: string) {
+    return await this.jobService.createStudents(file, createdBy);
+  }
 }

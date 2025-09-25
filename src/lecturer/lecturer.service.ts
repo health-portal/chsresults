@@ -6,10 +6,10 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { and, eq } from 'drizzle-orm';
-import { course, enrollment, student } from 'drizzle/schema';
+import { course, enrollment, lecturer, student } from 'drizzle/schema';
 import { DatabaseService } from 'src/database/database.service';
 import {
-  BulkStudentRegistrationResult,
+  BatchStudentRegistrationResult,
   EditScoreBody,
   ParseCsvData,
   RegisterStudentBody,
@@ -66,7 +66,6 @@ export class LecturerService {
                 row: currentRow,
                 errorMessage: error.toString(),
               });
-              error.toString();
             });
           } else {
             validRows.push(transformedRow);
@@ -86,7 +85,7 @@ export class LecturerService {
     return courses;
   }
 
-  async registerStudentsBulk(
+  async registerStudentsBatch(
     lecturerId: string,
     courseId: string,
     file: Express.Multer.File,
@@ -94,7 +93,7 @@ export class LecturerService {
     await this.validateCourseAccess(lecturerId, courseId);
 
     const parsedData = await this.parseCsvFile(file, RegisterStudentRow);
-    const result: BulkStudentRegistrationResult = {
+    const result: BatchStudentRegistrationResult = {
       registeredStudents: [],
       unregisteredStudents: [],
       ...parsedData,
@@ -265,5 +264,11 @@ export class LecturerService {
     });
 
     return courseStudents;
+  }
+
+  async getProfile(lecturerId: string) {
+    return await this.db.client.query.lecturer.findFirst({
+      where: eq(lecturer.id, lecturerId),
+    });
   }
 }

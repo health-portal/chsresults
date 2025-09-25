@@ -53,7 +53,7 @@ export class ParseCsvData<T extends object> {
   invalidRows: RowValidationError[];
 }
 
-export class BulkStudentRegistrationResult extends ParseCsvData<RegisterStudentRow> {
+export class BatchStudentRegistrationResult extends ParseCsvData<RegisterStudentRow> {
   registeredStudents: string[];
   unregisteredStudents: string[];
 }

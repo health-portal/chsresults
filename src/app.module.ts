@@ -5,6 +5,7 @@ import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { LecturerModule } from './lecturer/lecturer.module';
 import { env } from './environment';
+import { StudentModule } from './student/student.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { env } from './environment';
     DatabaseModule,
     AdminModule,
     AuthModule,
-    LecturerModule
+    LecturerModule,
+    StudentModule
   ],
 })
 export class AppModule { }

@@ -42,9 +42,9 @@ export class LecturerController {
     return await this.lecturerService.listCourses(lecturerId);
   }
 
-  @Post('courses/:courseId/students/bulk')
+  @Post('courses/:courseId/students/batch')
   @UseInterceptors(FileInterceptor('file'))
-  @ApiOperation({ summary: 'Register students in bulk for a course' })
+  @ApiOperation({ summary: 'Register students in batch for a course' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -52,7 +52,7 @@ export class LecturerController {
       properties: { file: { type: 'string', format: 'binary' } },
     },
   })
-  async registerStudentsBulk(
+  async registerStudentsBatch(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
     @UploadedFile(
@@ -62,7 +62,7 @@ export class LecturerController {
     )
     file: Express.Multer.File,
   ) {
-    return await this.lecturerService.registerStudentsBulk(
+    return await this.lecturerService.registerStudentsBatch(
       lecturerId,
       courseId,
       file,
@@ -137,5 +137,10 @@ export class LecturerController {
     @Param('courseId', ParseUUIDPipe) courseId: string,
   ) {
     return await this.lecturerService.listCourseStudents(lecturerId, courseId);
+  }
+
+  @Get('profile')
+  async getProfile(@User('id') lecturerId: string) {
+    return await this.lecturerService.getProfile(lecturerId);
   }
 }

@@ -1,8 +1,21 @@
-import { Body, Controller, Post, UseGuards, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags, ApiConsumes } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiConsumes,
+} from '@nestjs/swagger';
 import { Role, RolesGuard } from 'src/auth/roles.guard';
-import { EUserRole } from 'src/auth/auth.schema'
+import { EUserRole } from 'src/auth/auth.schema';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CourseBody, CourseResponse } from './admin.schema';
 import { CreateStudentDto, CreateLecturerDto } from 'src/repository/schema';
@@ -13,15 +26,19 @@ import { FileInterceptor } from '@nestjs/platform-express';
 @Role(EUserRole.admin)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class AdminController {
-  constructor(private readonly adminService: AdminService) { }
+  constructor(private readonly adminService: AdminService) {}
 
   @Post('courses')
   @ApiOperation({ summary: 'Create a new course' })
   @ApiBody({ type: CourseBody })
-  @ApiResponse({ status: 201, description: 'Course details', type: CourseResponse })
+  @ApiResponse({
+    status: 201,
+    description: 'Course details',
+    type: CourseResponse,
+  })
   @ApiResponse({})
   createCourse(@Body() body: CourseBody) {
-    return this.adminService.createCourse(body)
+    return this.adminService.createCourse(body);
   }
 
   @Post('lecturers')
@@ -79,5 +96,4 @@ export class AdminController {
   createStudentsBatch(@UploadedFile() file: any) {
     return this.adminService.createStudentsBatch(file, 'admin-id'); // TODO: get from auth
   }
-
 }
