@@ -6,7 +6,7 @@ import { JwtPayload, UserRole } from './auth.schema';
 export const Role = Reflector.createDecorator<UserRole>();
 
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class RoleGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {

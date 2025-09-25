@@ -16,7 +16,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { LecturerService } from './lecturer.service';
 import { User } from 'src/auth/user.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Role, RolesGuard } from 'src/auth/roles.guard';
+import { Role, RoleGuard } from 'src/auth/role.guard';
 import { EditScoreBody, RegisterStudentBody } from './lecturer.schema';
 import {
   ApiBearerAuth,
@@ -31,7 +31,7 @@ import {
 @ApiBearerAuth('accessToken')
 @Controller('lecturer')
 @Role('lecturer')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RoleGuard)
 export class LecturerController {
   constructor(private readonly lecturerService: LecturerService) {}
 

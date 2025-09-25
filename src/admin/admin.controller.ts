@@ -14,7 +14,7 @@ import {
   ApiTags,
   ApiConsumes,
 } from '@nestjs/swagger';
-import { Role, RolesGuard } from 'src/auth/roles.guard';
+import { Role, RoleGuard } from 'src/auth/role.guard';
 import { EUserRole } from 'src/auth/auth.schema';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CourseBody, CourseResponse } from './admin.schema';
@@ -24,7 +24,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 @ApiTags('admin')
 @Controller('admin')
 @Role(EUserRole.admin)
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RoleGuard)
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
