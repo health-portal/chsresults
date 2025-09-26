@@ -1,3 +1,4 @@
+import { OmitType, PartialType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ParseCsvData } from 'src/utils/csv';
@@ -40,3 +41,8 @@ export class CreateStudentResult extends CreateStudentBody {
 export class CreateStudentsResult extends ParseCsvData<CreateStudentBody> {
   students: CreateStudentResult[];
 }
+
+export class UpdateStudentBody extends OmitType(
+  PartialType(CreateStudentBody),
+  ['email', 'matricNumber'] as const,
+) {}

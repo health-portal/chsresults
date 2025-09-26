@@ -3,21 +3,23 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Param,
   ParseFilePipeBuilder,
+  Patch,
   Post,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CreateCourseBody } from './courses.schema';
+import { UpsertCourseBody } from './courses.schema';
 
 @Controller('courses')
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
   @Post()
-  async createCourse(@Body() body: CreateCourseBody) {
+  async createCourse(@Body() body: UpsertCourseBody) {
     return await this.coursesService.createCourse(body);
   }
 
@@ -37,5 +39,13 @@ export class CoursesController {
   @Get()
   async getCourses() {
     return await this.coursesService.getCourses();
+  }
+
+  @Patch(':courseId')
+  async updateCourse(
+    @Param('courseId') courseId: string,
+    @Body() body: UpsertCourseBody,
+  ) {
+    return await this.coursesService.updateCourse(courseId, body);
   }
 }

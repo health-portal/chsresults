@@ -1,9 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
+  Param,
   ParseFilePipeBuilder,
+  ParseUUIDPipe,
+  Patch,
   Post,
   UploadedFile,
   UseGuards,
@@ -14,7 +18,7 @@ import { UserRole } from 'src/auth/auth.schema';
 import { Role, RoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CreateLecturerBody } from './lecturers.schema';
+import { CreateLecturerBody, UpdateLecturerBody } from './lecturers.schema';
 
 @Controller('lecturers')
 @Role(UserRole.ADMIN)
@@ -43,5 +47,18 @@ export class LecturersController {
   @Get()
   async getLecturers() {
     return await this.lecturersService.getLecturers();
+  }
+
+  @Patch(':id')
+  async updateLecturer(
+    @Param('id', ParseUUIDPipe) lecturerId: string,
+    @Body() body: UpdateLecturerBody,
+  ) {
+    return await this.lecturersService.updateLecturer(lecturerId, body);
+  }
+
+  @Delete(':id')
+  async deleteLecturer(@Param('id', ParseUUIDPipe) lecturerId: string) {
+    return await this.lecturersService.deleteLecturer(lecturerId);
   }
 }

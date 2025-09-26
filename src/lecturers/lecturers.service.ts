@@ -1,6 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { CreateLecturerBody, CreateLecturersResult } from './lecturers.schema';
+import {
+  CreateLecturerBody,
+  CreateLecturersResult,
+  UpdateLecturerBody,
+} from './lecturers.schema';
 import { department, lecturer } from 'drizzle/schema';
 import { eq } from 'drizzle-orm';
 import { parseCsvFile } from 'src/utils/csv';
@@ -56,5 +60,27 @@ export class LecturersService {
 
   async getLecturers() {
     return await this.db.client.query.lecturer.findMany();
+  }
+
+  async updateLecturer(lecturerId: string, body: UpdateLecturerBody) {
+    const existingLecturer = await this.db.client.query.lecturer.findFirst({
+      where: eq(lecturer.id, lecturerId),
+    });
+    if (!existingLecturer) throw new BadRequestException('Lecturer not found');
+
+    const lecturerRecord = await this.db.client
+      .update(lecturer)
+      .set(body)
+      .where(eq(lecturer.id, lecturerId))
+      .returning();
+    return lecturerRecord;
+  }
+
+  async deleteLecturer(lecturerId: string) {
+    const lecturerRecord = await this.db.client
+      .delete(lecturer)
+      .where(eq(lecturer.id, lecturerId))
+      .returning();
+    return lecturerRecord;
   }
 }

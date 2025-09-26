@@ -1,6 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { CreateStudentBody, CreateStudentsResult } from './students.schema';
+import {
+  CreateStudentBody,
+  CreateStudentsResult,
+  UpdateStudentBody,
+} from './students.schema';
 import { department, student } from 'drizzle/schema';
 import { eq, or } from 'drizzle-orm';
 import { parseCsvFile } from 'src/utils/csv';
@@ -59,5 +67,41 @@ export class StudentsService {
 
   async getStudents() {
     return await this.db.client.query.student.findMany();
+  }
+
+  async updateStudent(studentId: string, body: UpdateStudentBody) {
+    const existingStudent = await this.db.client.query.student.findFirst({
+      where: eq(student.id, studentId),
+    });
+    if (!existingStudent) throw new NotFoundException('Student not found');
+
+    let departmentId: string | undefined = existingStudent.departmentId;
+    if (body.department) {
+      const existingDepartment =
+        await this.db.client.query.department.findFirst({
+          where: eq(department.name, body.department),
+        });
+      if (!existingDepartment)
+        throw new BadRequestException('Department not found');
+      departmentId = existingDepartment.id;
+    }
+
+    return await this.db.client
+      .update(student)
+      .set({ ...body, departmentId })
+      .where(eq(student.id, studentId))
+      .returning();
+  }
+
+  async deleteStudent(studentId: string) {
+    const existingStudent = await this.db.client.query.student.findFirst({
+      where: eq(student.id, studentId),
+    });
+    if (!existingStudent) throw new NotFoundException('Student not found');
+
+    return await this.db.client
+      .delete(student)
+      .where(eq(student.id, studentId))
+      .returning();
   }
 }
