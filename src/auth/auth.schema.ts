@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, IsNotEmpty } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  IsNotEmpty,
+  IsStrongPassword,
+} from 'class-validator';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -19,19 +24,13 @@ export class AuthUserBody {
   email: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsStrongPassword()
   password: string;
 }
 
 export enum StudentIdentifierType {
   EMAIL = 'email',
   MATRIC_NUMBER = 'matricNumber',
-}
-
-export class ResetPasswordBody {
-  email: string;
-  password: string;
 }
 
 export class StudentIdentifierBody {

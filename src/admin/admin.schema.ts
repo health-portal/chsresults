@@ -1,19 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  IsStrongPassword,
+} from 'class-validator';
 
-export class CreateCourseBody {
+export class AddAdminBody {
+  @ApiProperty()
+  @IsEmail()
+  email: string;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  code: string;
+  name: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  title: string;
-
-  @ApiProperty()
-  @IsUUID()
-  @IsNotEmpty()
-  lecturerId: string;
+  @IsStrongPassword()
+  password: string;
 }

@@ -7,7 +7,6 @@ import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from 'src/database/database.service';
 import {
   JwtPayload,
-  ResetPasswordBody,
   UserRole,
   AuthUserBody,
   AuthStudentBody,
@@ -114,7 +113,7 @@ export class AuthService {
     return { success: true, message: `Reset link sent to ${email}` };
   }
 
-  async resetPassword(role: UserRole, { email, password }: ResetPasswordBody) {
+  async resetPassword(role: UserRole, { email, password }: AuthUserBody) {
     const user = await this.findAdminOrLecturer(role, email);
     if (!user) throw new NotFoundException(`${role} not found`);
 
