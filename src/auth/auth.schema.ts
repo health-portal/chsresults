@@ -1,14 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, IsNotEmpty } from 'class-validator';
 
-export type UserRole = 'admin' | 'lecturer' | 'student';
-type EUserRole = Record<UserRole, UserRole>;
-
-export const EUserRole: EUserRole = {
-  admin: 'admin',
-  lecturer: 'lecturer',
-  student: 'student',
-};
+export enum UserRole {
+  ADMIN = 'admin',
+  LECTURER = 'lecturer',
+  STUDENT = 'student',
+}
 
 export interface JwtPayload {
   id: string;
@@ -27,9 +24,17 @@ export class AuthUserBody {
   password: string;
 }
 
-export type StudentIdentifierType = 'email' | 'matricNumber';
+export enum StudentIdentifierType {
+  EMAIL = 'email',
+  MATRIC_NUMBER = 'matricNumber',
+}
 
-export class AuthStudentBody {
+export class ResetPasswordBody {
+  email: string;
+  password: string;
+}
+
+export class StudentIdentifierBody {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -39,7 +44,9 @@ export class AuthStudentBody {
   @IsString()
   @IsNotEmpty()
   identifierType: StudentIdentifierType;
+}
 
+export class AuthStudentBody extends StudentIdentifierBody {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

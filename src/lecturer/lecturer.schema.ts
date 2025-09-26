@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { type StudentIdentifierType } from 'src/auth/auth.schema';
+import { ParseCsvData } from 'src/utils/csv';
 
 export class RegisterStudentBody {
   @ApiProperty()
@@ -40,17 +41,6 @@ export class UploadScoreRow extends Scores {
   @IsString()
   @IsNotEmpty()
   matricNumber: string;
-}
-
-export class RowValidationError {
-  row: number;
-  errorMessage: string;
-}
-
-export class ParseCsvData<T extends object> {
-  numberOfRows: number;
-  validRows: T[];
-  invalidRows: RowValidationError[];
 }
 
 export class BatchStudentRegistrationResult extends ParseCsvData<RegisterStudentRow> {

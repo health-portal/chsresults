@@ -1,7 +1,12 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import { Controller, Post, Body, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { AuthUserBody, AuthStudentBody } from './auth.schema';
+import {
+  AuthUserBody,
+  AuthStudentBody,
+  UserRole,
+  StudentIdentifierBody,
+} from './auth.schema';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -9,50 +14,65 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('admin/activate-account')
-  @ApiOperation({ summary: 'Activate an admin account' })
-  @ApiBody({ type: AuthUserBody })
-  @ApiResponse({ status: 201, description: 'Admin account activated' })
-  activateAdminAccount(@Body() body: AuthUserBody) {
-    return this.authService.activateAdminAccount(body);
+  async activateAdminAccount(@Body() body: AuthUserBody) {
+    return await this.authService.activate(UserRole.ADMIN, body);
   }
 
   @Post('admin/signin')
-  @ApiOperation({ summary: 'Admin sign in' })
-  @ApiBody({ type: AuthUserBody })
-  @ApiResponse({ status: 200, description: 'Admin signed in' })
-  signinAdmin(@Body() body: AuthUserBody) {
-    return this.authService.signinAdmin(body);
+  async signinAdmin(@Body() body: AuthUserBody) {
+    return await this.authService.signin(UserRole.ADMIN, body);
+  }
+
+  @Post('admin/reset-password/request')
+  async adminResetPasswordRequest(@Query('email') email: string) {
+    return await this.authService.resetPasswordRequest(UserRole.ADMIN, email);
+  }
+
+  @Post('admin/reset-password')
+  async adminResetPassword(@Body() body: AuthUserBody) {
+    return await this.authService.resetPassword(UserRole.ADMIN, body);
   }
 
   @Post('lecturer/activate-account')
-  @ApiOperation({ summary: 'Activate a lecturer account' })
-  @ApiBody({ type: AuthUserBody })
-  @ApiResponse({ status: 201, description: 'Lecturer account activated' })
-  activateLecturerAccount(@Body() body: AuthUserBody) {
-    return this.authService.activateLecturerAccount(body);
+  async activateLecturerAccount(@Body() body: AuthUserBody) {
+    return await this.authService.activate(UserRole.LECTURER, body);
   }
 
   @Post('lecturer/signin')
-  @ApiOperation({ summary: 'Lecturer sign in' })
-  @ApiBody({ type: AuthUserBody })
-  @ApiResponse({ status: 200, description: 'Lecturer signed in' })
-  signinLecturer(@Body() body: AuthUserBody) {
-    return this.authService.signinLecturer(body);
+  async signinLecturer(@Body() body: AuthUserBody) {
+    return await this.authService.signin(UserRole.LECTURER, body);
+  }
+
+  @Post('lecturer/reset-password/request')
+  async lecturerResetPasswordRequest(@Query('email') email: string) {
+    return await this.authService.resetPasswordRequest(
+      UserRole.LECTURER,
+      email,
+    );
+  }
+
+  @Post('lecturer/reset-password')
+  async lecturerResetPassword(@Body() body: AuthUserBody) {
+    return await this.authService.resetPassword(UserRole.LECTURER, body);
   }
 
   @Post('student/activate-account')
-  @ApiOperation({ summary: 'Activate a student account' })
-  @ApiBody({ type: AuthStudentBody })
-  @ApiResponse({ status: 201, description: 'Student account activated' })
-  activateStudentAccount(@Body() body: AuthStudentBody) {
+  async activateStudentAccount(@Body() body: AuthStudentBody) {
     return this.authService.activateStudentAccount(body);
   }
 
   @Post('student/signin')
-  @ApiOperation({ summary: 'Student sign in' })
-  @ApiBody({ type: AuthStudentBody })
-  @ApiResponse({ status: 200, description: 'Student signed in' })
-  signinStudent(@Body() body: AuthStudentBody) {
+  async signinStudent(@Body() body: AuthStudentBody) {
     return this.authService.signinStudent(body);
+  }
+
+  @Post('student/reset-password/request')
+  async studentResetPasswordRequest(@Body() body: StudentIdentifierBody) {
+    return await this.authService.studentResetPasswordRequest(body);
+  }
+
+  @Post('student/reset-password')
+  async studentResetPassword(@Body() body: AuthStudentBody) {
+    return await this.authService.studentResetPassword(body);
   }
 }

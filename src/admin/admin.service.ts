@@ -7,7 +7,7 @@ import { DatabaseService } from 'src/database/database.service';
 import { LecturerRepository } from 'src/repository/lecturer.repo';
 import { StudentRepository } from 'src/repository/student.repo';
 import { JobService } from 'src/jobs/jobs.service';
-import { CreateStudentDto, CreateLecturerDto } from 'src/repository/schema';
+import { CreateStudentBody, CreateLecturerBody } from 'src/repository/schema';
 
 @Injectable()
 export class AdminService {
@@ -30,7 +30,7 @@ export class AdminService {
     });
   }
 
-  async createLecturers(lecturerData: CreateLecturerDto) {
+  async createLecturers(lecturerData: CreateLecturerBody) {
     return await this.lecturerRepo.createLecturer(lecturerData);
   }
 
@@ -38,7 +38,7 @@ export class AdminService {
     return await this.jobService.createLecturers(file, createdBy);
   }
 
-  async createStudents(studentData: CreateStudentDto) {
+  async createStudents(studentData: CreateStudentBody) {
     return await this.studentRepo.createStudent(studentData);
   }
 

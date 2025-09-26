@@ -3,7 +3,6 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 import { and, eq } from 'drizzle-orm';
 import { course, enrollment, lecturer, student } from 'drizzle/schema';
@@ -11,17 +10,13 @@ import { DatabaseService } from 'src/database/database.service';
 import {
   BatchStudentRegistrationResult,
   EditScoreBody,
-  ParseCsvData,
   RegisterStudentBody,
   RegisterStudentRow,
-  RowValidationError,
   UploadScoreRow,
   UploadScoresResult,
 } from './lecturer.schema';
-import * as csv from 'fast-csv';
-import { Readable } from 'stream';
-import { plainToInstance } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { StudentIdentifierType } from 'src/auth/auth.schema';
+import { parseCsvFile } from 'src/utils/csv';
 
 @Injectable()
 export class LecturerService {
@@ -39,44 +34,6 @@ export class LecturerService {
     }
   }
 
-  private async parseCsvFile<T extends object>(
-    file: Express.Multer.File,
-    validationClass: new () => T,
-  ): Promise<ParseCsvData<T>> {
-    return new Promise((resolve, reject) => {
-      const validRows: T[] = [];
-      const invalidRows: RowValidationError[] = [];
-
-      let currentRow = 0;
-
-      const stream = Readable.from(file.buffer);
-      stream
-        .pipe(csv.parse({ headers: true }))
-        .on('error', (error) => {
-          reject(new UnprocessableEntityException(error.message));
-        })
-        .on('data', (row) => {
-          currentRow++;
-          const transformedRow = plainToInstance(validationClass, row);
-          const validationErrors = validateSync(transformedRow);
-
-          if (validationErrors.length > 0) {
-            validationErrors.map((error) => {
-              invalidRows.push({
-                row: currentRow,
-                errorMessage: error.toString(),
-              });
-            });
-          } else {
-            validRows.push(transformedRow);
-          }
-        })
-        .on('end', () => {
-          resolve({ validRows, invalidRows, numberOfRows: currentRow });
-        });
-    });
-  }
-
   async listCourses(lecturerId: string) {
     const courses = await this.db.client.query.course.findMany({
       where: eq(course.lecturerId, lecturerId),
@@ -92,7 +49,7 @@ export class LecturerService {
   ) {
     await this.validateCourseAccess(lecturerId, courseId);
 
-    const parsedData = await this.parseCsvFile(file, RegisterStudentRow);
+    const parsedData = await parseCsvFile(file, RegisterStudentRow);
     const result: BatchStudentRegistrationResult = {
       registeredStudents: [],
       unregisteredStudents: [],
@@ -128,7 +85,7 @@ export class LecturerService {
     await this.validateCourseAccess(lecturerId, courseId);
 
     const whereCondition =
-      identifierType === 'email'
+      identifierType === StudentIdentifierType.EMAIL
         ? eq(student.email, studentIdentifier)
         : eq(student.matricNumber, studentIdentifier);
 
@@ -171,7 +128,7 @@ export class LecturerService {
   ) {
     await this.validateCourseAccess(lecturerId, courseId);
 
-    const parsedData = await this.parseCsvFile(file, UploadScoreRow);
+    const parsedData = await parseCsvFile(file, UploadScoreRow);
     const result: UploadScoresResult = {
       studentsUploadedFor: [],
       studentsNotFound: [],
