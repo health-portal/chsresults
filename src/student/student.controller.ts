@@ -3,9 +3,10 @@ import { StudentService } from './student.service';
 import { User } from 'src/auth/user.decorator';
 import { Role, RoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UserRole } from 'src/auth/auth.schema';
 
 @Controller('student')
-@Role('student')
+@Role(UserRole.STUDENT)
 @UseGuards(JwtAuthGuard, RoleGuard)
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
