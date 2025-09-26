@@ -1,8 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import {
   CreateLecturerBody,
-  CreateLecturersResult,
+  CreateLecturersResponse,
   UpdateLecturerBody,
 } from './lecturers.schema';
 import { department, lecturer } from 'drizzle/schema';
@@ -14,42 +18,41 @@ export class LecturersService {
   constructor(private readonly db: DatabaseService) {}
 
   async createLecturer(body: CreateLecturerBody) {
-    const existingLecturer = await this.db.client.query.lecturer.findFirst({
+    const foundLecturer = await this.db.client.query.lecturer.findFirst({
       where: eq(lecturer.email, body.email),
     });
-    if (existingLecturer)
+    if (foundLecturer)
       throw new BadRequestException('Lecturer already registered');
 
-    const departmentRecord = await this.db.client.query.department.findFirst({
+    const foundDepartment = await this.db.client.query.department.findFirst({
       where: eq(department.name, body.department),
     });
+    if (!foundDepartment) throw new BadRequestException('Department not found');
 
-    if (!departmentRecord)
-      throw new BadRequestException('Department not found');
-
-    const lecturerRecord = await this.db.client
+    const [insertedLecturer] = await this.db.client
       .insert(lecturer)
-      .values({ ...body, departmentId: departmentRecord.id })
+      .values({ ...body, departmentId: foundDepartment.id })
       .returning();
 
-    return lecturerRecord;
+    const { password: _, ...lecturerProfile } = insertedLecturer;
+    return lecturerProfile;
   }
 
   async createLecturers(file: Express.Multer.File) {
     const parsedData = await parseCsvFile(file, CreateLecturerBody);
-    const result: CreateLecturersResult = { lecturers: [], ...parsedData };
+    const result: CreateLecturersResponse = { lecturers: [], ...parsedData };
 
     await this.db.client.transaction(async (tx) => {
       for (const row of parsedData.validRows) {
-        const departmentRecord = await tx.query.department.findFirst({
+        const foundDepartment = await tx.query.department.findFirst({
           where: eq(department.name, row.department),
         });
-        if (!departmentRecord)
+        if (!foundDepartment)
           result.lecturers.push({ ...row, isCreated: false });
         else {
           await tx
             .insert(lecturer)
-            .values({ ...row, departmentId: departmentRecord.id });
+            .values({ ...row, departmentId: foundDepartment.id });
           result.lecturers.push({ ...row, isCreated: true });
         }
       }
@@ -59,28 +62,36 @@ export class LecturersService {
   }
 
   async getLecturers() {
-    return await this.db.client.query.lecturer.findMany();
+    const foundLecturers = await this.db.client.query.lecturer.findMany();
+    return foundLecturers.map((l) => {
+      const { password: _, ...lecturerProfile } = l;
+      return lecturerProfile;
+    });
   }
 
   async updateLecturer(lecturerId: string, body: UpdateLecturerBody) {
-    const existingLecturer = await this.db.client.query.lecturer.findFirst({
+    const foundLecturer = await this.db.client.query.lecturer.findFirst({
       where: eq(lecturer.id, lecturerId),
     });
-    if (!existingLecturer) throw new BadRequestException('Lecturer not found');
+    if (!foundLecturer) throw new BadRequestException('Lecturer not found');
 
-    const lecturerRecord = await this.db.client
+    const [updatedLecturer] = await this.db.client
       .update(lecturer)
       .set(body)
       .where(eq(lecturer.id, lecturerId))
       .returning();
-    return lecturerRecord;
+    const { password: _, ...lecturerProfile } = updatedLecturer;
+    return lecturerProfile;
   }
 
   async deleteLecturer(lecturerId: string) {
-    const lecturerRecord = await this.db.client
+    const [foundLecturer] = await this.db.client
       .delete(lecturer)
       .where(eq(lecturer.id, lecturerId))
       .returning();
-    return lecturerRecord;
+    if (!foundLecturer) throw new NotFoundException('Lecturer not found');
+
+    const { password: _, ...lecturerProfile } = foundLecturer;
+    return lecturerProfile;
   }
 }

@@ -34,12 +34,14 @@ export class CreateStudentBody {
   department: string;
 }
 
-export class CreateStudentResult extends CreateStudentBody {
+export class CreateStudentResponse extends CreateStudentBody {
+  @ApiProperty()
   isCreated: boolean;
 }
 
-export class CreateStudentsResult extends ParseCsvData<CreateStudentBody> {
-  students: CreateStudentResult[];
+export class CreateStudentsResponse extends ParseCsvData<CreateStudentBody> {
+  @ApiProperty({ type: CreateStudentResponse, isArray: true })
+  students: CreateStudentResponse[];
 }
 
 export class UpdateStudentBody extends OmitType(

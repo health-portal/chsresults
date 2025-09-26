@@ -14,7 +14,11 @@ import {
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UpsertCourseBody } from './courses.schema';
+import {
+  CourseResponse,
+  CreateCoursesResponse,
+  UpsertCourseBody,
+} from './courses.schema';
 import {
   ApiTags,
   ApiOperation,
@@ -32,7 +36,7 @@ import { Role, RoleGuard } from 'src/auth/role.guard';
 import { UserRole } from 'src/auth/auth.schema';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
-@ApiTags('Courses')
+@ApiTags('Courses', 'Admin')
 @ApiBearerAuth('accessToken')
 @Controller('courses')
 @Role(UserRole.ADMIN)
@@ -43,7 +47,10 @@ export class CoursesController {
   @Post()
   @ApiOperation({ summary: 'Create a new course' })
   @ApiBody({ type: UpsertCourseBody })
-  @ApiCreatedResponse({ description: 'Course created successfully' })
+  @ApiCreatedResponse({
+    description: 'Course created successfully',
+    type: CourseResponse,
+  })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   async createCourse(@Body() body: UpsertCourseBody) {
     return await this.coursesService.createCourse(body);
@@ -64,7 +71,10 @@ export class CoursesController {
       },
     },
   })
-  @ApiCreatedResponse({ description: 'Courses created successfully' })
+  @ApiCreatedResponse({
+    description: 'Courses created successfully',
+    type: CreateCoursesResponse,
+  })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnprocessableEntityResponse({
     description: 'Invalid file or file size exceeds 5KB',
@@ -82,7 +92,10 @@ export class CoursesController {
 
   @Get()
   @ApiOperation({ summary: 'Get all courses' })
-  @ApiOkResponse({ description: 'Courses retrieved successfully' })
+  @ApiOkResponse({
+    description: 'Courses retrieved successfully',
+    type: [CourseResponse],
+  })
   async getCourses() {
     return await this.coursesService.getCourses();
   }
@@ -91,7 +104,10 @@ export class CoursesController {
   @ApiOperation({ summary: 'Update a course' })
   @ApiParam({ name: 'courseId', type: String, description: 'Course ID' })
   @ApiBody({ type: UpsertCourseBody })
-  @ApiOkResponse({ description: 'Course updated successfully' })
+  @ApiOkResponse({
+    description: 'Course updated successfully',
+    type: CourseResponse,
+  })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Course not found' })
   async updateCourse(
@@ -104,7 +120,10 @@ export class CoursesController {
   @Delete(':courseId')
   @ApiOperation({ summary: 'Delete a course' })
   @ApiParam({ name: 'courseId', type: String, description: 'Course ID' })
-  @ApiOkResponse({ description: 'Course deleted successfully' })
+  @ApiOkResponse({
+    description: 'Course deleted successfully',
+    type: CourseResponse,
+  })
   @ApiNotFoundResponse({ description: 'Course not found' })
   async deleteCourse(@Param('courseId') courseId: string) {
     return await this.coursesService.deleteCourse(courseId);

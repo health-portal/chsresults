@@ -5,11 +5,12 @@ import {
   IsNotEmpty,
   IsStrongPassword,
 } from 'class-validator';
+import { admin, lecturer, student } from 'drizzle/schema';
 
 export enum UserRole {
-  ADMIN = 'admin',
-  LECTURER = 'lecturer',
-  STUDENT = 'student',
+  ADMIN = 'Admin',
+  LECTURER = 'Lecturer',
+  STUDENT = 'Student',
 }
 
 export interface JwtPayload {
@@ -50,4 +51,72 @@ export class AuthStudentBody extends StudentIdentifierBody {
   @IsString()
   @IsNotEmpty()
   password: string;
+}
+
+export class SigninResponse {
+  @ApiProperty()
+  accessToken: string;
+}
+
+export class AdminProfileResponse
+  implements Omit<typeof admin.$inferSelect, 'password'>
+{
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  email: string;
+}
+
+export class LecturerProfileResponse
+  implements Omit<typeof lecturer.$inferSelect, 'password'>
+{
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  email: string;
+
+  @ApiProperty()
+  firstName: string;
+
+  @ApiProperty()
+  lastName: string;
+
+  @ApiProperty({ nullable: true })
+  otherName: string | null;
+
+  @ApiProperty({ nullable: true })
+  phone: string | null;
+
+  @ApiProperty()
+  departmentId: string;
+}
+
+export class StudentProfileResponse
+  implements Omit<typeof student.$inferSelect, 'password'>
+{
+  @ApiProperty()
+  email: string;
+
+  @ApiProperty()
+  matricNumber: string;
+
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  firstName: string;
+
+  @ApiProperty()
+  lastName: string;
+
+  @ApiProperty({ nullable: true })
+  otherName: string | null;
+
+  @ApiProperty()
+  departmentId: string;
 }

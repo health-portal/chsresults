@@ -39,10 +39,11 @@ export class UpdateLecturerBody extends OmitType(
   ['email'] as const,
 ) {}
 
-export class CreateLecturerResult extends CreateLecturerBody {
+export class CreateLecturerResponse extends CreateLecturerBody {
   isCreated: boolean;
 }
 
-export class CreateLecturersResult extends ParseCsvData<CreateLecturerBody> {
-  lecturers: CreateLecturerResult[];
+export class CreateLecturersResponse extends ParseCsvData<CreateLecturerBody> {
+  @ApiProperty({ type: CreateLecturerResponse, isArray: true })
+  lecturers: CreateLecturerResponse[];
 }

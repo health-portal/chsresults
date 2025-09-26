@@ -14,10 +14,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { StudentsService } from './students.service';
-import { UserRole } from 'src/auth/auth.schema';
+import { StudentProfileResponse, UserRole } from 'src/auth/auth.schema';
 import { Role, RoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { CreateStudentBody, UpdateStudentBody } from './students.schema';
+import {
+  CreateStudentBody,
+  CreateStudentsResponse,
+  UpdateStudentBody,
+} from './students.schema';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
@@ -35,8 +39,8 @@ import {
   ApiForbiddenResponse,
 } from '@nestjs/swagger';
 
-@ApiTags('Students')
-@ApiBearerAuth()
+@ApiTags('Students', 'Admin')
+@ApiBearerAuth('accessToken')
 @Controller('students')
 @Role(UserRole.ADMIN)
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -46,7 +50,10 @@ export class StudentsController {
   @Post()
   @ApiOperation({ summary: 'Create a new student' })
   @ApiBody({ type: CreateStudentBody })
-  @ApiCreatedResponse({ description: 'Student created successfully' })
+  @ApiCreatedResponse({
+    description: 'Student created successfully',
+    type: StudentProfileResponse,
+  })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -69,7 +76,10 @@ export class StudentsController {
       },
     },
   })
-  @ApiCreatedResponse({ description: 'Students created successfully' })
+  @ApiCreatedResponse({
+    description: 'Students created successfully',
+    type: CreateStudentsResponse,
+  })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnprocessableEntityResponse({
     description: 'Invalid file or file size exceeds 5KB',
@@ -89,7 +99,10 @@ export class StudentsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all students' })
-  @ApiOkResponse({ description: 'Students retrieved successfully' })
+  @ApiOkResponse({
+    description: 'Students retrieved successfully',
+    type: [StudentProfileResponse],
+  })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async getStudents() {
@@ -100,7 +113,10 @@ export class StudentsController {
   @ApiOperation({ summary: 'Update a student' })
   @ApiParam({ name: 'id', type: String, description: 'Student UUID' })
   @ApiBody({ type: UpdateStudentBody })
-  @ApiOkResponse({ description: 'Student updated successfully' })
+  @ApiOkResponse({
+    description: 'Student updated successfully',
+    type: StudentProfileResponse,
+  })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Student not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -115,7 +131,10 @@ export class StudentsController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a student' })
   @ApiParam({ name: 'id', type: String, description: 'Student UUID' })
-  @ApiOkResponse({ description: 'Student deleted successfully' })
+  @ApiOkResponse({
+    description: 'Student deleted successfully',
+    type: StudentProfileResponse,
+  })
   @ApiNotFoundResponse({ description: 'Student not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })

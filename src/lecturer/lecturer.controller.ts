@@ -17,8 +17,13 @@ import { LecturerService } from './lecturer.service';
 import { User } from 'src/auth/user.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Role, RoleGuard } from 'src/auth/role.guard';
-import { EditScoreBody, RegisterStudentBody } from './lecturer.schema';
-import { UserRole } from 'src/auth/auth.schema';
+import {
+  BatchStudentRegistrationResponse,
+  EditScoreBody,
+  RegisterStudentBody,
+  UploadScoresResponse,
+} from './lecturer.schema';
+import { LecturerProfileResponse, UserRole } from 'src/auth/auth.schema';
 import {
   ApiTags,
   ApiOperation,
@@ -34,9 +39,10 @@ import {
   ApiUnauthorizedResponse,
   ApiForbiddenResponse,
 } from '@nestjs/swagger';
+import { CourseResponse, EnrollmentResponse } from 'src/courses/courses.schema';
 
 @ApiTags('Lecturer')
-@ApiBearerAuth()
+@ApiBearerAuth('accessToken')
 @Controller('lecturer')
 @Role(UserRole.LECTURER)
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -45,7 +51,10 @@ export class LecturerController {
 
   @Get('courses')
   @ApiOperation({ summary: 'List courses assigned to the lecturer' })
-  @ApiOkResponse({ description: 'Courses retrieved successfully' })
+  @ApiOkResponse({
+    description: 'Courses retrieved successfully',
+    type: [CourseResponse],
+  })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async listCourses(@User('id') lecturerId: string) {
@@ -70,7 +79,10 @@ export class LecturerController {
       },
     },
   })
-  @ApiCreatedResponse({ description: 'Students registered successfully' })
+  @ApiCreatedResponse({
+    description: 'Students registered successfully',
+    type: BatchStudentRegistrationResponse,
+  })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Course not found' })
   @ApiUnprocessableEntityResponse({
@@ -99,7 +111,10 @@ export class LecturerController {
   @ApiOperation({ summary: 'Register a single student to a course' })
   @ApiParam({ name: 'courseId', type: String, description: 'Course UUID' })
   @ApiBody({ type: RegisterStudentBody })
-  @ApiCreatedResponse({ description: 'Student registered successfully' })
+  @ApiCreatedResponse({
+    description: 'Student registered successfully',
+    type: EnrollmentResponse,
+  })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Course not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -132,7 +147,10 @@ export class LecturerController {
       },
     },
   })
-  @ApiCreatedResponse({ description: 'Scores uploaded successfully' })
+  @ApiCreatedResponse({
+    description: 'Scores uploaded successfully',
+    type: UploadScoresResponse,
+  })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Course not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -150,7 +168,10 @@ export class LecturerController {
   @ApiParam({ name: 'courseId', type: String, description: 'Course UUID' })
   @ApiParam({ name: 'studentId', type: String, description: 'Student UUID' })
   @ApiBody({ type: EditScoreBody })
-  @ApiOkResponse({ description: 'Score updated successfully' })
+  @ApiOkResponse({
+    description: 'Score updated successfully',
+    type: EnrollmentResponse,
+  })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Course or student not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -172,7 +193,10 @@ export class LecturerController {
   @Get('courses/:courseId/scores')
   @ApiOperation({ summary: 'View scores for a course' })
   @ApiParam({ name: 'courseId', type: String, description: 'Course UUID' })
-  @ApiOkResponse({ description: 'Course scores retrieved successfully' })
+  @ApiOkResponse({
+    description: 'Course scores retrieved successfully',
+    type: [EnrollmentResponse],
+  })
   @ApiNotFoundResponse({ description: 'Course not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -186,7 +210,10 @@ export class LecturerController {
   @Get('courses/:courseId/students')
   @ApiOperation({ summary: 'List students enrolled in a course' })
   @ApiParam({ name: 'courseId', type: String, description: 'Course UUID' })
-  @ApiOkResponse({ description: 'Course students retrieved successfully' })
+  @ApiOkResponse({
+    description: 'Course students retrieved successfully',
+    type: [EnrollmentResponse],
+  })
   @ApiNotFoundResponse({ description: 'Course not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -199,7 +226,10 @@ export class LecturerController {
 
   @Get('profile')
   @ApiOperation({ summary: 'Get lecturer profile' })
-  @ApiOkResponse({ description: 'Profile retrieved successfully' })
+  @ApiOkResponse({
+    description: 'Profile retrieved successfully',
+    type: LecturerProfileResponse,
+  })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async getProfile(@User('id') lecturerId: string) {

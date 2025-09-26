@@ -10,7 +10,7 @@ import {
 import { AdminService } from './admin.service';
 import { Role, RoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { UserRole } from 'src/auth/auth.schema';
+import { AdminProfileResponse, UserRole } from 'src/auth/auth.schema';
 import { User } from 'src/auth/user.decorator';
 import { AddAdminBody } from './admin.schema';
 import {
@@ -46,17 +46,23 @@ export class AdminController {
 
   @Get('profile')
   @ApiOperation({ summary: 'Get admin profile' })
-  @ApiOkResponse({ description: 'Profile retrieved successfully' })
+  @ApiOkResponse({
+    description: 'Profile retrieved successfully',
+    type: AdminProfileResponse,
+  })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async getProfile(@User('id') adminId: string) {
     return await this.adminService.getProfile(adminId);
   }
 
-  @Patch()
+  @Patch('profile')
   @ApiOperation({ summary: 'Update admin profile' })
   @ApiQuery({ name: 'name', type: String, required: true })
-  @ApiOkResponse({ description: 'Profile updated successfully' })
+  @ApiOkResponse({
+    description: 'Profile updated successfully',
+    type: AdminProfileResponse,
+  })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })

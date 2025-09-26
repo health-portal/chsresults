@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -64,21 +66,39 @@ export class AuthService {
     hashedPassword: string,
   ) {
     switch (role) {
-      case UserRole.ADMIN:
-        return this.db.client
+      case UserRole.ADMIN: {
+        const updatedAdmin = await this.db.client
           .update(admin)
           .set({ password: hashedPassword })
-          .where(eq(admin.id, id));
-      case UserRole.LECTURER:
-        return this.db.client
+          .where(eq(admin.id, id))
+          .returning();
+
+        const { password, ...adminProfile } = updatedAdmin[0];
+        return adminProfile;
+      }
+
+      case UserRole.LECTURER: {
+        const updatedLecturer = await this.db.client
           .update(lecturer)
           .set({ password: hashedPassword })
-          .where(eq(lecturer.id, id));
-      case UserRole.STUDENT:
-        return this.db.client
-          .update(lecturer)
+          .where(eq(lecturer.id, id))
+          .returning();
+
+        const { password, ...lecturerProfile } = updatedLecturer[0];
+        return lecturerProfile;
+      }
+
+      case UserRole.STUDENT: {
+        const updatedStudent = await this.db.client
+          .update(student)
           .set({ password: hashedPassword })
-          .where(eq(student.id, id));
+          .where(eq(student.id, id))
+          .returning();
+
+        const { password, ...studentProfile } = updatedStudent[0];
+        return studentProfile;
+      }
+
       default:
         throw new UnauthorizedException('Role not supported here');
     }
@@ -88,17 +108,16 @@ export class AuthService {
     const user = await this.findAdminOrLecturer(role, email);
     if (!user) throw new UnauthorizedException(`${role} not found`);
     if (user.password)
-      throw new UnauthorizedException(`${role} already activated`);
+      throw new BadRequestException(`${role} already activated`);
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    return this.updatePassword(role, user.id, hashedPassword);
+    return await this.updatePassword(role, user.id, hashedPassword);
   }
 
   async signin(role: UserRole, { email, password }: AuthUserBody) {
     const user = await this.findAdminOrLecturer(role, email);
     if (!user) throw new UnauthorizedException(`${role} not found`);
-    if (!user.password)
-      throw new UnauthorizedException(`${role} not activated`);
+    if (!user.password) throw new ForbiddenException(`${role} not activated`);
 
     const isMatched = await bcrypt.compare(password, user.password);
     if (!isMatched) throw new UnauthorizedException('Invalid credentials');
@@ -118,7 +137,7 @@ export class AuthService {
     if (!user) throw new NotFoundException(`${role} not found`);
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    return this.updatePassword(role, user.id, hashedPassword);
+    return await this.updatePassword(role, user.id, hashedPassword);
   }
 
   async activateStudentAccount({
@@ -134,7 +153,7 @@ export class AuthService {
       throw new UnauthorizedException(`Student already activated`);
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    return this.updatePassword(
+    return await this.updatePassword(
       UserRole.STUDENT,
       studentRecord.id,
       hashedPassword,
@@ -151,7 +170,7 @@ export class AuthService {
       identifierType,
     });
     if (!studentRecord.password)
-      throw new UnauthorizedException(`$Student not activated`);
+      throw new ForbiddenException(`$Student not activated`);
 
     const isMatched = await bcrypt.compare(password, studentRecord.password);
     if (!isMatched) throw new UnauthorizedException('Invalid credentials');
@@ -188,7 +207,7 @@ export class AuthService {
     });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    return this.updatePassword(
+    return await this.updatePassword(
       UserRole.STUDENT,
       studentRecord.id,
       hashedPassword,

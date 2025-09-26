@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { UpsertCourseBody, CreateCoursesResult } from './courses.schema';
+import { UpsertCourseBody, CreateCoursesResponse } from './courses.schema';
 import { eq, or } from 'drizzle-orm';
 import { course, lecturer } from 'drizzle/schema';
 import { parseCsvFile } from 'src/utils/csv';
@@ -14,50 +14,51 @@ export class CoursesService {
   constructor(private readonly db: DatabaseService) {}
 
   async createCourse({ code, title, lecturerEmail }: UpsertCourseBody) {
-    const existingCourse = await this.db.client.query.course.findFirst({
+    const foundCourse = await this.db.client.query.course.findFirst({
       where: or(eq(course.title, title), eq(course.code, code)),
     });
-    if (existingCourse)
+    if (foundCourse)
       throw new BadRequestException(
         'Course with name or title already registered',
       );
 
-    const existingLecturer = await this.db.client.query.lecturer.findFirst({
+    const foundLecturer = await this.db.client.query.lecturer.findFirst({
       where: eq(lecturer.email, lecturerEmail),
     });
-    if (!existingLecturer) throw new BadRequestException('Lecturer not found');
+    if (!foundLecturer) throw new BadRequestException('Lecturer not found');
 
-    const courseRecord = await this.db.client
+    const insertedCourse = await this.db.client
       .insert(course)
-      .values({ code, title, lecturerId: existingLecturer.id });
-    return courseRecord;
+      .values({ code, title, lecturerId: foundLecturer.id })
+      .returning();
+    return insertedCourse[0];
   }
 
   async createCourses(file: Express.Multer.File) {
     const parsedData = await parseCsvFile(file, UpsertCourseBody);
-    const result: CreateCoursesResult = { courses: [], ...parsedData };
+    const result: CreateCoursesResponse = { courses: [], ...parsedData };
 
     await this.db.client.transaction(async (tx) => {
       for (const row of parsedData.validRows) {
-        const existingCourse = await tx.query.course.findFirst({
+        const foundCourse = await tx.query.course.findFirst({
           where: or(eq(course.title, row.title), eq(course.code, row.code)),
         });
-        if (existingCourse) {
+        if (foundCourse) {
           result.courses.push({ ...row, isCreated: false });
           continue;
         }
 
-        const existingLecturer = await this.db.client.query.lecturer.findFirst({
+        const foundLecturer = await this.db.client.query.lecturer.findFirst({
           where: eq(lecturer.email, row.lecturerEmail),
         });
-        if (!existingLecturer) {
+        if (!foundLecturer) {
           result.courses.push({ ...row, isCreated: false });
           continue;
         }
 
         await tx
           .insert(course)
-          .values({ ...row, lecturerId: existingLecturer.id });
+          .values({ ...row, lecturerId: foundLecturer.id });
         result.courses.push({ ...row, isCreated: true });
       }
     });
@@ -73,33 +74,34 @@ export class CoursesService {
     courseId: string,
     { code, title, lecturerEmail }: UpsertCourseBody,
   ) {
-    const existingCourse = await this.db.client.query.course.findFirst({
+    const foundCourse = await this.db.client.query.course.findFirst({
       where: eq(course.id, courseId),
     });
-    if (!existingCourse)
+    if (!foundCourse)
       throw new BadRequestException('Course with name or title not found');
 
-    const existingLecturer = await this.db.client.query.lecturer.findFirst({
+    const foundLecturer = await this.db.client.query.lecturer.findFirst({
       where: eq(lecturer.email, lecturerEmail),
     });
-    if (!existingLecturer) throw new BadRequestException('Lecturer not found');
+    if (!foundLecturer) throw new BadRequestException('Lecturer not found');
 
-    const courseRecord = await this.db.client
+    const updatedCourse = await this.db.client
       .update(course)
-      .set({ code, title, lecturerId: existingLecturer.id })
+      .set({ code, title, lecturerId: foundLecturer.id })
       .returning();
-    return courseRecord;
+    return updatedCourse[0];
   }
 
   async deleteCourse(courseId: string) {
-    const existingCourse = await this.db.client.query.course.findFirst({
+    const foundCourse = await this.db.client.query.course.findFirst({
       where: eq(course.id, courseId),
     });
-    if (!existingCourse) throw new NotFoundException('Course not found');
+    if (!foundCourse) throw new NotFoundException('Course not found');
 
-    return await this.db.client
+    const deletedCourse = await this.db.client
       .delete(course)
       .where(eq(course.id, courseId))
       .returning();
+    return deletedCourse[0];
   }
 }

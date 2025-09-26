@@ -3,17 +3,18 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { and, eq } from 'drizzle-orm';
 import { course, enrollment, lecturer, student } from 'drizzle/schema';
 import { DatabaseService } from 'src/database/database.service';
 import {
-  BatchStudentRegistrationResult,
+  BatchStudentRegistrationResponse,
   EditScoreBody,
   RegisterStudentBody,
   RegisterStudentRow,
   UploadScoreRow,
-  UploadScoresResult,
+  UploadScoresResponse,
 } from './lecturer.schema';
 import { StudentIdentifierType } from 'src/auth/auth.schema';
 import { parseCsvFile } from 'src/utils/csv';
@@ -23,11 +24,11 @@ export class LecturerService {
   constructor(private readonly db: DatabaseService) {}
 
   private async validateCourseAccess(lecturerId: string, courseId: string) {
-    const courseRecord = await this.db.client.query.course.findFirst({
+    const foundCourse = await this.db.client.query.course.findFirst({
       where: and(eq(course.id, courseId), eq(course.lecturerId, lecturerId)),
     });
 
-    if (!courseRecord) {
+    if (!foundCourse) {
       throw new ForbiddenException(
         'You are not authorized to access this course',
       );
@@ -35,11 +36,9 @@ export class LecturerService {
   }
 
   async listCourses(lecturerId: string) {
-    const courses = await this.db.client.query.course.findMany({
+    return await this.db.client.query.course.findMany({
       where: eq(course.lecturerId, lecturerId),
     });
-
-    return courses;
   }
 
   async registerStudentsBatch(
@@ -50,7 +49,7 @@ export class LecturerService {
     await this.validateCourseAccess(lecturerId, courseId);
 
     const parsedData = await parseCsvFile(file, RegisterStudentRow);
-    const result: BatchStudentRegistrationResult = {
+    const result: BatchStudentRegistrationResponse = {
       registeredStudents: [],
       unregisteredStudents: [],
       ...parsedData,
@@ -58,14 +57,14 @@ export class LecturerService {
 
     await this.db.client.transaction(async (tx) => {
       for (const { matricNumber } of parsedData.validRows) {
-        const studentRecord = await tx.query.student.findFirst({
+        const foundStudent = await tx.query.student.findFirst({
           where: eq(student.matricNumber, matricNumber),
         });
 
-        if (studentRecord) {
+        if (foundStudent) {
           await tx
             .insert(enrollment)
-            .values({ courseId, studentId: studentRecord.id })
+            .values({ courseId, studentId: foundStudent.id })
             .onConflictDoNothing();
           result.registeredStudents.push(matricNumber);
         } else {
@@ -89,36 +88,36 @@ export class LecturerService {
         ? eq(student.email, studentIdentifier)
         : eq(student.matricNumber, studentIdentifier);
 
-    const studentRecord = await this.db.client.query.student.findFirst({
+    const foundStudent = await this.db.client.query.student.findFirst({
       where: whereCondition,
     });
 
-    if (!studentRecord) {
+    if (!foundStudent) {
       throw new NotFoundException(
         `Student not found with ${identifierType}: ${studentIdentifier}`,
       );
     }
 
-    const existingEnrollment = await this.db.client.query.enrollment.findFirst({
+    const foundEnrollment = await this.db.client.query.enrollment.findFirst({
       where: and(
         eq(enrollment.courseId, courseId),
-        eq(enrollment.studentId, studentRecord.id),
+        eq(enrollment.studentId, foundStudent.id),
       ),
     });
 
-    if (existingEnrollment) {
+    if (foundEnrollment) {
       throw new ConflictException('Student is already enrolled in this course');
     }
 
-    const [newEnrollment] = await this.db.client
+    const [insertedEnrollment] = await this.db.client
       .insert(enrollment)
       .values({
         courseId,
-        studentId: studentRecord.id,
+        studentId: foundStudent.id,
       })
       .returning();
 
-    return newEnrollment;
+    return insertedEnrollment;
   }
 
   async uploadScores(
@@ -129,7 +128,7 @@ export class LecturerService {
     await this.validateCourseAccess(lecturerId, courseId);
 
     const parsedData = await parseCsvFile(file, UploadScoreRow);
-    const result: UploadScoresResult = {
+    const result: UploadScoresResponse = {
       studentsUploadedFor: [],
       studentsNotFound: [],
       ...parsedData,
@@ -141,11 +140,11 @@ export class LecturerService {
         continuousAssessment,
         examination,
       } of parsedData.validRows) {
-        const studentRecord = await tx.query.student.findFirst({
+        const foundStudent = await tx.query.student.findFirst({
           where: eq(student.matricNumber, matricNumber),
         });
 
-        if (studentRecord) {
+        if (foundStudent) {
           await tx
             .update(enrollment)
             .set({ scores: { continuousAssessment, examination } });
@@ -188,44 +187,49 @@ export class LecturerService {
   }
 
   async viewCourseScores(lecturerId: string, courseId: string) {
-    const courseRecord = await this.db.client.query.course.findFirst({
+    const foundCourse = await this.db.client.query.course.findFirst({
       where: and(eq(course.id, courseId), eq(course.lecturerId, lecturerId)),
     });
 
-    if (!courseRecord) {
+    if (!foundCourse) {
       throw new ForbiddenException(
         'You are not authorized to view this course',
       );
     }
 
-    const courseScores = await this.db.client.query.enrollment.findMany({
+    const foundEnrollments = await this.db.client.query.enrollment.findMany({
       where: eq(enrollment.courseId, courseId),
     });
 
-    return courseScores;
+    return foundEnrollments;
   }
 
   async listCourseStudents(lecturerId: string, courseId: string) {
-    const courseRecord = await this.db.client.query.course.findFirst({
+    const foundCourse = await this.db.client.query.course.findFirst({
       where: and(eq(course.id, courseId), eq(course.lecturerId, lecturerId)),
     });
 
-    if (!courseRecord) {
+    if (!foundCourse) {
       throw new ForbiddenException(
         'You are not authorized to view this course',
       );
     }
 
-    const courseStudents = await this.db.client.query.enrollment.findMany({
+    const foundEnrollments = await this.db.client.query.enrollment.findMany({
       where: eq(enrollment.courseId, courseId),
     });
 
-    return courseStudents;
+    return foundEnrollments;
   }
 
   async getProfile(lecturerId: string) {
-    return await this.db.client.query.lecturer.findFirst({
+    const foundLecturer = await this.db.client.query.lecturer.findFirst({
       where: eq(lecturer.id, lecturerId),
     });
+
+    if (!foundLecturer) throw new UnauthorizedException('Lecturer not found');
+
+    const { password: _, ...lecturerProfile } = foundLecturer;
+    return lecturerProfile;
   }
 }

@@ -16,10 +16,12 @@ export class RegisterStudentBody {
 }
 
 export class Scores {
+  @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
   continuousAssessment: number;
 
+  @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
   examination: number;
@@ -28,27 +30,36 @@ export class Scores {
 export class EditScoreBody extends Scores {}
 
 export class RegisterStudentRow {
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   matricNumber: string;
 
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   name: string;
 }
 
 export class UploadScoreRow extends Scores {
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   matricNumber: string;
 }
 
-export class BatchStudentRegistrationResult extends ParseCsvData<RegisterStudentRow> {
+export class BatchStudentRegistrationResponse extends ParseCsvData<RegisterStudentRow> {
+  @ApiProperty()
   registeredStudents: string[];
+
+  @ApiProperty()
   unregisteredStudents: string[];
 }
 
-export class UploadScoresResult extends ParseCsvData<UploadScoreRow> {
+export class UploadScoresResponse extends ParseCsvData<UploadScoreRow> {
+  @ApiProperty()
   studentsUploadedFor: string[];
+
+  @ApiProperty()
   studentsNotFound: string[];
 }
