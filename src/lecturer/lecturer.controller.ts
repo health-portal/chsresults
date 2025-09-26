@@ -19,7 +19,24 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Role, RoleGuard } from 'src/auth/role.guard';
 import { EditScoreBody, RegisterStudentBody } from './lecturer.schema';
 import { UserRole } from 'src/auth/auth.schema';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiParam,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiUnprocessableEntityResponse,
+  ApiConsumes,
+  ApiBearerAuth,
+  ApiUnauthorizedResponse,
+  ApiForbiddenResponse,
+} from '@nestjs/swagger';
 
+@ApiTags('Lecturer')
+@ApiBearerAuth()
 @Controller('lecturer')
 @Role(UserRole.LECTURER)
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -27,12 +44,40 @@ export class LecturerController {
   constructor(private readonly lecturerService: LecturerService) {}
 
   @Get('courses')
+  @ApiOperation({ summary: 'List courses assigned to the lecturer' })
+  @ApiOkResponse({ description: 'Courses retrieved successfully' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   async listCourses(@User('id') lecturerId: string) {
     return await this.lecturerService.listCourses(lecturerId);
   }
 
   @Post('courses/:courseId/students/batch')
   @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({
+    summary: 'Register multiple students to a course via file upload',
+  })
+  @ApiParam({ name: 'courseId', type: String, description: 'Course UUID' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiCreatedResponse({ description: 'Students registered successfully' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiNotFoundResponse({ description: 'Course not found' })
+  @ApiUnprocessableEntityResponse({
+    description: 'Invalid file or file size exceeds 5KB',
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   async registerStudentsBatch(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
@@ -51,6 +96,14 @@ export class LecturerController {
   }
 
   @Post('courses/:courseId/students')
+  @ApiOperation({ summary: 'Register a single student to a course' })
+  @ApiParam({ name: 'courseId', type: String, description: 'Course UUID' })
+  @ApiBody({ type: RegisterStudentBody })
+  @ApiCreatedResponse({ description: 'Student registered successfully' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiNotFoundResponse({ description: 'Course not found' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   async registerStudent(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
@@ -65,6 +118,25 @@ export class LecturerController {
 
   @Post('courses/:courseId/scores')
   @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Upload scores for a course' })
+  @ApiParam({ name: 'courseId', type: String, description: 'Course UUID' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiCreatedResponse({ description: 'Scores uploaded successfully' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiNotFoundResponse({ description: 'Course not found' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   async uploadScores(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
@@ -74,6 +146,15 @@ export class LecturerController {
   }
 
   @Patch('courses/:courseId/scores/:studentId')
+  @ApiOperation({ summary: 'Edit a student’s score for a course' })
+  @ApiParam({ name: 'courseId', type: String, description: 'Course UUID' })
+  @ApiParam({ name: 'studentId', type: String, description: 'Student UUID' })
+  @ApiBody({ type: EditScoreBody })
+  @ApiOkResponse({ description: 'Score updated successfully' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiNotFoundResponse({ description: 'Course or student not found' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   async editScore(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
@@ -89,6 +170,12 @@ export class LecturerController {
   }
 
   @Get('courses/:courseId/scores')
+  @ApiOperation({ summary: 'View scores for a course' })
+  @ApiParam({ name: 'courseId', type: String, description: 'Course UUID' })
+  @ApiOkResponse({ description: 'Course scores retrieved successfully' })
+  @ApiNotFoundResponse({ description: 'Course not found' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   async viewCourseScores(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
@@ -97,6 +184,12 @@ export class LecturerController {
   }
 
   @Get('courses/:courseId/students')
+  @ApiOperation({ summary: 'List students enrolled in a course' })
+  @ApiParam({ name: 'courseId', type: String, description: 'Course UUID' })
+  @ApiOkResponse({ description: 'Course students retrieved successfully' })
+  @ApiNotFoundResponse({ description: 'Course not found' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   async listCourseStudents(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
@@ -105,6 +198,10 @@ export class LecturerController {
   }
 
   @Get('profile')
+  @ApiOperation({ summary: 'Get lecturer profile' })
+  @ApiOkResponse({ description: 'Profile retrieved successfully' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   async getProfile(@User('id') lecturerId: string) {
     return await this.lecturerService.getProfile(lecturerId);
   }

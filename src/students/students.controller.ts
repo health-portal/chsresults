@@ -19,7 +19,24 @@ import { Role, RoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateStudentBody, UpdateStudentBody } from './students.schema';
 import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiParam,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiUnprocessableEntityResponse,
+  ApiConsumes,
+  ApiBearerAuth,
+  ApiUnauthorizedResponse,
+  ApiForbiddenResponse,
+} from '@nestjs/swagger';
 
+@ApiTags('Students')
+@ApiBearerAuth()
 @Controller('students')
 @Role(UserRole.ADMIN)
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -27,12 +44,38 @@ export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create a new student' })
+  @ApiBody({ type: CreateStudentBody })
+  @ApiCreatedResponse({ description: 'Student created successfully' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   async createStudent(@Body() body: CreateStudentBody) {
     return await this.studentsService.createStudent(body);
   }
 
   @Post('batch')
   @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Create multiple students via file upload' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiCreatedResponse({ description: 'Students created successfully' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnprocessableEntityResponse({
+    description: 'Invalid file or file size exceeds 5KB',
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   async createStudents(
     @UploadedFile(
       new ParseFilePipeBuilder()
@@ -45,11 +88,23 @@ export class StudentsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all students' })
+  @ApiOkResponse({ description: 'Students retrieved successfully' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   async getStudents() {
     return await this.studentsService.getStudents();
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update a student' })
+  @ApiParam({ name: 'id', type: String, description: 'Student UUID' })
+  @ApiBody({ type: UpdateStudentBody })
+  @ApiOkResponse({ description: 'Student updated successfully' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiNotFoundResponse({ description: 'Student not found' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   async updateStudent(
     @Param('id', ParseUUIDPipe) studentId: string,
     @Body() body: UpdateStudentBody,
@@ -58,6 +113,12 @@ export class StudentsController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete a student' })
+  @ApiParam({ name: 'id', type: String, description: 'Student UUID' })
+  @ApiOkResponse({ description: 'Student deleted successfully' })
+  @ApiNotFoundResponse({ description: 'Student not found' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   async deleteStudent(@Param('id', ParseUUIDPipe) studentId: string) {
     return await this.studentsService.deleteStudent(studentId);
   }
