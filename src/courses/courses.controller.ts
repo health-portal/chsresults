@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -47,5 +48,10 @@ export class CoursesController {
     @Body() body: UpsertCourseBody,
   ) {
     return await this.coursesService.updateCourse(courseId, body);
+  }
+
+  @Delete(':courseId')
+  async deleteCourse(@Param('courseId') courseId: string) {
+    return await this.coursesService.deleteCourse(courseId);
   }
 }

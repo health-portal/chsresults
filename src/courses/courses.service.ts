@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { UpsertCourseBody, CreateCoursesResult } from './courses.schema';
 import { eq, or } from 'drizzle-orm';
@@ -85,5 +89,17 @@ export class CoursesService {
       .set({ code, title, lecturerId: existingLecturer.id })
       .returning();
     return courseRecord;
+  }
+
+  async deleteCourse(courseId: string) {
+    const existingCourse = await this.db.client.query.course.findFirst({
+      where: eq(course.id, courseId),
+    });
+    if (!existingCourse) throw new NotFoundException('Course not found');
+
+    return await this.db.client
+      .delete(course)
+      .where(eq(course.id, courseId))
+      .returning();
   }
 }
