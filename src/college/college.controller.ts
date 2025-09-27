@@ -26,8 +26,6 @@ import {
 import {
   CreateDepartmentBody,
   UpsertFacultyAndDepartmentBody,
-  UpsertFacultyAndDepartmentBody,
-  UpsertFacultyAndDepartmentBody,
   FacultyResponse,
   DepartmentResponse,
   GetDepartmentsResponse,

@@ -6,9 +6,7 @@ import { Pool } from 'pg';
 import { env } from 'src/environment';
 import {
   UpsertFacultyAndDepartmentBody,
-  UpsertFacultyAndDepartmentBody,
   CreateDepartmentBody,
-  UpsertFacultyAndDepartmentBody,
 } from './college.schema';
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
