@@ -1,7 +1,0 @@
-import { Controller } from '@nestjs/common';
-import { UniversityService } from './university.service';
-
-@Controller()
-export class UniversityController {
-  constructor(private readonly universityService: UniversityService) {}
-}

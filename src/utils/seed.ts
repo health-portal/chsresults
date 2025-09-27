@@ -3,6 +3,7 @@ import { Pool } from 'pg';
 import { env } from 'src/environment';
 import * as schema from 'drizzle/schema';
 import { v4 as uuidv4 } from 'uuid';
+import { eq } from 'drizzle-orm';
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
 const db = drizzle(pool, { schema });
@@ -71,21 +72,27 @@ async function seed() {
     )) {
       console.log(`Faculty: ${facultyName}`);
 
-      const [insertedFaculty] = await tx
-        .insert(schema.faculty)
-        .values({ name: facultyName })
-        .returning();
+      let facultyRecord = await db.query.faculty.findFirst({
+        where: eq(schema.faculty.name, facultyName),
+      });
 
-      await tx.insert(schema.department).values(
-        departments.map((deptName) => ({
-          name: deptName,
-          facultyId: insertedFaculty.id,
-        })),
-      );
+      if (!facultyRecord) {
+        [facultyRecord] = await tx
+          .insert(schema.faculty)
+          .values({ name: facultyName })
+          .onConflictDoNothing()
+          .returning();
+      }
 
-      console.log(
-        `Inserted ${departments.length} departments for ${facultyName}`,
-      );
+      await tx
+        .insert(schema.department)
+        .values(
+          departments.map((deptName) => ({
+            name: deptName,
+            facultyId: facultyRecord.id,
+          })),
+        )
+        .onConflictDoNothing();
     }
   });
 
@@ -93,11 +100,12 @@ async function seed() {
 }
 
 seed()
-  .then(() => {
+  .then(async () => {
     console.log('Seeding finished successfully');
-    process.exit(0);
+    await pool.end();
   })
-  .catch((err) => {
+  .catch(async (err) => {
     console.error('Seeding failed:', err);
-    process.exit(1);
+    await pool.end();
+    process.exitCode = 1;
   });
