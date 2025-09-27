@@ -25,9 +25,9 @@ import {
 } from '@nestjs/swagger';
 import {
   CreateDepartmentBody,
-  CreateFacultyBody,
-  UpdateDepartmentBody,
-  UpdateFacultyBody,
+  UpsertFacultyAndDepartmentBody,
+  UpsertFacultyAndDepartmentBody,
+  UpsertFacultyAndDepartmentBody,
   FacultyResponse,
   DepartmentResponse,
   GetDepartmentsResponse,
@@ -50,21 +50,21 @@ export class CollegeController {
 
   @Post('faculties')
   @ApiOperation({ summary: 'Create a faculty' })
-  @ApiBody({ type: () => CreateFacultyBody })
+  @ApiBody({ type: () => UpsertFacultyAndDepartmentBody })
   @ApiCreatedResponse({ type: () => FacultyResponse })
-  async createFaculty(@Body() body: CreateFacultyBody) {
+  async createFaculty(@Body() body: UpsertFacultyAndDepartmentBody) {
     return await this.collegeService.createFaculty(body);
   }
 
   @Patch('faculties/:facultyId')
   @ApiOperation({ summary: 'Update faculty name' })
   @ApiParam({ name: 'facultyId', type: String, description: 'Faculty UUID' })
-  @ApiBody({ type: () => UpdateFacultyBody })
+  @ApiBody({ type: () => UpsertFacultyAndDepartmentBody })
   @ApiOkResponse({ type: () => FacultyResponse })
   @ApiNotFoundResponse({ description: 'Faculty not found' })
   async updateFaculty(
     @Param('facultyId', ParseUUIDPipe) facultyId: string,
-    @Body() body: UpdateFacultyBody,
+    @Body() body: UpsertFacultyAndDepartmentBody,
   ) {
     return await this.collegeService.updateFaculty(facultyId, body);
   }
@@ -89,12 +89,12 @@ export class CollegeController {
   @Patch('departments/:deptId')
   @ApiOperation({ summary: 'Update department name' })
   @ApiParam({ name: 'deptId', type: String, description: 'Department UUID' })
-  @ApiBody({ type: () => UpdateDepartmentBody })
+  @ApiBody({ type: () => UpsertFacultyAndDepartmentBody })
   @ApiOkResponse({ type: () => DepartmentResponse })
   @ApiNotFoundResponse({ description: 'Department not found' })
   async updateDepartment(
     @Param('deptId', ParseUUIDPipe) deptId: string,
-    @Body() body: UpdateDepartmentBody,
+    @Body() body: UpsertFacultyAndDepartmentBody,
   ) {
     return await this.collegeService.updateDepartment(deptId, body);
   }

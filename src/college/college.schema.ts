@@ -1,36 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
-export class CreateFacultyBody {
+export class UpsertFacultyAndDepartmentBody {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   name: string;
 }
 
-export class UpdateFacultyBody {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-}
-
-export class CreateDepartmentBody {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
+export class CreateDepartmentBody extends UpsertFacultyAndDepartmentBody {
   @ApiProperty({ description: 'Faculty UUID' })
   @IsUUID()
   facultyId: string;
-}
-
-export class UpdateDepartmentBody {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  name: string;
 }
 
 export class FacultyResponse {

@@ -5,10 +5,10 @@ import { eq } from 'drizzle-orm';
 import { Pool } from 'pg';
 import { env } from 'src/environment';
 import {
-  CreateFacultyBody,
-  UpdateFacultyBody,
+  UpsertFacultyAndDepartmentBody,
+  UpsertFacultyAndDepartmentBody,
   CreateDepartmentBody,
-  UpdateDepartmentBody,
+  UpsertFacultyAndDepartmentBody,
 } from './college.schema';
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
@@ -22,12 +22,12 @@ export class CollegeService {
     });
   }
 
-  async createFaculty(body: CreateFacultyBody) {
+  async createFaculty(body: UpsertFacultyAndDepartmentBody) {
     const [faculty] = await db.insert(schema.faculty).values(body).returning();
     return faculty;
   }
 
-  async updateFaculty(facultyId: string, body: UpdateFacultyBody) {
+  async updateFaculty(facultyId: string, body: UpsertFacultyAndDepartmentBody) {
     const [faculty] = await db
       .update(schema.faculty)
       .set(body)
@@ -56,7 +56,7 @@ export class CollegeService {
     return dept;
   }
 
-  async updateDepartment(deptId: string, body: UpdateDepartmentBody) {
+  async updateDepartment(deptId: string, body: UpsertFacultyAndDepartmentBody) {
     const [dept] = await db
       .update(schema.department)
       .set(body)
