@@ -5,7 +5,6 @@ import {
   IsNotEmpty,
   IsStrongPassword,
 } from 'class-validator';
-import { admin, lecturer, student } from 'drizzle/schema';
 
 export enum UserRole {
   ADMIN = 'Admin',
@@ -58,9 +57,7 @@ export class SigninResponse {
   accessToken: string;
 }
 
-export class AdminProfileResponse
-  implements Omit<typeof admin.$inferSelect, 'password'>
-{
+export class AdminProfileResponse {
   @ApiProperty()
   id: string;
 
@@ -71,9 +68,7 @@ export class AdminProfileResponse
   email: string;
 }
 
-export class LecturerProfileResponse
-  implements Omit<typeof lecturer.$inferSelect, 'password'>
-{
+export class LecturerProfileResponse {
   @ApiProperty()
   id: string;
 
@@ -86,19 +81,17 @@ export class LecturerProfileResponse
   @ApiProperty()
   lastName: string;
 
-  @ApiProperty({ nullable: true })
-  otherName: string | null;
+  @ApiProperty()
+  otherName?: string;
 
-  @ApiProperty({ nullable: true })
-  phone: string | null;
+  @ApiProperty()
+  phone?: string;
 
   @ApiProperty()
   departmentId: string;
 }
 
-export class StudentProfileResponse
-  implements Omit<typeof student.$inferSelect, 'password'>
-{
+export class StudentProfileResponse {
   @ApiProperty()
   email: string;
 
@@ -114,8 +107,8 @@ export class StudentProfileResponse
   @ApiProperty()
   lastName: string;
 
-  @ApiProperty({ nullable: true })
-  otherName: string | null;
+  @ApiProperty()
+  otherName?: string;
 
   @ApiProperty()
   departmentId: string;

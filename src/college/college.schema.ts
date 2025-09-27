@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
-import { department, faculty } from 'drizzle/schema';
 
 export class CreateFacultyBody {
   @ApiProperty()
@@ -34,8 +33,7 @@ export class UpdateDepartmentBody {
   name: string;
 }
 
-type FacultyType = typeof faculty.$inferSelect;
-export class FacultyResponse implements FacultyType {
+export class FacultyResponse {
   @ApiProperty()
   @IsUUID()
   id: string;
@@ -46,23 +44,13 @@ export class FacultyResponse implements FacultyType {
   name: string;
 }
 
-type DepartmentType = typeof department.$inferSelect;
-export class DepartmentResponse implements DepartmentType {
-  @ApiProperty()
-  @IsUUID()
-  id: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
+export class DepartmentResponse extends FacultyResponse {
   @ApiProperty()
   @IsUUID()
   facultyId: string;
 }
 
 export class GetDepartmentsResponse extends FacultyResponse {
-  @ApiProperty({ isArray: true })
+  @ApiProperty({ type: () => [DepartmentResponse] })
   departments: DepartmentResponse[];
 }

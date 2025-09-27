@@ -3,15 +3,24 @@ import * as csv from 'fast-csv';
 import { plainToInstance } from 'class-transformer';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { validateSync } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RowValidationError {
+  @ApiProperty()
   row: number;
+
+  @ApiProperty()
   errorMessage: string;
 }
 
 export class ParseCsvData<T extends object> {
+  @ApiProperty()
   numberOfRows: number;
+
+  @ApiProperty({ type: () => [Object] })
   validRows: T[];
+
+  @ApiProperty({ type: () => [RowValidationError] })
   invalidRows: RowValidationError[];
 }
 

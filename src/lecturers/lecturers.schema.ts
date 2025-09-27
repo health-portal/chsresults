@@ -40,10 +40,11 @@ export class UpdateLecturerBody extends OmitType(
 ) {}
 
 export class CreateLecturerResponse extends CreateLecturerBody {
+  @ApiProperty()
   isCreated: boolean;
 }
 
 export class CreateLecturersResponse extends ParseCsvData<CreateLecturerBody> {
-  @ApiProperty({ type: CreateLecturerResponse, isArray: true })
+  @ApiProperty({ type: () => [CreateLecturerResponse] })
   lecturers: CreateLecturerResponse[];
 }

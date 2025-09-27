@@ -28,7 +28,7 @@ export class StudentController {
   @ApiOperation({ summary: 'List all enrollments for the student' })
   @ApiOkResponse({
     description: 'Enrollments retrieved successfully',
-    type: [EnrollmentResponse],
+    type: () => [EnrollmentResponse],
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -36,19 +36,23 @@ export class StudentController {
     return await this.studentService.listEnrollments(studentId);
   }
 
-  @Get('enrollments/:id')
+  @Get('enrollments/:enrollmentId')
   @ApiOperation({ summary: 'Get details of a specific enrollment' })
-  @ApiParam({ name: 'id', type: String, description: 'Enrollment ID' })
+  @ApiParam({
+    name: 'enrollmentId',
+    type: String,
+    description: 'Enrollment ID',
+  })
   @ApiOkResponse({
     description: 'Enrollment retrieved successfully',
-    type: EnrollmentResponse,
+    type: () => EnrollmentResponse,
   })
   @ApiNotFoundResponse({ description: 'Enrollment not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async listEnrollment(
     @User('id') studentId: string,
-    @Param('id') enrollmentId: string,
+    @Param('enrollmentId') enrollmentId: string,
   ) {
     return await this.studentService.listEnrollment(studentId, enrollmentId);
   }
@@ -57,7 +61,7 @@ export class StudentController {
   @ApiOperation({ summary: 'Get student profile' })
   @ApiOkResponse({
     description: 'Profile retrieved successfully',
-    type: StudentProfileResponse,
+    type: () => StudentProfileResponse,
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })

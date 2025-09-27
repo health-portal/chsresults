@@ -34,17 +34,17 @@ export class CreateStudentBody {
   department: string;
 }
 
+export class UpdateStudentBody extends OmitType(
+  PartialType(CreateStudentBody),
+  ['email', 'matricNumber'] as const,
+) {}
+
 export class CreateStudentResponse extends CreateStudentBody {
   @ApiProperty()
   isCreated: boolean;
 }
 
 export class CreateStudentsResponse extends ParseCsvData<CreateStudentBody> {
-  @ApiProperty({ type: CreateStudentResponse, isArray: true })
+  @ApiProperty({ type: () => [CreateStudentResponse] })
   students: CreateStudentResponse[];
 }
-
-export class UpdateStudentBody extends OmitType(
-  PartialType(CreateStudentBody),
-  ['email', 'matricNumber'] as const,
-) {}

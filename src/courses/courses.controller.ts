@@ -46,10 +46,10 @@ export class CoursesController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new course' })
-  @ApiBody({ type: UpsertCourseBody })
+  @ApiBody({ type: () => UpsertCourseBody })
   @ApiCreatedResponse({
     description: 'Course created successfully',
-    type: CourseResponse,
+    type: () => CourseResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   async createCourse(@Body() body: UpsertCourseBody) {
@@ -73,7 +73,7 @@ export class CoursesController {
   })
   @ApiCreatedResponse({
     description: 'Courses created successfully',
-    type: CreateCoursesResponse,
+    type: () => CreateCoursesResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnprocessableEntityResponse({
@@ -94,7 +94,7 @@ export class CoursesController {
   @ApiOperation({ summary: 'Get all courses' })
   @ApiOkResponse({
     description: 'Courses retrieved successfully',
-    type: [CourseResponse],
+    type: () => [CourseResponse],
   })
   async getCourses() {
     return await this.coursesService.getCourses();
@@ -103,10 +103,10 @@ export class CoursesController {
   @Patch(':courseId')
   @ApiOperation({ summary: 'Update a course' })
   @ApiParam({ name: 'courseId', type: String, description: 'Course ID' })
-  @ApiBody({ type: UpsertCourseBody })
+  @ApiBody({ type: () => UpsertCourseBody })
   @ApiOkResponse({
     description: 'Course updated successfully',
-    type: CourseResponse,
+    type: () => CourseResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Course not found' })
@@ -122,7 +122,7 @@ export class CoursesController {
   @ApiParam({ name: 'courseId', type: String, description: 'Course ID' })
   @ApiOkResponse({
     description: 'Course deleted successfully',
-    type: CourseResponse,
+    type: () => CourseResponse,
   })
   @ApiNotFoundResponse({ description: 'Course not found' })
   async deleteCourse(@Param('courseId') courseId: string) {

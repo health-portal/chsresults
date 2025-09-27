@@ -43,45 +43,45 @@ export class CollegeController {
 
   @Get('departments')
   @ApiOperation({ summary: 'Get all faculties with departments' })
-  @ApiOkResponse({ type: [GetDepartmentsResponse] })
+  @ApiOkResponse({ type: () => [GetDepartmentsResponse] })
   async getDepartments() {
     return await this.collegeService.getDepartments();
   }
 
   @Post('faculties')
   @ApiOperation({ summary: 'Create a faculty' })
-  @ApiBody({ type: CreateFacultyBody })
-  @ApiCreatedResponse({ type: FacultyResponse })
+  @ApiBody({ type: () => CreateFacultyBody })
+  @ApiCreatedResponse({ type: () => FacultyResponse })
   async createFaculty(@Body() body: CreateFacultyBody) {
     return await this.collegeService.createFaculty(body);
   }
 
-  @Patch('faculties/:id')
+  @Patch('faculties/:facultyId')
   @ApiOperation({ summary: 'Update faculty name' })
-  @ApiParam({ name: 'id', type: String, description: 'Faculty UUID' })
-  @ApiBody({ type: UpdateFacultyBody })
-  @ApiOkResponse({ type: FacultyResponse })
+  @ApiParam({ name: 'facultyId', type: String, description: 'Faculty UUID' })
+  @ApiBody({ type: () => UpdateFacultyBody })
+  @ApiOkResponse({ type: () => FacultyResponse })
   @ApiNotFoundResponse({ description: 'Faculty not found' })
   async updateFaculty(
-    @Param('id', ParseUUIDPipe) facultyId: string,
+    @Param('facultyId', ParseUUIDPipe) facultyId: string,
     @Body() body: UpdateFacultyBody,
   ) {
     return await this.collegeService.updateFaculty(facultyId, body);
   }
 
-  @Delete('faculties/:id')
+  @Delete('faculties/:facultyId')
   @ApiOperation({ summary: 'Delete a faculty' })
-  @ApiParam({ name: 'id', type: String, description: 'Faculty UUID' })
+  @ApiParam({ name: 'facultyId', type: String, description: 'Faculty UUID' })
   @ApiOkResponse({ description: 'Faculty deleted successfully' })
   @ApiNotFoundResponse({ description: 'Faculty not found' })
-  async deleteFaculty(@Param('id', ParseUUIDPipe) facultyId: string) {
+  async deleteFaculty(@Param('facultyId', ParseUUIDPipe) facultyId: string) {
     return await this.collegeService.deleteFaculty(facultyId);
   }
 
   @Post('departments')
   @ApiOperation({ summary: 'Create a department under a faculty' })
-  @ApiBody({ type: CreateDepartmentBody })
-  @ApiCreatedResponse({ type: DepartmentResponse })
+  @ApiBody({ type: () => CreateDepartmentBody })
+  @ApiCreatedResponse({ type: () => DepartmentResponse })
   async createDepartment(@Body() body: CreateDepartmentBody) {
     return await this.collegeService.createDepartment(body);
   }
@@ -89,8 +89,8 @@ export class CollegeController {
   @Patch('departments/:deptId')
   @ApiOperation({ summary: 'Update department name' })
   @ApiParam({ name: 'deptId', type: String, description: 'Department UUID' })
-  @ApiBody({ type: UpdateDepartmentBody })
-  @ApiOkResponse({ type: DepartmentResponse })
+  @ApiBody({ type: () => UpdateDepartmentBody })
+  @ApiOkResponse({ type: () => DepartmentResponse })
   @ApiNotFoundResponse({ description: 'Department not found' })
   async updateDepartment(
     @Param('deptId', ParseUUIDPipe) deptId: string,
@@ -99,12 +99,12 @@ export class CollegeController {
     return await this.collegeService.updateDepartment(deptId, body);
   }
 
-  @Delete('departments/:id')
+  @Delete('departments/:deptId')
   @ApiOperation({ summary: 'Delete a department' })
-  @ApiParam({ name: 'id', type: String, description: 'Department UUID' })
+  @ApiParam({ name: 'deptId', type: String, description: 'Department UUID' })
   @ApiOkResponse({ description: 'Department deleted successfully' })
   @ApiNotFoundResponse({ description: 'Department not found' })
-  async deleteDepartment(@Param('id', ParseUUIDPipe) deptId: string) {
+  async deleteDepartment(@Param('deptId', ParseUUIDPipe) deptId: string) {
     return await this.collegeService.deleteDepartment(deptId);
   }
 }

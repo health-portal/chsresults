@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
-import { course, enrollment } from 'drizzle/schema';
 import { Scores } from 'src/lecturer/lecturer.schema';
 import { ParseCsvData } from 'src/utils/csv';
 
@@ -26,12 +25,11 @@ export class CreateCourseResponse extends UpsertCourseBody {
 }
 
 export class CreateCoursesResponse extends ParseCsvData<UpsertCourseBody> {
-  @ApiProperty({ type: CreateCourseResponse, isArray: true })
+  @ApiProperty({ type: () => [CreateCourseResponse] })
   courses: CreateCourseResponse[];
 }
 
-type CourseType = typeof course.$inferSelect;
-export class CourseResponse implements CourseType {
+export class CourseResponse {
   @ApiProperty()
   id: string;
 
@@ -45,8 +43,7 @@ export class CourseResponse implements CourseType {
   lecturerId: string;
 }
 
-type EnrollmentType = typeof enrollment.$inferSelect;
-export class EnrollmentResponse implements EnrollmentType {
+export class EnrollmentResponse {
   @ApiProperty()
   id: string;
 

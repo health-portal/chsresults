@@ -49,10 +49,10 @@ export class StudentsController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new student' })
-  @ApiBody({ type: CreateStudentBody })
+  @ApiBody({ type: () => CreateStudentBody })
   @ApiCreatedResponse({
     description: 'Student created successfully',
-    type: StudentProfileResponse,
+    type: () => StudentProfileResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -78,7 +78,7 @@ export class StudentsController {
   })
   @ApiCreatedResponse({
     description: 'Students created successfully',
-    type: CreateStudentsResponse,
+    type: () => CreateStudentsResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnprocessableEntityResponse({
@@ -101,7 +101,7 @@ export class StudentsController {
   @ApiOperation({ summary: 'Get all students' })
   @ApiOkResponse({
     description: 'Students retrieved successfully',
-    type: [StudentProfileResponse],
+    type: () => [StudentProfileResponse],
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -109,31 +109,31 @@ export class StudentsController {
     return await this.studentsService.getStudents();
   }
 
-  @Patch(':id')
+  @Patch(':studentId')
   @ApiOperation({ summary: 'Update a student' })
   @ApiParam({ name: 'id', type: String, description: 'Student UUID' })
-  @ApiBody({ type: UpdateStudentBody })
+  @ApiBody({ type: () => UpdateStudentBody })
   @ApiOkResponse({
     description: 'Student updated successfully',
-    type: StudentProfileResponse,
+    type: () => StudentProfileResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Student not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async updateStudent(
-    @Param('id', ParseUUIDPipe) studentId: string,
+    @Param('studentId', ParseUUIDPipe) studentId: string,
     @Body() body: UpdateStudentBody,
   ) {
     return await this.studentsService.updateStudent(studentId, body);
   }
 
-  @Delete(':id')
+  @Delete(':studentId')
   @ApiOperation({ summary: 'Delete a student' })
-  @ApiParam({ name: 'id', type: String, description: 'Student UUID' })
+  @ApiParam({ name: 'studentId', type: String, description: 'Student UUID' })
   @ApiOkResponse({
     description: 'Student deleted successfully',
-    type: StudentProfileResponse,
+    type: () => StudentProfileResponse,
   })
   @ApiNotFoundResponse({ description: 'Student not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })

@@ -36,7 +36,7 @@ export class AdminController {
 
   @Post()
   @ApiOperation({ summary: 'Add a new admin user' })
-  @ApiBody({ type: AddAdminBody })
+  @ApiBody({ type: () => AddAdminBody })
   @ApiCreatedResponse({ description: 'Admin successfully added' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -48,7 +48,7 @@ export class AdminController {
   @ApiOperation({ summary: 'Get admin profile' })
   @ApiOkResponse({
     description: 'Profile retrieved successfully',
-    type: AdminProfileResponse,
+    type: () => AdminProfileResponse,
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -61,7 +61,7 @@ export class AdminController {
   @ApiQuery({ name: 'name', type: String, required: true })
   @ApiOkResponse({
     description: 'Profile updated successfully',
-    type: AdminProfileResponse,
+    type: () => AdminProfileResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
