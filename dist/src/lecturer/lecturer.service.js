@@ -51,7 +51,7 @@ let LecturerService = class LecturerService {
                 if (foundStudent) {
                     await tx
                         .insert(schema_1.enrollment)
-                        .values({ courseId, studentId: foundStudent.id })
+                        .values({ courseId, studentId: foundStudent.id, session })
                         .onConflictDoNothing();
                     result.registeredStudents.push(matricNumber);
                 }

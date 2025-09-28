@@ -21,7 +21,7 @@ let CoursesService = class CoursesService {
     constructor(db) {
         this.db = db;
     }
-    async createCourse({ code, title, lecturerEmail }) {
+    async createCourse({ code, title, lecturerEmail, semester, units, }) {
         const foundCourse = await this.db.client.query.course.findFirst({
             where: (0, drizzle_orm_1.or)((0, drizzle_orm_1.eq)(schema_1.course.title, title), (0, drizzle_orm_1.eq)(schema_1.course.code, code)),
         });
@@ -32,11 +32,11 @@ let CoursesService = class CoursesService {
         });
         if (!foundLecturer)
             throw new common_1.BadRequestException('Lecturer not found');
-        const insertedCourse = await this.db.client
+        const [insertedCourse] = await this.db.client
             .insert(schema_1.course)
-            .values({ code, title, lecturerId: foundLecturer.id })
+            .values({ code, title, lecturerId: foundLecturer.id, semester, units })
             .returning();
-        return insertedCourse[0];
+        return insertedCourse;
     }
     async createCourses(file) {
         const parsedData = await (0, csv_1.parseCsvFile)(file, courses_schema_1.UpsertCourseBody);
@@ -68,7 +68,7 @@ let CoursesService = class CoursesService {
     async getCourses() {
         return await this.db.client.query.course.findMany();
     }
-    async updateCourse(courseId, { code, title, lecturerEmail }) {
+    async updateCourse(courseId, { code, title, lecturerEmail, description, semester, units, }) {
         const foundCourse = await this.db.client.query.course.findFirst({
             where: (0, drizzle_orm_1.eq)(schema_1.course.id, courseId),
         });
@@ -81,7 +81,14 @@ let CoursesService = class CoursesService {
             throw new common_1.BadRequestException('Lecturer not found');
         const updatedCourse = await this.db.client
             .update(schema_1.course)
-            .set({ code, title, lecturerId: foundLecturer.id })
+            .set({
+            code,
+            title,
+            lecturerId: foundLecturer.id,
+            description,
+            semester,
+            units,
+        })
             .returning();
         return updatedCourse[0];
     }

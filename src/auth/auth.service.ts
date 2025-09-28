@@ -33,116 +33,57 @@ export class AuthService {
     return { accessToken: this.jwtService.sign(payload) };
   }
 
-  private async findAdminOrLecturer(role: UserRole, email: string) {
-    switch (role) {
-      case UserRole.ADMIN:
-        return await this.db.client.query.admin.findFirst({
-          where: eq(admin.email, email),
-        });
-      case UserRole.LECTURER:
-        return await this.db.client.query.lecturer.findFirst({
-          where: eq(lecturer.email, email),
-        });
-      default:
-        throw new UnauthorizedException('Role not supported here');
-    }
-  }
-
-  private async findStudent({
-    studentIdentifier,
-    identifierType,
-  }: StudentIdentifierBody) {
-    const studentRecord = await this.db.client.query.student.findFirst({
-      where:
-        identifierType === StudentIdentifierType.EMAIL
-          ? eq(student.email, studentIdentifier)
-          : eq(student.matricNumber, studentIdentifier),
+  private async findAdmin(email: string) {
+    return await this.db.client.query.admin.findFirst({
+      where: eq(admin.email, email),
     });
-    if (!studentRecord) throw new NotFoundException(`Student not found`);
-
-    return studentRecord;
   }
 
-  private async updatePassword(
-    role: UserRole,
-    id: string,
-    hashedPassword: string,
-  ) {
-    switch (role) {
-      case UserRole.ADMIN: {
-        const updatedAdmin = await this.db.client
-          .update(admin)
-          .set({ password: hashedPassword })
-          .where(eq(admin.id, id))
-          .returning();
+  private async updateAdminPassword(id: string, hashedPassword: string) {
+    const [updatedAdmin] = await this.db.client
+      .update(admin)
+      .set({ password: hashedPassword })
+      .where(eq(admin.id, id))
+      .returning();
 
-        const { password, ...adminProfile } = updatedAdmin[0];
-        return adminProfile;
-      }
-
-      case UserRole.LECTURER: {
-        const updatedLecturer = await this.db.client
-          .update(lecturer)
-          .set({ password: hashedPassword })
-          .where(eq(lecturer.id, id))
-          .returning();
-
-        const { password, ...lecturerProfile } = updatedLecturer[0];
-        return lecturerProfile;
-      }
-
-      case UserRole.STUDENT: {
-        const updatedStudent = await this.db.client
-          .update(student)
-          .set({ password: hashedPassword })
-          .where(eq(student.id, id))
-          .returning();
-
-        const { password, ...studentProfile } = updatedStudent[0];
-        return studentProfile;
-      }
-
-      default:
-        throw new UnauthorizedException('Role not supported here');
-    }
+    const { password: _, ...adminProfile } = updatedAdmin;
+    return adminProfile;
   }
 
-  async activate(role: UserRole, { email, password }: AuthUserBody) {
-    const user = await this.findAdminOrLecturer(role, email);
-    if (!user) throw new UnauthorizedException(`${role} not found`);
-    if (user.password)
-      throw new BadRequestException(`${role} already activated`);
+  async activateAdmin({ email, password }: AuthUserBody) {
+    const foundAdmin = await this.findAdmin(email);
+    if (!foundAdmin) throw new UnauthorizedException(`Admin not found`);
+    if (foundAdmin.password)
+      throw new BadRequestException(`Admin already activated`);
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    return await this.updatePassword(role, user.id, hashedPassword);
+    return this.updateAdminPassword(foundAdmin.id, hashedPassword);
   }
 
-  async signin(role: UserRole, { email, password }: AuthUserBody) {
-    const user = await this.findAdminOrLecturer(role, email);
-    if (!user) throw new UnauthorizedException(`${role} not found`);
-    if (!user.password) throw new ForbiddenException(`${role} not activated`);
+  async signinAdmin({ email, password }: AuthUserBody) {
+    const foundAdmin = await this.findAdmin(email);
+    if (!foundAdmin) throw new UnauthorizedException(`Admin not found`);
+    if (!foundAdmin.password)
+      throw new ForbiddenException(`Admin not activated`);
 
-    const isMatched = await bcrypt.compare(password, user.password);
+    const isMatched = await bcrypt.compare(password, foundAdmin.password);
     if (!isMatched) throw new UnauthorizedException('Invalid credentials');
 
-    return this.generateAccessToken({ id: user.id, role });
+    return this.generateAccessToken({
+      id: foundAdmin.id,
+      role: UserRole.ADMIN,
+    });
   }
 
-  async resetPasswordRequest(role: UserRole, email: string) {
-    const user: typeof admin.$inferSelect | typeof lecturer.$inferSelect =
-      await this.findAdminOrLecturer(role, email);
-    if (!user) throw new NotFoundException(`${role} not found`);
-
-    const name =
-      role === UserRole.ADMIN
-        ? user.name
-        : `${user.firstName} ${user.lastName}`;
+  async adminResetPasswordRequest(email: string) {
+    const foundAdmin = await this.findAdmin(email);
+    if (!foundAdmin) throw new NotFoundException(`Admin not found`);
 
     await this.emailService.sendMail({
       subject: 'Reset Password',
-      toEmail: [user.email],
+      toEmail: [foundAdmin.email],
       htmlContent: ResetPasswordTemplate({
-        name,
+        name: foundAdmin.name,
         resetLink: '',
       }),
     });
@@ -150,32 +91,120 @@ export class AuthService {
     return { success: true, message: `Reset link sent to ${email}` };
   }
 
-  async resetPassword(role: UserRole, { email, password }: AuthUserBody) {
-    const user = await this.findAdminOrLecturer(role, email);
-    if (!user) throw new NotFoundException(`${role} not found`);
+  async adminResetPassword({ email, password }: AuthUserBody) {
+    const foundAdmin = await this.findAdmin(email);
+    if (!foundAdmin) throw new NotFoundException(`Admin not found`);
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    return await this.updatePassword(role, user.id, hashedPassword);
+    return this.updateAdminPassword(foundAdmin.id, hashedPassword);
   }
 
-  async activateStudentAccount({
+  private async findLecturer(email: string) {
+    return this.db.client.query.lecturer.findFirst({
+      where: eq(lecturer.email, email),
+    });
+  }
+
+  private async updateLecturerPassword(id: string, hashedPassword: string) {
+    const [updatedLecturer] = await this.db.client
+      .update(lecturer)
+      .set({ password: hashedPassword })
+      .where(eq(lecturer.id, id))
+      .returning();
+
+    const { password: _, ...lecturerProfile } = updatedLecturer;
+    return lecturerProfile;
+  }
+
+  async activateLecturer({ email, password }: AuthUserBody) {
+    const foundLecturer = await this.findLecturer(email);
+    if (!foundLecturer) throw new UnauthorizedException(`Lecturer not found`);
+    if (foundLecturer.password)
+      throw new BadRequestException(`Lecturer already activated`);
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return this.updateLecturerPassword(foundLecturer.id, hashedPassword);
+  }
+
+  async signinLecturer({ email, password }: AuthUserBody) {
+    const foundLecturer = await this.findLecturer(email);
+    if (!foundLecturer) throw new UnauthorizedException(`Lecturer not found`);
+    if (!foundLecturer.password)
+      throw new ForbiddenException(`Lecturer not activated`);
+
+    const isMatched = await bcrypt.compare(password, foundLecturer.password);
+    if (!isMatched) throw new UnauthorizedException('Invalid credentials');
+
+    return this.generateAccessToken({
+      id: foundLecturer.id,
+      role: UserRole.LECTURER,
+    });
+  }
+
+  async lecturerResetPasswordRequest(email: string) {
+    const foundLecturer = await this.findLecturer(email);
+    if (!foundLecturer) throw new NotFoundException(`Lecturer not found`);
+
+    await this.emailService.sendMail({
+      subject: 'Reset Password',
+      toEmail: [foundLecturer.email],
+      htmlContent: ResetPasswordTemplate({
+        name: `${foundLecturer.firstName} ${foundLecturer.lastName}`,
+        resetLink: '',
+      }),
+    });
+
+    return { success: true, message: `Reset link sent to ${email}` };
+  }
+
+  async lecturerResetPassword({ email, password }: AuthUserBody) {
+    const foundLecturer = await this.findLecturer(email);
+    if (!foundLecturer) throw new NotFoundException(`Lecturer not found`);
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return this.updateLecturerPassword(foundLecturer.id, hashedPassword);
+  }
+
+  private async findStudent({
+    studentIdentifier,
+    identifierType,
+  }: StudentIdentifierBody) {
+    const foundStudent = await this.db.client.query.student.findFirst({
+      where:
+        identifierType === StudentIdentifierType.EMAIL
+          ? eq(student.email, studentIdentifier)
+          : eq(student.matricNumber, studentIdentifier),
+    });
+    if (!foundStudent) throw new NotFoundException(`Student not found`);
+
+    return foundStudent;
+  }
+
+  private async updateStudentPassword(id: string, hashedPassword: string) {
+    const updated = await this.db.client
+      .update(student)
+      .set({ password: hashedPassword })
+      .where(eq(student.id, id))
+      .returning();
+
+    const { password: _, ...profile } = updated[0];
+    return profile;
+  }
+
+  async activateStudent({
     studentIdentifier,
     identifierType,
     password,
   }: AuthStudentBody) {
-    const studentRecord = await this.findStudent({
+    const foundStudent = await this.findStudent({
       studentIdentifier,
       identifierType,
     });
-    if (studentRecord.password)
+    if (foundStudent.password)
       throw new UnauthorizedException(`Student already activated`);
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    return await this.updatePassword(
-      UserRole.STUDENT,
-      studentRecord.id,
-      hashedPassword,
-    );
+    return this.updateStudentPassword(foundStudent.id, hashedPassword);
   }
 
   async signinStudent({
@@ -183,18 +212,18 @@ export class AuthService {
     identifierType,
     password,
   }: AuthStudentBody) {
-    const studentRecord = await this.findStudent({
+    const foundStudent = await this.findStudent({
       studentIdentifier,
       identifierType,
     });
-    if (!studentRecord.password)
-      throw new ForbiddenException(`$Student not activated`);
+    if (!foundStudent.password)
+      throw new ForbiddenException(`Student not activated`);
 
-    const isMatched = await bcrypt.compare(password, studentRecord.password);
+    const isMatched = await bcrypt.compare(password, foundStudent.password);
     if (!isMatched) throw new UnauthorizedException('Invalid credentials');
 
     return this.generateAccessToken({
-      id: studentRecord.id,
+      id: foundStudent.id,
       role: UserRole.STUDENT,
     });
   }
@@ -203,23 +232,23 @@ export class AuthService {
     studentIdentifier,
     identifierType,
   }: StudentIdentifierBody) {
-    const studentRecord = await this.findStudent({
+    const foundStudent = await this.findStudent({
       studentIdentifier,
       identifierType,
     });
 
     await this.emailService.sendMail({
       subject: 'Reset Password',
-      toEmail: [studentRecord.email],
+      toEmail: [foundStudent.email],
       htmlContent: ResetPasswordTemplate({
-        name: `${studentRecord.firstName} ${studentRecord.lastName}`,
+        name: `${foundStudent.firstName} ${foundStudent.lastName}`,
         resetLink: '',
       }),
     });
 
     return {
       success: true,
-      message: `Reset link sent to ${studentRecord.email}`,
+      message: `Reset link sent to ${foundStudent.email}`,
     };
   }
 
@@ -228,16 +257,12 @@ export class AuthService {
     identifierType,
     password,
   }: AuthStudentBody) {
-    const studentRecord = await this.findStudent({
+    const foundStudent = await this.findStudent({
       studentIdentifier,
       identifierType,
     });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    return await this.updatePassword(
-      UserRole.STUDENT,
-      studentRecord.id,
-      hashedPassword,
-    );
+    return this.updateStudentPassword(foundStudent.id, hashedPassword);
   }
 }

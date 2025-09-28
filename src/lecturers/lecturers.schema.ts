@@ -32,6 +32,11 @@ export class CreateLecturerBody {
   @IsString()
   @IsNotEmpty()
   department: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  title?: string;
 }
 
 export class UpdateLecturerBody extends OmitType(

@@ -63,3 +63,32 @@ export class UploadScoresResponse extends ParseCsvData<UploadScoreRow> {
   @ApiProperty()
   studentsNotFound: string[];
 }
+
+export class LecturerProfileResponse {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
+
+  @ApiProperty()
+  email: string;
+
+  @ApiProperty()
+  firstName: string;
+
+  @ApiProperty()
+  lastName: string;
+
+  @ApiProperty()
+  otherName?: string;
+
+  @ApiProperty()
+  phone?: string;
+
+  @ApiProperty()
+  departmentId: string;
+}

@@ -220,7 +220,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get lecturer profile' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Profile retrieved successfully',
-        type: () => auth_schema_1.LecturerProfileResponse,
+        type: () => lecturer_schema_1.LecturerProfileResponse,
     }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),

@@ -14,7 +14,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { StudentsService } from './students.service';
-import { StudentProfileResponse, UserRole } from 'src/auth/auth.schema';
+import { UserRole } from 'src/auth/auth.schema';
 import { Role, RoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import {
@@ -38,6 +38,7 @@ import {
   ApiUnauthorizedResponse,
   ApiForbiddenResponse,
 } from '@nestjs/swagger';
+import { StudentProfileResponse } from 'src/student/student.schema';
 
 @ApiTags('Students', 'Admin')
 @ApiBearerAuth('accessToken')

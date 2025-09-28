@@ -12,12 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EnrollmentResponse = exports.CourseResponse = exports.CreateCoursesResponse = exports.CreateCourseResponse = exports.UpsertCourseBody = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
-const lecturer_schema_1 = require("../lecturer/lecturer.schema");
 const csv_1 = require("../utils/csv");
 class UpsertCourseBody {
     code;
     title;
     lecturerEmail;
+    description;
+    units;
+    semester;
 }
 exports.UpsertCourseBody = UpsertCourseBody;
 __decorate([
@@ -37,6 +39,22 @@ __decorate([
     (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
 ], UpsertCourseBody.prototype, "lecturerEmail", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpsertCourseBody.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], UpsertCourseBody.prototype, "units", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], UpsertCourseBody.prototype, "semester", void 0);
 class CreateCourseResponse extends UpsertCourseBody {
     isCreated;
 }
@@ -54,20 +72,21 @@ __decorate([
     __metadata("design:type", Array)
 ], CreateCoursesResponse.prototype, "courses", void 0);
 class CourseResponse {
-    id;
-    code;
+    description;
     title;
+    id;
+    createdAt;
+    updatedAt;
+    code;
+    units;
+    semester;
     lecturerId;
 }
 exports.CourseResponse = CourseResponse;
 __decorate([
-    (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", String)
-], CourseResponse.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", String)
-], CourseResponse.prototype, "code", void 0);
+    (0, swagger_1.ApiProperty)({ nullable: true }),
+    __metadata("design:type", Object)
+], CourseResponse.prototype, "description", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
@@ -75,9 +94,36 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
+], CourseResponse.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], CourseResponse.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], CourseResponse.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], CourseResponse.prototype, "code", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], CourseResponse.prototype, "units", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], CourseResponse.prototype, "semester", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
 ], CourseResponse.prototype, "lecturerId", void 0);
 class EnrollmentResponse {
     id;
+    createdAt;
+    updatedAt;
+    session;
     scores;
     courseId;
     studentId;
@@ -89,7 +135,19 @@ __decorate([
 ], EnrollmentResponse.prototype, "id", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", lecturer_schema_1.Scores)
+    __metadata("design:type", Date)
+], EnrollmentResponse.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], EnrollmentResponse.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], EnrollmentResponse.prototype, "session", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Object)
 ], EnrollmentResponse.prototype, "scores", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),

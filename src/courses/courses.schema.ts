@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
-import { Scores } from 'src/lecturer/lecturer.schema';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
+import { course, enrollment } from 'drizzle/schema';
 import { ParseCsvData } from 'src/utils/csv';
 
 export class UpsertCourseBody {
@@ -17,6 +23,19 @@ export class UpsertCourseBody {
   @ApiProperty()
   @IsUUID()
   lecturerEmail: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @ApiProperty()
+  @IsNumber()
+  units: number;
+
+  @ApiProperty()
+  @IsNumber()
+  semester: number;
 }
 
 export class CreateCourseResponse extends UpsertCourseBody {
@@ -29,26 +48,54 @@ export class CreateCoursesResponse extends ParseCsvData<UpsertCourseBody> {
   courses: CreateCourseResponse[];
 }
 
-export class CourseResponse {
-  @ApiProperty()
-  id: string;
+type Course = typeof course.$inferSelect;
 
-  @ApiProperty()
-  code: string;
+export class CourseResponse implements Course {
+  @ApiProperty({ nullable: true })
+  description: string | null;
 
   @ApiProperty()
   title: string;
 
   @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
+
+  @ApiProperty()
+  code: string;
+
+  @ApiProperty()
+  units: number;
+
+  @ApiProperty()
+  semester: number;
+
+  @ApiProperty()
   lecturerId: string;
 }
 
-export class EnrollmentResponse {
+type Enrollment = typeof enrollment.$inferSelect;
+
+export class EnrollmentResponse implements Enrollment {
   @ApiProperty()
   id: string;
 
   @ApiProperty()
-  scores: Scores;
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
+
+  @ApiProperty()
+  session: string;
+
+  @ApiProperty()
+  scores: unknown;
 
   @ApiProperty()
   courseId: string;

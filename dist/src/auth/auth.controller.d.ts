@@ -3,26 +3,13 @@ import { AuthUserBody, AuthStudentBody, StudentIdentifierBody } from './auth.sch
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
-    activateAdminAccount(body: AuthUserBody): Promise<{
+    activateAdmin(body: AuthUserBody): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
-        name: string;
-    } | {
-        id: string;
-        email: string;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
         phone: string | null;
-        departmentId: string;
-    } | {
-        id: string;
-        email: string;
-        matricNumber: string;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
-        departmentId: string;
+        name: string;
     }>;
     signinAdmin(body: AuthUserBody): Promise<{
         accessToken: string;
@@ -33,44 +20,22 @@ export declare class AuthController {
     }>;
     adminResetPassword(body: AuthUserBody): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
-        name: string;
-    } | {
-        id: string;
-        email: string;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
         phone: string | null;
-        departmentId: string;
-    } | {
-        id: string;
-        email: string;
-        matricNumber: string;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
-        departmentId: string;
+        name: string;
     }>;
-    activateLecturerAccount(body: AuthUserBody): Promise<{
+    activateLecturer(body: AuthUserBody): Promise<{
         id: string;
-        email: string;
-        name: string;
-    } | {
-        id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
         firstName: string;
         lastName: string;
         otherName: string | null;
         phone: string | null;
-        departmentId: string;
-    } | {
-        id: string;
-        email: string;
-        matricNumber: string;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
+        title: string | null;
         departmentId: string;
     }>;
     signinLecturer(body: AuthUserBody): Promise<{
@@ -82,44 +47,28 @@ export declare class AuthController {
     }>;
     lecturerResetPassword(body: AuthUserBody): Promise<{
         id: string;
-        email: string;
-        name: string;
-    } | {
-        id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
         firstName: string;
         lastName: string;
         otherName: string | null;
         phone: string | null;
-        departmentId: string;
-    } | {
-        id: string;
-        email: string;
-        matricNumber: string;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
+        title: string | null;
         departmentId: string;
     }>;
-    activateStudentAccount(body: AuthStudentBody): Promise<{
+    activateStudent(body: AuthStudentBody): Promise<{
         id: string;
-        email: string;
-        name: string;
-    } | {
-        id: string;
-        email: string;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
-        phone: string | null;
-        departmentId: string;
-    } | {
-        id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
         matricNumber: string;
         firstName: string;
         lastName: string;
         otherName: string | null;
+        level: number;
+        gender: string;
+        degree: string;
         departmentId: string;
     }>;
     signinStudent(body: AuthStudentBody): Promise<{
@@ -131,23 +80,16 @@ export declare class AuthController {
     }>;
     studentResetPassword(body: AuthStudentBody): Promise<{
         id: string;
-        email: string;
-        name: string;
-    } | {
-        id: string;
-        email: string;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
-        phone: string | null;
-        departmentId: string;
-    } | {
-        id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
         matricNumber: string;
         firstName: string;
         lastName: string;
         otherName: string | null;
+        level: number;
+        gender: string;
+        degree: string;
         departmentId: string;
     }>;
 }

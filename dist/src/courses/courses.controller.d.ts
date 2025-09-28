@@ -5,27 +5,47 @@ export declare class CoursesController {
     constructor(coursesService: CoursesService);
     createCourse(body: UpsertCourseBody): Promise<{
         id: string;
-        code: string;
+        createdAt: Date;
+        updatedAt: Date;
         title: string;
+        description: string | null;
+        code: string;
+        units: number;
+        semester: number;
         lecturerId: string;
     }>;
     createCourses(file: Express.Multer.File): Promise<CreateCoursesResponse>;
     getCourses(): Promise<{
         id: string;
-        code: string;
+        createdAt: Date;
+        updatedAt: Date;
         title: string;
+        description: string | null;
+        code: string;
+        units: number;
+        semester: number;
         lecturerId: string;
     }[]>;
     updateCourse(courseId: string, body: UpsertCourseBody): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         code: string;
         title: string;
+        description: string | null;
+        units: number;
+        semester: number;
         lecturerId: string;
     }>;
     deleteCourse(courseId: string): Promise<{
         id: string;
-        code: string;
+        createdAt: Date;
+        updatedAt: Date;
         title: string;
+        description: string | null;
+        code: string;
+        units: number;
+        semester: number;
         lecturerId: string;
     }>;
 }

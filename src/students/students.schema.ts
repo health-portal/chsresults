@@ -1,6 +1,14 @@
 import { OmitType, PartialType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { Gender } from 'src/student/student.schema';
 import { ParseCsvData } from 'src/utils/csv';
 
 export class CreateStudentBody {
@@ -32,6 +40,19 @@ export class CreateStudentBody {
   @IsString()
   @IsNotEmpty()
   department: string;
+
+  @ApiProperty()
+  @IsNumber()
+  level: number;
+
+  @ApiProperty({ enum: Gender })
+  @IsEnum(Gender)
+  gender: Gender;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  degree: string;
 }
 
 export class UpdateStudentBody extends OmitType(

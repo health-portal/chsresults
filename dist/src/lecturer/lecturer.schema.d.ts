@@ -25,3 +25,14 @@ export declare class UploadScoresResponse extends ParseCsvData<UploadScoreRow> {
     studentsUploadedFor: string[];
     studentsNotFound: string[];
 }
+export declare class LecturerProfileResponse {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    email: string;
+    firstName: string;
+    lastName: string;
+    otherName?: string;
+    phone?: string;
+    departmentId: string;
+}

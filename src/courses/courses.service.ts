@@ -13,7 +13,13 @@ import { parseCsvFile } from 'src/utils/csv';
 export class CoursesService {
   constructor(private readonly db: DatabaseService) {}
 
-  async createCourse({ code, title, lecturerEmail }: UpsertCourseBody) {
+  async createCourse({
+    code,
+    title,
+    lecturerEmail,
+    semester,
+    units,
+  }: UpsertCourseBody) {
     const foundCourse = await this.db.client.query.course.findFirst({
       where: or(eq(course.title, title), eq(course.code, code)),
     });
@@ -27,11 +33,11 @@ export class CoursesService {
     });
     if (!foundLecturer) throw new BadRequestException('Lecturer not found');
 
-    const insertedCourse = await this.db.client
+    const [insertedCourse] = await this.db.client
       .insert(course)
-      .values({ code, title, lecturerId: foundLecturer.id })
+      .values({ code, title, lecturerId: foundLecturer.id, semester, units })
       .returning();
-    return insertedCourse[0];
+    return insertedCourse;
   }
 
   async createCourses(file: Express.Multer.File) {
@@ -72,7 +78,14 @@ export class CoursesService {
 
   async updateCourse(
     courseId: string,
-    { code, title, lecturerEmail }: UpsertCourseBody,
+    {
+      code,
+      title,
+      lecturerEmail,
+      description,
+      semester,
+      units,
+    }: UpsertCourseBody,
   ) {
     const foundCourse = await this.db.client.query.course.findFirst({
       where: eq(course.id, courseId),
@@ -87,7 +100,14 @@ export class CoursesService {
 
     const updatedCourse = await this.db.client
       .update(course)
-      .set({ code, title, lecturerId: foundLecturer.id })
+      .set({
+        code,
+        title,
+        lecturerId: foundLecturer.id,
+        description,
+        semester,
+        units,
+      })
       .returning();
     return updatedCourse[0];
   }

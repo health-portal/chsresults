@@ -1,82 +1,85 @@
 import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from 'src/database/database.service';
-import { UserRole, AuthUserBody, AuthStudentBody, StudentIdentifierBody } from './auth.schema';
+import { AuthUserBody, AuthStudentBody, StudentIdentifierBody } from './auth.schema';
+import { EmailService } from 'src/email/email.service';
 export declare class AuthService {
     private readonly db;
     private readonly jwtService;
-    constructor(db: DatabaseService, jwtService: JwtService);
+    private readonly emailService;
+    constructor(db: DatabaseService, jwtService: JwtService, emailService: EmailService);
     private generateAccessToken;
-    private findAdminOrLecturer;
-    private findStudent;
-    private updatePassword;
-    activate(role: UserRole, { email, password }: AuthUserBody): Promise<{
+    private findAdmin;
+    private updateAdminPassword;
+    activateAdmin({ email, password }: AuthUserBody): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
-        name: string;
-    } | {
-        id: string;
-        email: string;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
         phone: string | null;
-        departmentId: string;
-    } | {
-        id: string;
-        email: string;
-        matricNumber: string;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
-        departmentId: string;
+        name: string;
     }>;
-    signin(role: UserRole, { email, password }: AuthUserBody): Promise<{
+    signinAdmin({ email, password }: AuthUserBody): Promise<{
         accessToken: string;
     }>;
-    resetPasswordRequest(role: UserRole, email: string): Promise<{
+    adminResetPasswordRequest(email: string): Promise<{
         success: boolean;
         message: string;
     }>;
-    resetPassword(role: UserRole, { email, password }: AuthUserBody): Promise<{
+    adminResetPassword({ email, password }: AuthUserBody): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
+        phone: string | null;
         name: string;
-    } | {
+    }>;
+    private findLecturer;
+    private updateLecturerPassword;
+    activateLecturer({ email, password }: AuthUserBody): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
         firstName: string;
         lastName: string;
         otherName: string | null;
         phone: string | null;
-        departmentId: string;
-    } | {
-        id: string;
-        email: string;
-        matricNumber: string;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
+        title: string | null;
         departmentId: string;
     }>;
-    activateStudentAccount({ studentIdentifier, identifierType, password, }: AuthStudentBody): Promise<{
+    signinLecturer({ email, password }: AuthUserBody): Promise<{
+        accessToken: string;
+    }>;
+    lecturerResetPasswordRequest(email: string): Promise<{
+        success: boolean;
+        message: string;
+    }>;
+    lecturerResetPassword({ email, password }: AuthUserBody): Promise<{
         id: string;
-        email: string;
-        name: string;
-    } | {
-        id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
         firstName: string;
         lastName: string;
         otherName: string | null;
         phone: string | null;
+        title: string | null;
         departmentId: string;
-    } | {
+    }>;
+    private findStudent;
+    private updateStudentPassword;
+    activateStudent({ studentIdentifier, identifierType, password, }: AuthStudentBody): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
         matricNumber: string;
         firstName: string;
         lastName: string;
         otherName: string | null;
+        level: number;
+        gender: string;
+        degree: string;
         departmentId: string;
     }>;
     signinStudent({ studentIdentifier, identifierType, password, }: AuthStudentBody): Promise<{
@@ -88,23 +91,16 @@ export declare class AuthService {
     }>;
     studentResetPassword({ studentIdentifier, identifierType, password, }: AuthStudentBody): Promise<{
         id: string;
-        email: string;
-        name: string;
-    } | {
-        id: string;
-        email: string;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
-        phone: string | null;
-        departmentId: string;
-    } | {
-        id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
         matricNumber: string;
         firstName: string;
         lastName: string;
         otherName: string | null;
+        level: number;
+        gender: string;
+        degree: string;
         departmentId: string;
     }>;
 }

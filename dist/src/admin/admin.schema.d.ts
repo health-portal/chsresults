@@ -1,5 +1,20 @@
+import { admin } from 'drizzle/schema';
 export declare class AddAdminBody {
     email: string;
     name: string;
-    password: string;
 }
+export declare class UpdateAdminBody {
+    email: string;
+    name: string;
+    phone: string;
+}
+type Admin = Omit<typeof admin.$inferSelect, 'password'>;
+export declare class AdminProfileResponse implements Admin {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    name: string;
+    email: string;
+    phone: string | null;
+}
+export {};

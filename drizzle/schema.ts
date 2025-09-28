@@ -8,17 +8,33 @@ import {
   inet,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { integer } from 'drizzle-orm/pg-core';
 
 // Tables
 export const admin = pgTable('admin', {
   id: uuid('id').defaultRandom().primaryKey(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+
   email: text('email').notNull().unique(),
+  phone: text('phone'),
   password: text('password'),
   name: text('name').notNull(),
 });
 
 export const lecturer = pgTable('lecturer', {
   id: uuid('id').defaultRandom().primaryKey(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+
   email: text('email').notNull().unique(),
   password: text('password'),
 
@@ -26,6 +42,7 @@ export const lecturer = pgTable('lecturer', {
   lastName: text('last_name').notNull(),
   otherName: text('other_name'),
   phone: text('phone'),
+  title: text('title'),
 
   departmentId: uuid('department_id')
     .references(() => department.id)
@@ -34,13 +51,22 @@ export const lecturer = pgTable('lecturer', {
 
 export const student = pgTable('student', {
   id: uuid('id').defaultRandom().primaryKey(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+
   email: text('email').notNull().unique(),
   matricNumber: text('matric_number').notNull().unique(),
   password: text('password'),
-
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
   otherName: text('other_name'),
+  level: integer('level').notNull(),
+  gender: text('gender').notNull(),
+  degree: text('degree').notNull(),
 
   departmentId: uuid('department_id')
     .references(() => department.id)
@@ -63,11 +89,23 @@ export const log = pgTable('log', {
 
 export const faculty = pgTable('faculty', {
   id: uuid('id').defaultRandom().primaryKey(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
   name: text('name').notNull().unique(),
 });
 
 export const department = pgTable('department', {
   id: uuid('id').defaultRandom().primaryKey(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
   name: text('name').notNull().unique(),
 
   facultyId: uuid('faculty_id')
@@ -77,8 +115,18 @@ export const department = pgTable('department', {
 
 export const course = pgTable('course', {
   id: uuid('id').defaultRandom().primaryKey(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+
   code: text('code').notNull().unique(),
   title: text('title').notNull().unique(),
+  description: text('description'),
+  units: integer('units').notNull(),
+  semester: integer('semester').notNull(),
 
   lecturerId: uuid('lecturer_id')
     .references(() => lecturer.id)
@@ -87,6 +135,14 @@ export const course = pgTable('course', {
 
 export const enrollment = pgTable('enrollment', {
   id: uuid('id').defaultRandom().primaryKey(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+
+  session: text('session').notNull(),
   scores: json('scores'),
 
   courseId: uuid('course_id')

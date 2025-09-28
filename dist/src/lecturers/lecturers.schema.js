@@ -21,6 +21,7 @@ class CreateLecturerBody {
     otherName;
     phone;
     department;
+    title;
 }
 exports.CreateLecturerBody = CreateLecturerBody;
 __decorate([
@@ -58,6 +59,12 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateLecturerBody.prototype, "department", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateLecturerBody.prototype, "title", void 0);
 class UpdateLecturerBody extends (0, mapped_types_1.OmitType)((0, swagger_1.PartialType)(CreateLecturerBody), ['email']) {
 }
 exports.UpdateLecturerBody = UpdateLecturerBody;

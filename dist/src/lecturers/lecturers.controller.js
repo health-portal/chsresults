@@ -21,6 +21,7 @@ const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const platform_express_1 = require("@nestjs/platform-express");
 const lecturers_schema_1 = require("./lecturers.schema");
 const swagger_1 = require("@nestjs/swagger");
+const lecturer_schema_1 = require("../lecturer/lecturer.schema");
 let LecturersController = class LecturersController {
     lecturersService;
     constructor(lecturersService) {
@@ -49,7 +50,7 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: () => lecturers_schema_1.CreateLecturerBody }),
     (0, swagger_1.ApiCreatedResponse)({
         description: 'Lecturer created successfully',
-        type: () => auth_schema_1.LecturerProfileResponse,
+        type: () => lecturer_schema_1.LecturerProfileResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
@@ -97,7 +98,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get all lecturers' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Lecturers retrieved successfully',
-        type: () => [auth_schema_1.LecturerProfileResponse],
+        type: () => [lecturer_schema_1.LecturerProfileResponse],
     }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
@@ -112,7 +113,7 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: () => lecturers_schema_1.UpdateLecturerBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Lecturer updated successfully',
-        type: () => auth_schema_1.LecturerProfileResponse,
+        type: () => lecturer_schema_1.LecturerProfileResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Lecturer not found' }),
@@ -130,7 +131,7 @@ __decorate([
     (0, swagger_1.ApiParam)({ name: 'lecturerId', type: String, description: 'Lecturer UUID' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Lecturer deleted successfully',
-        type: () => auth_schema_1.LecturerProfileResponse,
+        type: () => lecturer_schema_1.LecturerProfileResponse,
     }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Lecturer not found' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),

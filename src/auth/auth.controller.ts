@@ -21,13 +21,12 @@ import { AuthService } from './auth.service';
 import {
   AuthUserBody,
   AuthStudentBody,
-  UserRole,
   StudentIdentifierBody,
   SigninResponse,
-  AdminProfileResponse,
-  LecturerProfileResponse,
-  StudentProfileResponse,
 } from './auth.schema';
+import { AdminProfileResponse } from 'src/admin/admin.schema';
+import { LecturerProfileResponse } from 'src/lecturer/lecturer.schema';
+import { StudentProfileResponse } from 'src/student/student.schema';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -44,8 +43,8 @@ export class AuthController {
   })
   @ApiBadRequestResponse({ description: 'Admin already activated' })
   @ApiUnauthorizedResponse({ description: 'Admin not found' })
-  async activateAdminAccount(@Body() body: AuthUserBody) {
-    return await this.authService.activate(UserRole.ADMIN, body);
+  async activateAdmin(@Body() body: AuthUserBody) {
+    return await this.authService.activateAdmin(body);
   }
 
   @Post('admin/signin')
@@ -62,7 +61,7 @@ export class AuthController {
   @ApiForbiddenResponse({ description: 'Admin not activated' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   async signinAdmin(@Body() body: AuthUserBody) {
-    return await this.authService.signin(UserRole.ADMIN, body);
+    return await this.authService.signinAdmin(body);
   }
 
   @Post('admin/reset-password/request')
@@ -73,7 +72,7 @@ export class AuthController {
   @ApiNotFoundResponse({ description: 'Admin not found' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   async adminResetPasswordRequest(@Query('email') email: string) {
-    return await this.authService.resetPasswordRequest(UserRole.ADMIN, email);
+    return await this.authService.adminResetPasswordRequest(email);
   }
 
   @Post('admin/reset-password')
@@ -87,7 +86,7 @@ export class AuthController {
   @ApiNotFoundResponse({ description: 'Admin not found' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   async adminResetPassword(@Body() body: AuthUserBody) {
-    return await this.authService.resetPassword(UserRole.ADMIN, body);
+    return await this.authService.adminResetPassword(body);
   }
 
   @Post('lecturer/activate-account')
@@ -100,8 +99,8 @@ export class AuthController {
   })
   @ApiBadRequestResponse({ description: 'Lecturer already activated' })
   @ApiUnauthorizedResponse({ description: 'Lecturer not found' })
-  async activateLecturerAccount(@Body() body: AuthUserBody) {
-    return await this.authService.activate(UserRole.LECTURER, body);
+  async activateLecturer(@Body() body: AuthUserBody) {
+    return await this.authService.activateLecturer(body);
   }
 
   @Post('lecturer/signin')
@@ -118,7 +117,7 @@ export class AuthController {
   @ApiForbiddenResponse({ description: 'Lecturer not activated' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   async signinLecturer(@Body() body: AuthUserBody) {
-    return await this.authService.signin(UserRole.LECTURER, body);
+    return await this.authService.signinLecturer(body);
   }
 
   @Post('lecturer/reset-password/request')
@@ -129,10 +128,7 @@ export class AuthController {
   @ApiNotFoundResponse({ description: 'Lecturer not found' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   async lecturerResetPasswordRequest(@Query('email') email: string) {
-    return await this.authService.resetPasswordRequest(
-      UserRole.LECTURER,
-      email,
-    );
+    return await this.authService.lecturerResetPasswordRequest(email);
   }
 
   @Post('lecturer/reset-password')
@@ -146,7 +142,7 @@ export class AuthController {
   @ApiNotFoundResponse({ description: 'Lecturer not found' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   async lecturerResetPassword(@Body() body: AuthUserBody) {
-    return await this.authService.resetPassword(UserRole.LECTURER, body);
+    return await this.authService.lecturerResetPassword(body);
   }
 
   @Post('student/activate-account')
@@ -160,8 +156,8 @@ export class AuthController {
   @ApiUnauthorizedResponse({ description: 'Student already activated' })
   @ApiNotFoundResponse({ description: 'Student not found' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  async activateStudentAccount(@Body() body: AuthStudentBody) {
-    return this.authService.activateStudentAccount(body);
+  async activateStudent(@Body() body: AuthStudentBody) {
+    return this.authService.activateStudent(body);
   }
 
   @Post('student/signin')

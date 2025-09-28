@@ -32,8 +32,8 @@ let AdminController = class AdminController {
     async getProfile(adminId) {
         return await this.adminService.getProfile(adminId);
     }
-    async updateProfile(adminId, name) {
-        return await this.adminService.updateProfile(adminId, name);
+    async updateProfile(adminId, body) {
+        return await this.adminService.updateProfile(adminId, body);
     }
 };
 exports.AdminController = AdminController;
@@ -54,7 +54,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get admin profile' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Profile retrieved successfully',
-        type: () => auth_schema_1.AdminProfileResponse,
+        type: () => admin_schema_1.AdminProfileResponse,
     }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
@@ -66,18 +66,18 @@ __decorate([
 __decorate([
     (0, common_1.Patch)('profile'),
     (0, swagger_1.ApiOperation)({ summary: 'Update admin profile' }),
-    (0, swagger_1.ApiQuery)({ name: 'name', type: String, required: true }),
+    (0, swagger_1.ApiBody)({ type: () => admin_schema_1.UpdateAdminBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Profile updated successfully',
-        type: () => auth_schema_1.AdminProfileResponse,
+        type: () => admin_schema_1.AdminProfileResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
     __param(0, (0, user_decorator_1.User)('id')),
-    __param(1, (0, common_1.Query)('name')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, admin_schema_1.UpdateAdminBody]),
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "updateProfile", null);
 exports.AdminController = AdminController = __decorate([

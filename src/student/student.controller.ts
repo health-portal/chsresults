@@ -3,7 +3,7 @@ import { StudentService } from './student.service';
 import { User } from 'src/auth/user.decorator';
 import { Role, RoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { StudentProfileResponse, UserRole } from 'src/auth/auth.schema';
+import { UserRole } from 'src/auth/auth.schema';
 import {
   ApiTags,
   ApiOperation,
@@ -15,6 +15,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { EnrollmentResponse } from 'src/courses/courses.schema';
+import { StudentProfileResponse } from './student.schema';
 
 @ApiTags('Student')
 @ApiBearerAuth('accessToken')

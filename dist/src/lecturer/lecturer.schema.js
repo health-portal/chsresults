@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UploadScoresResponse = exports.BatchStudentRegistrationResponse = exports.UploadScoreRow = exports.RegisterStudentRow = exports.EditScoreBody = exports.Scores = exports.RegisterStudentBody = void 0;
+exports.LecturerProfileResponse = exports.UploadScoresResponse = exports.BatchStudentRegistrationResponse = exports.UploadScoreRow = exports.RegisterStudentRow = exports.EditScoreBody = exports.Scores = exports.RegisterStudentBody = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const csv_1 = require("../utils/csv");
@@ -103,4 +103,52 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", Array)
 ], UploadScoresResponse.prototype, "studentsNotFound", void 0);
+class LecturerProfileResponse {
+    id;
+    createdAt;
+    updatedAt;
+    email;
+    firstName;
+    lastName;
+    otherName;
+    phone;
+    departmentId;
+}
+exports.LecturerProfileResponse = LecturerProfileResponse;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], LecturerProfileResponse.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], LecturerProfileResponse.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], LecturerProfileResponse.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], LecturerProfileResponse.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], LecturerProfileResponse.prototype, "firstName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], LecturerProfileResponse.prototype, "lastName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], LecturerProfileResponse.prototype, "otherName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], LecturerProfileResponse.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], LecturerProfileResponse.prototype, "departmentId", void 0);
 //# sourceMappingURL=lecturer.schema.js.map

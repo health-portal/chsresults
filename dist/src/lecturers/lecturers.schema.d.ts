@@ -6,6 +6,7 @@ export declare class CreateLecturerBody {
     otherName?: string;
     phone?: string;
     department: string;
+    title?: string;
 }
 declare const UpdateLecturerBody_base: import("@nestjs/mapped-types").MappedType<Omit<Partial<CreateLecturerBody>, "email">>;
 export declare class UpdateLecturerBody extends UpdateLecturerBody_base {

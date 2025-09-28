@@ -1,3 +1,4 @@
+import { Gender } from 'src/student/student.schema';
 import { ParseCsvData } from 'src/utils/csv';
 export declare class CreateStudentBody {
     email: string;
@@ -6,6 +7,9 @@ export declare class CreateStudentBody {
     lastName: string;
     otherName?: string;
     department: string;
+    level: number;
+    gender: Gender;
+    degree: string;
 }
 declare const UpdateStudentBody_base: import("@nestjs/mapped-types").MappedType<Omit<Partial<CreateStudentBody>, "email" | "matricNumber">>;
 export declare class UpdateStudentBody extends UpdateStudentBody_base {

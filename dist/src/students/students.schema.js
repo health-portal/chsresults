@@ -13,6 +13,7 @@ exports.CreateStudentsResponse = exports.CreateStudentResponse = exports.UpdateS
 const mapped_types_1 = require("@nestjs/mapped-types");
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
+const student_schema_1 = require("../student/student.schema");
 const csv_1 = require("../utils/csv");
 class CreateStudentBody {
     email;
@@ -21,6 +22,9 @@ class CreateStudentBody {
     lastName;
     otherName;
     department;
+    level;
+    gender;
+    degree;
 }
 exports.CreateStudentBody = CreateStudentBody;
 __decorate([
@@ -58,6 +62,22 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateStudentBody.prototype, "department", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateStudentBody.prototype, "level", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ enum: student_schema_1.Gender }),
+    (0, class_validator_1.IsEnum)(student_schema_1.Gender),
+    __metadata("design:type", String)
+], CreateStudentBody.prototype, "gender", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateStudentBody.prototype, "degree", void 0);
 class UpdateStudentBody extends (0, mapped_types_1.OmitType)((0, mapped_types_1.PartialType)(CreateStudentBody), ['email', 'matricNumber']) {
 }
 exports.UpdateStudentBody = UpdateStudentBody;

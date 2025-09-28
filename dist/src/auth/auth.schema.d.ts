@@ -25,26 +25,3 @@ export declare class AuthStudentBody extends StudentIdentifierBody {
 export declare class SigninResponse {
     accessToken: string;
 }
-export declare class AdminProfileResponse {
-    id: string;
-    name: string;
-    email: string;
-}
-export declare class LecturerProfileResponse {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    otherName?: string;
-    phone?: string;
-    departmentId: string;
-}
-export declare class StudentProfileResponse {
-    email: string;
-    matricNumber: string;
-    id: string;
-    firstName: string;
-    lastName: string;
-    otherName?: string;
-    departmentId: string;
-}

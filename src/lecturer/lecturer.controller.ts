@@ -20,10 +20,11 @@ import { Role, RoleGuard } from 'src/auth/role.guard';
 import {
   BatchStudentRegistrationResponse,
   EditScoreBody,
+  LecturerProfileResponse,
   RegisterStudentBody,
   UploadScoresResponse,
 } from './lecturer.schema';
-import { LecturerProfileResponse, UserRole } from 'src/auth/auth.schema';
+import { UserRole } from 'src/auth/auth.schema';
 import {
   ApiTags,
   ApiOperation,

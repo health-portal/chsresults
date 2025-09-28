@@ -1,77 +1,78 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import * as schema from 'drizzle/schema';
 import { eq } from 'drizzle-orm';
-import { Pool } from 'pg';
-import { env } from 'src/environment';
 import {
   UpsertFacultyAndDepartmentBody,
   CreateDepartmentBody,
 } from './college.schema';
-
-const pool = new Pool({ connectionString: env.DATABASE_URL });
-const db = drizzle(pool, { schema });
+import { DatabaseService } from 'src/database/database.service';
+import { department, faculty } from 'drizzle/schema';
 
 @Injectable()
 export class CollegeService {
+  constructor(private readonly db: DatabaseService) {}
+
   async getDepartments() {
-    return db.query.faculty.findMany({
+    return await this.db.client.query.faculty.findMany({
       with: { departments: true },
     });
   }
 
   async createFaculty(body: UpsertFacultyAndDepartmentBody) {
-    const [faculty] = await db.insert(schema.faculty).values(body).returning();
-    return faculty;
+    const [insertedFaculty] = await this.db.client
+      .insert(faculty)
+      .values(body)
+      .returning();
+
+    return insertedFaculty;
   }
 
   async updateFaculty(facultyId: string, body: UpsertFacultyAndDepartmentBody) {
-    const [faculty] = await db
-      .update(schema.faculty)
+    const [updatedFaculty] = await this.db.client
+      .update(faculty)
       .set(body)
-      .where(eq(schema.faculty.id, facultyId))
+      .where(eq(faculty.id, facultyId))
       .returning();
 
-    if (!faculty) throw new NotFoundException('Faculty not found');
-    return faculty;
+    if (!updatedFaculty) throw new NotFoundException('Faculty not found');
+    return updatedFaculty;
   }
 
   async deleteFaculty(facultyId: string) {
-    const [faculty] = await db
-      .delete(schema.faculty)
-      .where(eq(schema.faculty.id, facultyId))
+    const [deletedFaculty] = await this.db.client
+      .delete(faculty)
+      .where(eq(faculty.id, facultyId))
       .returning();
 
-    if (!faculty) throw new NotFoundException('Faculty not found');
-    return faculty;
+    if (!deletedFaculty) throw new NotFoundException('Faculty not found');
+    return deletedFaculty;
   }
 
   async createDepartment({ facultyId, name }: CreateDepartmentBody) {
-    const [dept] = await db
-      .insert(schema.department)
+    const [insertedDept] = await this.db.client
+      .insert(department)
       .values({ facultyId, name })
       .returning();
-    return dept;
+    return insertedDept;
   }
 
   async updateDepartment(deptId: string, body: UpsertFacultyAndDepartmentBody) {
-    const [dept] = await db
-      .update(schema.department)
+    const [updatedDept] = await this.db.client
+      .update(department)
       .set(body)
-      .where(eq(schema.department.id, deptId))
+      .where(eq(department.id, deptId))
       .returning();
 
-    if (!dept) throw new NotFoundException('Department not found');
-    return dept;
+    if (!updatedDept) throw new NotFoundException('Department not found');
+    return updatedDept;
   }
 
   async deleteDepartment(deptId: string) {
-    const [dept] = await db
-      .delete(schema.department)
-      .where(eq(schema.department.id, deptId))
+    const [deletedDept] = await this.db.client
+      .delete(department)
+      .where(eq(department.id, deptId))
       .returning();
 
-    if (!dept) throw new NotFoundException('Department not found');
-    return dept;
+    if (!deletedDept) throw new NotFoundException('Department not found');
+    return deletedDept;
   }
 }

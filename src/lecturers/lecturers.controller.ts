@@ -14,7 +14,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { LecturersService } from './lecturers.service';
-import { LecturerProfileResponse, UserRole } from 'src/auth/auth.schema';
+import { UserRole } from 'src/auth/auth.schema';
 import { Role, RoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -38,6 +38,7 @@ import {
   ApiUnauthorizedResponse,
   ApiForbiddenResponse,
 } from '@nestjs/swagger';
+import { LecturerProfileResponse } from 'src/lecturer/lecturer.schema';
 
 @ApiTags('Lecturers', 'Admin')
 @ApiBearerAuth('accessToken')

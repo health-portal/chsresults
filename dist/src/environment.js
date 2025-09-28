@@ -38,9 +38,10 @@ const envalid_1 = require("envalid");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 exports.env = (0, envalid_1.cleanEnv)(process.env, {
-    JWT_SECRET: (0, envalid_1.str)(),
     DATABASE_URL: (0, envalid_1.str)(),
     DEFAULT_ADMINS: (0, envalid_1.json)(),
+    JWT_SECRET: (0, envalid_1.str)(),
     PORT: (0, envalid_1.num)(),
+    RESEND_API_KEY: (0, envalid_1.str)(),
 });
 //# sourceMappingURL=environment.js.map

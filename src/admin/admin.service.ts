@@ -6,23 +6,21 @@ import {
 import { eq } from 'drizzle-orm';
 import { admin } from 'drizzle/schema';
 import { DatabaseService } from 'src/database/database.service';
-import { AddAdminBody } from './admin.schema';
-import * as bcrypt from 'bcrypt';
+import { AddAdminBody, UpdateAdminBody } from './admin.schema';
 
 @Injectable()
 export class AdminService {
   constructor(private readonly db: DatabaseService) {}
 
-  async addAdmin({ email, name, password }: AddAdminBody) {
+  async addAdmin({ email, name }: AddAdminBody) {
     const foundAdmin = await this.db.client.query.admin.findFirst({
       where: eq(admin.email, email),
     });
     if (foundAdmin) throw new BadRequestException('Admin already exists');
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     const insertedAdmin = await this.db.client
       .insert(admin)
-      .values({ email, name, password: hashedPassword })
+      .values({ email, name })
       .returning();
 
     const { password: _, ...adminProfile } = insertedAdmin[0];
@@ -39,7 +37,7 @@ export class AdminService {
     return adminProfile;
   }
 
-  async updateProfile(adminId: string, name: string) {
+  async updateProfile(adminId: string, { name, phone }: UpdateAdminBody) {
     const foundAdmin = await this.db.client.query.admin.findFirst({
       where: eq(admin.id, adminId),
     });
@@ -47,10 +45,10 @@ export class AdminService {
 
     const updatedAdmin = await this.db.client
       .update(admin)
-      .set({ name })
+      .set({ name, phone })
       .returning();
 
-    const { password, ...adminProfile } = updatedAdmin[0];
+    const { password: _, ...adminProfile } = updatedAdmin[0];
     return adminProfile;
   }
 }

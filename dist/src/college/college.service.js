@@ -1,111 +1,85 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CollegeService = void 0;
 const common_1 = require("@nestjs/common");
-const node_postgres_1 = require("drizzle-orm/node-postgres");
-const schema = __importStar(require("../../drizzle/schema"));
 const drizzle_orm_1 = require("drizzle-orm");
-const pg_1 = require("pg");
-const environment_1 = require("../environment");
-const pool = new pg_1.Pool({ connectionString: environment_1.env.DATABASE_URL });
-const db = (0, node_postgres_1.drizzle)(pool, { schema });
+const database_service_1 = require("../database/database.service");
+const schema_1 = require("../../drizzle/schema");
 let CollegeService = class CollegeService {
+    db;
+    constructor(db) {
+        this.db = db;
+    }
     async getDepartments() {
-        return db.query.faculty.findMany({
+        return await this.db.client.query.faculty.findMany({
             with: { departments: true },
         });
     }
     async createFaculty(body) {
-        const [faculty] = await db.insert(schema.faculty).values(body).returning();
-        return faculty;
+        const [insertedFaculty] = await this.db.client
+            .insert(schema_1.faculty)
+            .values(body)
+            .returning();
+        return insertedFaculty;
     }
     async updateFaculty(facultyId, body) {
-        const [faculty] = await db
-            .update(schema.faculty)
+        const [updatedFaculty] = await this.db.client
+            .update(schema_1.faculty)
             .set(body)
-            .where((0, drizzle_orm_1.eq)(schema.faculty.id, facultyId))
+            .where((0, drizzle_orm_1.eq)(schema_1.faculty.id, facultyId))
             .returning();
-        if (!faculty)
+        if (!updatedFaculty)
             throw new common_1.NotFoundException('Faculty not found');
-        return faculty;
+        return updatedFaculty;
     }
     async deleteFaculty(facultyId) {
-        const [faculty] = await db
-            .delete(schema.faculty)
-            .where((0, drizzle_orm_1.eq)(schema.faculty.id, facultyId))
+        const [deletedFaculty] = await this.db.client
+            .delete(schema_1.faculty)
+            .where((0, drizzle_orm_1.eq)(schema_1.faculty.id, facultyId))
             .returning();
-        if (!faculty)
+        if (!deletedFaculty)
             throw new common_1.NotFoundException('Faculty not found');
-        return faculty;
+        return deletedFaculty;
     }
     async createDepartment({ facultyId, name }) {
-        const [dept] = await db
-            .insert(schema.department)
+        const [insertedDept] = await this.db.client
+            .insert(schema_1.department)
             .values({ facultyId, name })
             .returning();
-        return dept;
+        return insertedDept;
     }
     async updateDepartment(deptId, body) {
-        const [dept] = await db
-            .update(schema.department)
+        const [updatedDept] = await this.db.client
+            .update(schema_1.department)
             .set(body)
-            .where((0, drizzle_orm_1.eq)(schema.department.id, deptId))
+            .where((0, drizzle_orm_1.eq)(schema_1.department.id, deptId))
             .returning();
-        if (!dept)
+        if (!updatedDept)
             throw new common_1.NotFoundException('Department not found');
-        return dept;
+        return updatedDept;
     }
     async deleteDepartment(deptId) {
-        const [dept] = await db
-            .delete(schema.department)
-            .where((0, drizzle_orm_1.eq)(schema.department.id, deptId))
+        const [deletedDept] = await this.db.client
+            .delete(schema_1.department)
+            .where((0, drizzle_orm_1.eq)(schema_1.department.id, deptId))
             .returning();
-        if (!dept)
+        if (!deletedDept)
             throw new common_1.NotFoundException('Department not found');
-        return dept;
+        return deletedDept;
     }
 };
 exports.CollegeService = CollegeService;
 exports.CollegeService = CollegeService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [database_service_1.DatabaseService])
 ], CollegeService);
 //# sourceMappingURL=college.service.js.map

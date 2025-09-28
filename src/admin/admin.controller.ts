@@ -1,18 +1,14 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Patch,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Role, RoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { AdminProfileResponse, UserRole } from 'src/auth/auth.schema';
+import { UserRole } from 'src/auth/auth.schema';
 import { User } from 'src/auth/user.decorator';
-import { AddAdminBody } from './admin.schema';
+import {
+  AddAdminBody,
+  AdminProfileResponse,
+  UpdateAdminBody,
+} from './admin.schema';
 import {
   ApiTags,
   ApiBearerAuth,
@@ -23,7 +19,6 @@ import {
   ApiUnauthorizedResponse,
   ApiForbiddenResponse,
   ApiBody,
-  ApiQuery,
 } from '@nestjs/swagger';
 
 @ApiTags('Admin')
@@ -58,7 +53,7 @@ export class AdminController {
 
   @Patch('profile')
   @ApiOperation({ summary: 'Update admin profile' })
-  @ApiQuery({ name: 'name', type: String, required: true })
+  @ApiBody({ type: () => UpdateAdminBody })
   @ApiOkResponse({
     description: 'Profile updated successfully',
     type: () => AdminProfileResponse,
@@ -68,8 +63,8 @@ export class AdminController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async updateProfile(
     @User('id') adminId: string,
-    @Query('name') name: string,
+    @Body() body: UpdateAdminBody,
   ) {
-    return await this.adminService.updateProfile(adminId, name);
+    return await this.adminService.updateProfile(adminId, body);
   }
 }

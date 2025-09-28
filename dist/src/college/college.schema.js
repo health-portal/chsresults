@@ -27,33 +27,23 @@ class CreateDepartmentBody extends UpsertFacultyAndDepartmentBody {
 }
 exports.CreateDepartmentBody = CreateDepartmentBody;
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Faculty UUID' }),
+    (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
 ], CreateDepartmentBody.prototype, "facultyId", void 0);
 class FacultyResponse {
     id;
     name;
+    createdAt;
+    updatedAt;
 }
 exports.FacultyResponse = FacultyResponse;
-__decorate([
-    (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsUUID)(),
-    __metadata("design:type", String)
-], FacultyResponse.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], FacultyResponse.prototype, "name", void 0);
 class DepartmentResponse extends FacultyResponse {
     facultyId;
 }
 exports.DepartmentResponse = DepartmentResponse;
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
 ], DepartmentResponse.prototype, "facultyId", void 0);
 class GetDepartmentsResponse extends FacultyResponse {

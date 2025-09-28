@@ -21,6 +21,7 @@ const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const auth_schema_1 = require("../auth/auth.schema");
 const swagger_1 = require("@nestjs/swagger");
 const courses_schema_1 = require("../courses/courses.schema");
+const student_schema_1 = require("./student.schema");
 let StudentController = class StudentController {
     studentService;
     constructor(studentService) {
@@ -77,7 +78,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get student profile' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Profile retrieved successfully',
-        type: () => auth_schema_1.StudentProfileResponse,
+        type: () => student_schema_1.StudentProfileResponse,
     }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),

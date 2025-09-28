@@ -5,39 +5,51 @@ export declare class LecturersController {
     constructor(lecturersService: LecturersService);
     createLecturer(body: CreateLecturerBody): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
+        phone: string | null;
         firstName: string;
         lastName: string;
         otherName: string | null;
-        phone: string | null;
+        title: string | null;
         departmentId: string;
     }>;
     createLecturers(file: Express.Multer.File): Promise<CreateLecturersResponse>;
     getLecturers(): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
+        phone: string | null;
         firstName: string;
         lastName: string;
         otherName: string | null;
-        phone: string | null;
+        title: string | null;
         departmentId: string;
     }[]>;
     updateLecturer(lecturerId: string, body: UpdateLecturerBody): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
         firstName: string;
         lastName: string;
         otherName: string | null;
         phone: string | null;
+        title: string | null;
         departmentId: string;
     }>;
     deleteLecturer(lecturerId: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
+        phone: string | null;
         firstName: string;
         lastName: string;
         otherName: string | null;
-        phone: string | null;
+        title: string | null;
         departmentId: string;
     }>;
 }

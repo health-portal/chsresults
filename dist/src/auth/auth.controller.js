@@ -17,37 +17,40 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const auth_service_1 = require("./auth.service");
 const auth_schema_1 = require("./auth.schema");
+const admin_schema_1 = require("../admin/admin.schema");
+const lecturer_schema_1 = require("../lecturer/lecturer.schema");
+const student_schema_1 = require("../student/student.schema");
 let AuthController = class AuthController {
     authService;
     constructor(authService) {
         this.authService = authService;
     }
-    async activateAdminAccount(body) {
-        return await this.authService.activate(auth_schema_1.UserRole.ADMIN, body);
+    async activateAdmin(body) {
+        return await this.authService.activateAdmin(body);
     }
     async signinAdmin(body) {
-        return await this.authService.signin(auth_schema_1.UserRole.ADMIN, body);
+        return await this.authService.signinAdmin(body);
     }
     async adminResetPasswordRequest(email) {
-        return await this.authService.resetPasswordRequest(auth_schema_1.UserRole.ADMIN, email);
+        return await this.authService.adminResetPasswordRequest(email);
     }
     async adminResetPassword(body) {
-        return await this.authService.resetPassword(auth_schema_1.UserRole.ADMIN, body);
+        return await this.authService.adminResetPassword(body);
     }
-    async activateLecturerAccount(body) {
-        return await this.authService.activate(auth_schema_1.UserRole.LECTURER, body);
+    async activateLecturer(body) {
+        return await this.authService.activateLecturer(body);
     }
     async signinLecturer(body) {
-        return await this.authService.signin(auth_schema_1.UserRole.LECTURER, body);
+        return await this.authService.signinLecturer(body);
     }
     async lecturerResetPasswordRequest(email) {
-        return await this.authService.resetPasswordRequest(auth_schema_1.UserRole.LECTURER, email);
+        return await this.authService.lecturerResetPasswordRequest(email);
     }
     async lecturerResetPassword(body) {
-        return await this.authService.resetPassword(auth_schema_1.UserRole.LECTURER, body);
+        return await this.authService.lecturerResetPassword(body);
     }
-    async activateStudentAccount(body) {
-        return this.authService.activateStudentAccount(body);
+    async activateStudent(body) {
+        return this.authService.activateStudent(body);
     }
     async signinStudent(body) {
         return this.authService.signinStudent(body);
@@ -67,7 +70,7 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: () => auth_schema_1.AuthUserBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Admin account activated successfully',
-        type: () => auth_schema_1.AdminProfileResponse,
+        type: () => admin_schema_1.AdminProfileResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Admin already activated' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Admin not found' }),
@@ -75,7 +78,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [auth_schema_1.AuthUserBody]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "activateAdminAccount", null);
+], AuthController.prototype, "activateAdmin", null);
 __decorate([
     (0, common_1.Post)('admin/signin'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
@@ -115,7 +118,7 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: () => auth_schema_1.AuthUserBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Admin password reset successfully',
-        type: () => auth_schema_1.AdminProfileResponse,
+        type: () => admin_schema_1.AdminProfileResponse,
     }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Admin not found' }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
@@ -131,7 +134,7 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: () => auth_schema_1.AuthUserBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Lecturer account activated successfully',
-        type: () => auth_schema_1.LecturerProfileResponse,
+        type: () => lecturer_schema_1.LecturerProfileResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Lecturer already activated' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Lecturer not found' }),
@@ -139,7 +142,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [auth_schema_1.AuthUserBody]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "activateLecturerAccount", null);
+], AuthController.prototype, "activateLecturer", null);
 __decorate([
     (0, common_1.Post)('lecturer/signin'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
@@ -179,7 +182,7 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: () => auth_schema_1.AuthUserBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Lecturer password reset successfully',
-        type: () => auth_schema_1.LecturerProfileResponse,
+        type: () => lecturer_schema_1.LecturerProfileResponse,
     }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Lecturer not found' }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
@@ -195,7 +198,7 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: () => auth_schema_1.AuthStudentBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Student account activated successfully',
-        type: () => auth_schema_1.StudentProfileResponse,
+        type: () => student_schema_1.StudentProfileResponse,
     }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Student already activated' }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Student not found' }),
@@ -204,7 +207,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [auth_schema_1.AuthStudentBody]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "activateStudentAccount", null);
+], AuthController.prototype, "activateStudent", null);
 __decorate([
     (0, common_1.Post)('student/signin'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
@@ -244,7 +247,7 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: () => auth_schema_1.AuthStudentBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Student password reset successfully',
-        type: () => auth_schema_1.StudentProfileResponse,
+        type: () => student_schema_1.StudentProfileResponse,
     }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Student not found' }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),

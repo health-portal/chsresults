@@ -1,9 +1,12 @@
-import { Scores } from 'src/lecturer/lecturer.schema';
+import { course, enrollment } from 'drizzle/schema';
 import { ParseCsvData } from 'src/utils/csv';
 export declare class UpsertCourseBody {
     code: string;
     title: string;
     lecturerEmail: string;
+    description?: string;
+    units: number;
+    semester: number;
 }
 export declare class CreateCourseResponse extends UpsertCourseBody {
     isCreated: boolean;
@@ -11,15 +14,26 @@ export declare class CreateCourseResponse extends UpsertCourseBody {
 export declare class CreateCoursesResponse extends ParseCsvData<UpsertCourseBody> {
     courses: CreateCourseResponse[];
 }
-export declare class CourseResponse {
-    id: string;
-    code: string;
+type Course = typeof course.$inferSelect;
+export declare class CourseResponse implements Course {
+    description: string | null;
     title: string;
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    code: string;
+    units: number;
+    semester: number;
     lecturerId: string;
 }
-export declare class EnrollmentResponse {
+type Enrollment = typeof enrollment.$inferSelect;
+export declare class EnrollmentResponse implements Enrollment {
     id: string;
-    scores: Scores;
+    createdAt: Date;
+    updatedAt: Date;
+    session: string;
+    scores: unknown;
     courseId: string;
     studentId: string;
 }
+export {};

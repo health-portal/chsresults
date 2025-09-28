@@ -21,6 +21,7 @@ const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const students_schema_1 = require("./students.schema");
 const platform_express_1 = require("@nestjs/platform-express");
 const swagger_1 = require("@nestjs/swagger");
+const student_schema_1 = require("../student/student.schema");
 let StudentsController = class StudentsController {
     studentsService;
     constructor(studentsService) {
@@ -49,7 +50,7 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: () => students_schema_1.CreateStudentBody }),
     (0, swagger_1.ApiCreatedResponse)({
         description: 'Student created successfully',
-        type: () => auth_schema_1.StudentProfileResponse,
+        type: () => student_schema_1.StudentProfileResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
@@ -97,7 +98,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get all students' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Students retrieved successfully',
-        type: () => [auth_schema_1.StudentProfileResponse],
+        type: () => [student_schema_1.StudentProfileResponse],
     }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
@@ -112,7 +113,7 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: () => students_schema_1.UpdateStudentBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Student updated successfully',
-        type: () => auth_schema_1.StudentProfileResponse,
+        type: () => student_schema_1.StudentProfileResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Student not found' }),
@@ -130,7 +131,7 @@ __decorate([
     (0, swagger_1.ApiParam)({ name: 'studentId', type: String, description: 'Student UUID' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Student deleted successfully',
-        type: () => auth_schema_1.StudentProfileResponse,
+        type: () => student_schema_1.StudentProfileResponse,
     }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Student not found' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),

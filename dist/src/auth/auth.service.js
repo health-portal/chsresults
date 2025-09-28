@@ -50,154 +50,212 @@ const auth_schema_1 = require("./auth.schema");
 const schema_1 = require("../../drizzle/schema");
 const drizzle_orm_1 = require("drizzle-orm");
 const bcrypt = __importStar(require("bcrypt"));
+const email_service_1 = require("../email/email.service");
+const email_schema_1 = require("../email/email.schema");
 let AuthService = class AuthService {
     db;
     jwtService;
-    constructor(db, jwtService) {
+    emailService;
+    constructor(db, jwtService, emailService) {
         this.db = db;
         this.jwtService = jwtService;
+        this.emailService = emailService;
     }
     generateAccessToken(payload) {
         return { accessToken: this.jwtService.sign(payload) };
     }
-    async findAdminOrLecturer(role, email) {
-        switch (role) {
-            case auth_schema_1.UserRole.ADMIN:
-                return this.db.client.query.admin.findFirst({
-                    where: (0, drizzle_orm_1.eq)(schema_1.admin.email, email),
-                });
-            case auth_schema_1.UserRole.LECTURER:
-                return this.db.client.query.lecturer.findFirst({
-                    where: (0, drizzle_orm_1.eq)(schema_1.lecturer.email, email),
-                });
-            default:
-                throw new common_1.UnauthorizedException('Role not supported here');
-        }
+    async findAdmin(email) {
+        return await this.db.client.query.admin.findFirst({
+            where: (0, drizzle_orm_1.eq)(schema_1.admin.email, email),
+        });
+    }
+    async updateAdminPassword(id, hashedPassword) {
+        const [updatedAdmin] = await this.db.client
+            .update(schema_1.admin)
+            .set({ password: hashedPassword })
+            .where((0, drizzle_orm_1.eq)(schema_1.admin.id, id))
+            .returning();
+        const { password: _, ...adminProfile } = updatedAdmin;
+        return adminProfile;
+    }
+    async activateAdmin({ email, password }) {
+        const foundAdmin = await this.findAdmin(email);
+        if (!foundAdmin)
+            throw new common_1.UnauthorizedException(`Admin not found`);
+        if (foundAdmin.password)
+            throw new common_1.BadRequestException(`Admin already activated`);
+        const hashedPassword = await bcrypt.hash(password, 10);
+        return this.updateAdminPassword(foundAdmin.id, hashedPassword);
+    }
+    async signinAdmin({ email, password }) {
+        const foundAdmin = await this.findAdmin(email);
+        if (!foundAdmin)
+            throw new common_1.UnauthorizedException(`Admin not found`);
+        if (!foundAdmin.password)
+            throw new common_1.ForbiddenException(`Admin not activated`);
+        const isMatched = await bcrypt.compare(password, foundAdmin.password);
+        if (!isMatched)
+            throw new common_1.UnauthorizedException('Invalid credentials');
+        return this.generateAccessToken({
+            id: foundAdmin.id,
+            role: auth_schema_1.UserRole.ADMIN,
+        });
+    }
+    async adminResetPasswordRequest(email) {
+        const foundAdmin = await this.findAdmin(email);
+        if (!foundAdmin)
+            throw new common_1.NotFoundException(`Admin not found`);
+        await this.emailService.sendMail({
+            subject: 'Reset Password',
+            toEmail: [foundAdmin.email],
+            htmlContent: (0, email_schema_1.ResetPasswordTemplate)({
+                name: foundAdmin.name,
+                resetLink: '',
+            }),
+        });
+        return { success: true, message: `Reset link sent to ${email}` };
+    }
+    async adminResetPassword({ email, password }) {
+        const foundAdmin = await this.findAdmin(email);
+        if (!foundAdmin)
+            throw new common_1.NotFoundException(`Admin not found`);
+        const hashedPassword = await bcrypt.hash(password, 10);
+        return this.updateAdminPassword(foundAdmin.id, hashedPassword);
+    }
+    async findLecturer(email) {
+        return this.db.client.query.lecturer.findFirst({
+            where: (0, drizzle_orm_1.eq)(schema_1.lecturer.email, email),
+        });
+    }
+    async updateLecturerPassword(id, hashedPassword) {
+        const [updatedLecturer] = await this.db.client
+            .update(schema_1.lecturer)
+            .set({ password: hashedPassword })
+            .where((0, drizzle_orm_1.eq)(schema_1.lecturer.id, id))
+            .returning();
+        const { password: _, ...lecturerProfile } = updatedLecturer;
+        return lecturerProfile;
+    }
+    async activateLecturer({ email, password }) {
+        const foundLecturer = await this.findLecturer(email);
+        if (!foundLecturer)
+            throw new common_1.UnauthorizedException(`Lecturer not found`);
+        if (foundLecturer.password)
+            throw new common_1.BadRequestException(`Lecturer already activated`);
+        const hashedPassword = await bcrypt.hash(password, 10);
+        return this.updateLecturerPassword(foundLecturer.id, hashedPassword);
+    }
+    async signinLecturer({ email, password }) {
+        const foundLecturer = await this.findLecturer(email);
+        if (!foundLecturer)
+            throw new common_1.UnauthorizedException(`Lecturer not found`);
+        if (!foundLecturer.password)
+            throw new common_1.ForbiddenException(`Lecturer not activated`);
+        const isMatched = await bcrypt.compare(password, foundLecturer.password);
+        if (!isMatched)
+            throw new common_1.UnauthorizedException('Invalid credentials');
+        return this.generateAccessToken({
+            id: foundLecturer.id,
+            role: auth_schema_1.UserRole.LECTURER,
+        });
+    }
+    async lecturerResetPasswordRequest(email) {
+        const foundLecturer = await this.findLecturer(email);
+        if (!foundLecturer)
+            throw new common_1.NotFoundException(`Lecturer not found`);
+        await this.emailService.sendMail({
+            subject: 'Reset Password',
+            toEmail: [foundLecturer.email],
+            htmlContent: (0, email_schema_1.ResetPasswordTemplate)({
+                name: `${foundLecturer.firstName} ${foundLecturer.lastName}`,
+                resetLink: '',
+            }),
+        });
+        return { success: true, message: `Reset link sent to ${email}` };
+    }
+    async lecturerResetPassword({ email, password }) {
+        const foundLecturer = await this.findLecturer(email);
+        if (!foundLecturer)
+            throw new common_1.NotFoundException(`Lecturer not found`);
+        const hashedPassword = await bcrypt.hash(password, 10);
+        return this.updateLecturerPassword(foundLecturer.id, hashedPassword);
     }
     async findStudent({ studentIdentifier, identifierType, }) {
-        const studentRecord = await this.db.client.query.student.findFirst({
+        const foundStudent = await this.db.client.query.student.findFirst({
             where: identifierType === auth_schema_1.StudentIdentifierType.EMAIL
                 ? (0, drizzle_orm_1.eq)(schema_1.student.email, studentIdentifier)
                 : (0, drizzle_orm_1.eq)(schema_1.student.matricNumber, studentIdentifier),
         });
-        if (!studentRecord)
+        if (!foundStudent)
             throw new common_1.NotFoundException(`Student not found`);
-        return studentRecord;
+        return foundStudent;
     }
-    async updatePassword(role, id, hashedPassword) {
-        switch (role) {
-            case auth_schema_1.UserRole.ADMIN: {
-                const updatedAdmin = await this.db.client
-                    .update(schema_1.admin)
-                    .set({ password: hashedPassword })
-                    .where((0, drizzle_orm_1.eq)(schema_1.admin.id, id))
-                    .returning();
-                const { password, ...adminProfile } = updatedAdmin[0];
-                return adminProfile;
-            }
-            case auth_schema_1.UserRole.LECTURER: {
-                const updatedLecturer = await this.db.client
-                    .update(schema_1.lecturer)
-                    .set({ password: hashedPassword })
-                    .where((0, drizzle_orm_1.eq)(schema_1.lecturer.id, id))
-                    .returning();
-                const { password, ...lecturerProfile } = updatedLecturer[0];
-                return lecturerProfile;
-            }
-            case auth_schema_1.UserRole.STUDENT: {
-                const updatedStudent = await this.db.client
-                    .update(schema_1.student)
-                    .set({ password: hashedPassword })
-                    .where((0, drizzle_orm_1.eq)(schema_1.student.id, id))
-                    .returning();
-                const { password, ...studentProfile } = updatedStudent[0];
-                return studentProfile;
-            }
-            default:
-                throw new common_1.UnauthorizedException('Role not supported here');
-        }
+    async updateStudentPassword(id, hashedPassword) {
+        const updated = await this.db.client
+            .update(schema_1.student)
+            .set({ password: hashedPassword })
+            .where((0, drizzle_orm_1.eq)(schema_1.student.id, id))
+            .returning();
+        const { password: _, ...profile } = updated[0];
+        return profile;
     }
-    async activate(role, { email, password }) {
-        const user = await this.findAdminOrLecturer(role, email);
-        if (!user)
-            throw new common_1.UnauthorizedException(`${role} not found`);
-        if (user.password)
-            throw new common_1.BadRequestException(`${role} already activated`);
-        const hashedPassword = await bcrypt.hash(password, 10);
-        return await this.updatePassword(role, user.id, hashedPassword);
-    }
-    async signin(role, { email, password }) {
-        const user = await this.findAdminOrLecturer(role, email);
-        if (!user)
-            throw new common_1.UnauthorizedException(`${role} not found`);
-        if (!user.password)
-            throw new common_1.ForbiddenException(`${role} not activated`);
-        const isMatched = await bcrypt.compare(password, user.password);
-        if (!isMatched)
-            throw new common_1.UnauthorizedException('Invalid credentials');
-        return this.generateAccessToken({ id: user.id, role });
-    }
-    async resetPasswordRequest(role, email) {
-        const user = await this.findAdminOrLecturer(role, email);
-        if (!user)
-            throw new common_1.NotFoundException(`${role} not found`);
-        return { success: true, message: `Reset link sent to ${email}` };
-    }
-    async resetPassword(role, { email, password }) {
-        const user = await this.findAdminOrLecturer(role, email);
-        if (!user)
-            throw new common_1.NotFoundException(`${role} not found`);
-        const hashedPassword = await bcrypt.hash(password, 10);
-        return await this.updatePassword(role, user.id, hashedPassword);
-    }
-    async activateStudentAccount({ studentIdentifier, identifierType, password, }) {
-        const studentRecord = await this.findStudent({
+    async activateStudent({ studentIdentifier, identifierType, password, }) {
+        const foundStudent = await this.findStudent({
             studentIdentifier,
             identifierType,
         });
-        if (studentRecord.password)
+        if (foundStudent.password)
             throw new common_1.UnauthorizedException(`Student already activated`);
         const hashedPassword = await bcrypt.hash(password, 10);
-        return await this.updatePassword(auth_schema_1.UserRole.STUDENT, studentRecord.id, hashedPassword);
+        return this.updateStudentPassword(foundStudent.id, hashedPassword);
     }
     async signinStudent({ studentIdentifier, identifierType, password, }) {
-        const studentRecord = await this.findStudent({
+        const foundStudent = await this.findStudent({
             studentIdentifier,
             identifierType,
         });
-        if (!studentRecord.password)
-            throw new common_1.ForbiddenException(`$Student not activated`);
-        const isMatched = await bcrypt.compare(password, studentRecord.password);
+        if (!foundStudent.password)
+            throw new common_1.ForbiddenException(`Student not activated`);
+        const isMatched = await bcrypt.compare(password, foundStudent.password);
         if (!isMatched)
             throw new common_1.UnauthorizedException('Invalid credentials');
         return this.generateAccessToken({
-            id: studentRecord.id,
+            id: foundStudent.id,
             role: auth_schema_1.UserRole.STUDENT,
         });
     }
     async studentResetPasswordRequest({ studentIdentifier, identifierType, }) {
-        const studentRecord = await this.findStudent({
+        const foundStudent = await this.findStudent({
             studentIdentifier,
             identifierType,
         });
+        await this.emailService.sendMail({
+            subject: 'Reset Password',
+            toEmail: [foundStudent.email],
+            htmlContent: (0, email_schema_1.ResetPasswordTemplate)({
+                name: `${foundStudent.firstName} ${foundStudent.lastName}`,
+                resetLink: '',
+            }),
+        });
         return {
             success: true,
-            message: `Reset link sent to ${studentRecord.email}`,
+            message: `Reset link sent to ${foundStudent.email}`,
         };
     }
     async studentResetPassword({ studentIdentifier, identifierType, password, }) {
-        const studentRecord = await this.findStudent({
+        const foundStudent = await this.findStudent({
             studentIdentifier,
             identifierType,
         });
         const hashedPassword = await bcrypt.hash(password, 10);
-        return await this.updatePassword(auth_schema_1.UserRole.STUDENT, studentRecord.id, hashedPassword);
+        return this.updateStudentPassword(foundStudent.id, hashedPassword);
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [database_service_1.DatabaseService,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        email_service_1.EmailService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map
