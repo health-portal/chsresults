@@ -18,12 +18,15 @@ import {
 import { admin, lecturer, student } from 'drizzle/schema';
 import { eq } from 'drizzle-orm';
 import * as bcrypt from 'bcrypt';
+import { EmailService } from 'src/email/email.service';
+import { ResetPasswordTemplate } from 'src/email/email.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly db: DatabaseService,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
   ) {}
 
   private generateAccessToken(payload: JwtPayload) {
@@ -33,11 +36,11 @@ export class AuthService {
   private async findAdminOrLecturer(role: UserRole, email: string) {
     switch (role) {
       case UserRole.ADMIN:
-        return this.db.client.query.admin.findFirst({
+        return await this.db.client.query.admin.findFirst({
           where: eq(admin.email, email),
         });
       case UserRole.LECTURER:
-        return this.db.client.query.lecturer.findFirst({
+        return await this.db.client.query.lecturer.findFirst({
           where: eq(lecturer.email, email),
         });
       default:
@@ -126,8 +129,23 @@ export class AuthService {
   }
 
   async resetPasswordRequest(role: UserRole, email: string) {
-    const user = await this.findAdminOrLecturer(role, email);
+    const user: typeof admin.$inferSelect | typeof lecturer.$inferSelect =
+      await this.findAdminOrLecturer(role, email);
     if (!user) throw new NotFoundException(`${role} not found`);
+
+    const name =
+      role === UserRole.ADMIN
+        ? user.name
+        : `${user.firstName} ${user.lastName}`;
+
+    await this.emailService.sendMail({
+      subject: 'Reset Password',
+      toEmail: [user.email],
+      htmlContent: ResetPasswordTemplate({
+        name,
+        resetLink: '',
+      }),
+    });
 
     return { success: true, message: `Reset link sent to ${email}` };
   }
@@ -188,6 +206,15 @@ export class AuthService {
     const studentRecord = await this.findStudent({
       studentIdentifier,
       identifierType,
+    });
+
+    await this.emailService.sendMail({
+      subject: 'Reset Password',
+      toEmail: [studentRecord.email],
+      htmlContent: ResetPasswordTemplate({
+        name: `${studentRecord.firstName} ${studentRecord.lastName}`,
+        resetLink: '',
+      }),
     });
 
     return {
