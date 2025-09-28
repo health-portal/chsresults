@@ -10,7 +10,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateLecturersResponse = exports.CreateLecturerResponse = exports.UpdateLecturerBody = exports.CreateLecturerBody = void 0;
-const mapped_types_1 = require("@nestjs/mapped-types");
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const csv_1 = require("../utils/csv");
@@ -65,9 +64,57 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateLecturerBody.prototype, "title", void 0);
-class UpdateLecturerBody extends (0, mapped_types_1.OmitType)((0, swagger_1.PartialType)(CreateLecturerBody), ['email']) {
+class UpdateLecturerBody {
+    email;
+    firstName;
+    lastName;
+    otherName;
+    phone;
+    department;
+    title;
 }
 exports.UpdateLecturerBody = UpdateLecturerBody;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsEmail)(),
+    __metadata("design:type", String)
+], UpdateLecturerBody.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateLecturerBody.prototype, "firstName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateLecturerBody.prototype, "lastName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateLecturerBody.prototype, "otherName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateLecturerBody.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateLecturerBody.prototype, "department", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateLecturerBody.prototype, "title", void 0);
 class CreateLecturerResponse extends CreateLecturerBody {
     isCreated;
 }
@@ -81,7 +128,7 @@ class CreateLecturersResponse extends csv_1.ParseCsvData {
 }
 exports.CreateLecturersResponse = CreateLecturersResponse;
 __decorate([
-    (0, swagger_1.ApiProperty)({ type: () => [CreateLecturerResponse] }),
+    (0, swagger_1.ApiProperty)({ type: [CreateLecturerResponse] }),
     __metadata("design:type", Array)
 ], CreateLecturersResponse.prototype, "lecturers", void 0);
 //# sourceMappingURL=lecturers.schema.js.map

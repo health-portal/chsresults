@@ -56,7 +56,7 @@ export class LecturerService {
     };
 
     await this.db.client.transaction(async (tx) => {
-      for (const { matricNumber } of parsedData.validRows) {
+      for (const { matricNumber, session } of parsedData.validRows) {
         const foundStudent = await tx.query.student.findFirst({
           where: eq(student.matricNumber, matricNumber),
         });
@@ -64,7 +64,7 @@ export class LecturerService {
         if (foundStudent) {
           await tx
             .insert(enrollment)
-            .values({ courseId, studentId: foundStudent.id, session,  })
+            .values({ courseId, studentId: foundStudent.id, session })
             .onConflictDoNothing();
           result.registeredStudents.push(matricNumber);
         } else {
@@ -79,7 +79,7 @@ export class LecturerService {
   async registerStudent(
     lecturerId: string,
     courseId: string,
-    { studentIdentifier, identifierType }: RegisterStudentBody,
+    { studentIdentifier, identifierType, session }: RegisterStudentBody,
   ) {
     await this.validateCourseAccess(lecturerId, courseId);
 
@@ -114,6 +114,7 @@ export class LecturerService {
       .values({
         courseId,
         studentId: foundStudent.id,
+        session,
       })
       .returning();
 

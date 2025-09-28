@@ -51,7 +51,7 @@ class GetDepartmentsResponse extends FacultyResponse {
 }
 exports.GetDepartmentsResponse = GetDepartmentsResponse;
 __decorate([
-    (0, swagger_1.ApiProperty)({ type: () => [DepartmentResponse] }),
+    (0, swagger_1.ApiProperty)({ type: [DepartmentResponse] }),
     __metadata("design:type", Array)
 ], GetDepartmentsResponse.prototype, "departments", void 0);
 //# sourceMappingURL=college.schema.js.map

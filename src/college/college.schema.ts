@@ -30,6 +30,6 @@ export class DepartmentResponse extends FacultyResponse {
 }
 
 export class GetDepartmentsResponse extends FacultyResponse {
-  @ApiProperty({ type: () => [DepartmentResponse] })
+  @ApiProperty({ type:[DepartmentResponse] })
   departments: DepartmentResponse[];
 }

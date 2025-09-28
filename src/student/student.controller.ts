@@ -29,7 +29,7 @@ export class StudentController {
   @ApiOperation({ summary: 'List all enrollments for the student' })
   @ApiOkResponse({
     description: 'Enrollments retrieved successfully',
-    type: () => [EnrollmentResponse],
+    type: [EnrollmentResponse],
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -46,7 +46,7 @@ export class StudentController {
   })
   @ApiOkResponse({
     description: 'Enrollment retrieved successfully',
-    type: () => EnrollmentResponse,
+    type: EnrollmentResponse,
   })
   @ApiNotFoundResponse({ description: 'Enrollment not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -62,7 +62,7 @@ export class StudentController {
   @ApiOperation({ summary: 'Get student profile' })
   @ApiOkResponse({
     description: 'Profile retrieved successfully',
-    type: () => StudentProfileResponse,
+    type: StudentProfileResponse,
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })

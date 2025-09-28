@@ -10,7 +10,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateStudentsResponse = exports.CreateStudentResponse = exports.UpdateStudentBody = exports.CreateStudentBody = void 0;
-const mapped_types_1 = require("@nestjs/mapped-types");
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const student_schema_1 = require("../student/student.schema");
@@ -51,7 +50,7 @@ __decorate([
     __metadata("design:type", String)
 ], CreateStudentBody.prototype, "lastName", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ required: true }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
@@ -78,9 +77,56 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateStudentBody.prototype, "degree", void 0);
-class UpdateStudentBody extends (0, mapped_types_1.OmitType)((0, mapped_types_1.PartialType)(CreateStudentBody), ['email', 'matricNumber']) {
+class UpdateStudentBody {
+    firstName;
+    lastName;
+    otherName;
+    department;
+    level;
+    gender;
+    degree;
 }
 exports.UpdateStudentBody = UpdateStudentBody;
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStudentBody.prototype, "firstName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStudentBody.prototype, "lastName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStudentBody.prototype, "otherName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStudentBody.prototype, "department", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], UpdateStudentBody.prototype, "level", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ enum: student_schema_1.Gender, required: false }),
+    (0, class_validator_1.IsEnum)(student_schema_1.Gender),
+    __metadata("design:type", String)
+], UpdateStudentBody.prototype, "gender", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateStudentBody.prototype, "degree", void 0);
 class CreateStudentResponse extends CreateStudentBody {
     isCreated;
 }
@@ -94,7 +140,7 @@ class CreateStudentsResponse extends csv_1.ParseCsvData {
 }
 exports.CreateStudentsResponse = CreateStudentsResponse;
 __decorate([
-    (0, swagger_1.ApiProperty)({ type: () => [CreateStudentResponse] }),
+    (0, swagger_1.ApiProperty)({ type: [CreateStudentResponse] }),
     __metadata("design:type", Array)
 ], CreateStudentsResponse.prototype, "students", void 0);
 //# sourceMappingURL=students.schema.js.map

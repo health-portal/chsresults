@@ -4,28 +4,28 @@ export declare class LecturersService {
     private readonly db;
     constructor(db: DatabaseService);
     createLecturer(body: CreateLecturerBody): Promise<{
+        email: string;
+        firstName: string;
+        lastName: string;
+        title: string | null;
+        otherName: string | null;
+        phone: string | null;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        email: string;
-        phone: string | null;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
-        title: string | null;
         departmentId: string;
     }>;
     createLecturers(file: Express.Multer.File): Promise<CreateLecturersResponse>;
     getLecturers(): Promise<{
+        email: string;
+        firstName: string;
+        lastName: string;
+        title: string | null;
+        otherName: string | null;
+        phone: string | null;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        email: string;
-        phone: string | null;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
-        title: string | null;
         departmentId: string;
     }[]>;
     updateLecturer(lecturerId: string, body: UpdateLecturerBody): Promise<{
@@ -41,15 +41,15 @@ export declare class LecturersService {
         departmentId: string;
     }>;
     deleteLecturer(lecturerId: string): Promise<{
+        email: string;
+        firstName: string;
+        lastName: string;
+        title: string | null;
+        otherName: string | null;
+        phone: string | null;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        email: string;
-        phone: string | null;
-        firstName: string;
-        lastName: string;
-        otherName: string | null;
-        title: string | null;
         departmentId: string;
     }>;
 }

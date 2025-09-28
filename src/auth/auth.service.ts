@@ -181,14 +181,14 @@ export class AuthService {
   }
 
   private async updateStudentPassword(id: string, hashedPassword: string) {
-    const updated = await this.db.client
+    const [updatedStudent] = await this.db.client
       .update(student)
       .set({ password: hashedPassword })
       .where(eq(student.id, id))
       .returning();
 
-    const { password: _, ...profile } = updated[0];
-    return profile;
+    const { password: _, ...studentProfile } = updatedStudent;
+    return studentProfile;
   }
 
   async activateStudent({

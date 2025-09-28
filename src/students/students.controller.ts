@@ -50,10 +50,10 @@ export class StudentsController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new student' })
-  @ApiBody({ type: () => CreateStudentBody })
+  @ApiBody({ type: CreateStudentBody })
   @ApiCreatedResponse({
     description: 'Student created successfully',
-    type: () => StudentProfileResponse,
+    type: StudentProfileResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -79,7 +79,7 @@ export class StudentsController {
   })
   @ApiCreatedResponse({
     description: 'Students created successfully',
-    type: () => CreateStudentsResponse,
+    type: CreateStudentsResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnprocessableEntityResponse({
@@ -102,7 +102,7 @@ export class StudentsController {
   @ApiOperation({ summary: 'Get all students' })
   @ApiOkResponse({
     description: 'Students retrieved successfully',
-    type: () => [StudentProfileResponse],
+    type: [StudentProfileResponse],
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -112,11 +112,11 @@ export class StudentsController {
 
   @Patch(':studentId')
   @ApiOperation({ summary: 'Update a student' })
-  @ApiParam({ name: 'id', type: String, description: 'Student UUID' })
-  @ApiBody({ type: () => UpdateStudentBody })
+  @ApiParam({ name: 'studentId', type: String, description: 'Student UUID' })
+  @ApiBody({ type: UpdateStudentBody })
   @ApiOkResponse({
     description: 'Student updated successfully',
-    type: () => StudentProfileResponse,
+    type: StudentProfileResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Student not found' })
@@ -134,7 +134,7 @@ export class StudentsController {
   @ApiParam({ name: 'studentId', type: String, description: 'Student UUID' })
   @ApiOkResponse({
     description: 'Student deleted successfully',
-    type: () => StudentProfileResponse,
+    type: StudentProfileResponse,
   })
   @ApiNotFoundResponse({ description: 'Student not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })

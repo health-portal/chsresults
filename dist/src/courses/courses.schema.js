@@ -68,7 +68,7 @@ class CreateCoursesResponse extends csv_1.ParseCsvData {
 }
 exports.CreateCoursesResponse = CreateCoursesResponse;
 __decorate([
-    (0, swagger_1.ApiProperty)({ type: () => [CreateCourseResponse] }),
+    (0, swagger_1.ApiProperty)({ type: [CreateCourseResponse] }),
     __metadata("design:type", Array)
 ], CreateCoursesResponse.prototype, "courses", void 0);
 class CourseResponse {

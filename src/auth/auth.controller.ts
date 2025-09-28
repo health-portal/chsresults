@@ -36,10 +36,10 @@ export class AuthController {
   @Post('admin/activate-account')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Activate admin account' })
-  @ApiBody({ type: () => AuthUserBody })
+  @ApiBody({ type: AuthUserBody })
   @ApiOkResponse({
     description: 'Admin account activated successfully',
-    type: () => AdminProfileResponse,
+    type: AdminProfileResponse,
   })
   @ApiBadRequestResponse({ description: 'Admin already activated' })
   @ApiUnauthorizedResponse({ description: 'Admin not found' })
@@ -50,10 +50,10 @@ export class AuthController {
   @Post('admin/signin')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Sign in admin' })
-  @ApiBody({ type: () => AuthUserBody })
+  @ApiBody({ type: AuthUserBody })
   @ApiOkResponse({
     description: 'Admin signed in successfully',
-    type: () => SigninResponse,
+    type: SigninResponse,
   })
   @ApiUnauthorizedResponse({
     description: 'Admin not found or invalid credentials',
@@ -78,10 +78,10 @@ export class AuthController {
   @Post('admin/reset-password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset admin password' })
-  @ApiBody({ type: () => AuthUserBody })
+  @ApiBody({ type: AuthUserBody })
   @ApiOkResponse({
     description: 'Admin password reset successfully',
-    type: () => AdminProfileResponse,
+    type: AdminProfileResponse,
   })
   @ApiNotFoundResponse({ description: 'Admin not found' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
@@ -92,10 +92,10 @@ export class AuthController {
   @Post('lecturer/activate-account')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Activate lecturer account' })
-  @ApiBody({ type: () => AuthUserBody })
+  @ApiBody({ type: AuthUserBody })
   @ApiOkResponse({
     description: 'Lecturer account activated successfully',
-    type: () => LecturerProfileResponse,
+    type: LecturerProfileResponse,
   })
   @ApiBadRequestResponse({ description: 'Lecturer already activated' })
   @ApiUnauthorizedResponse({ description: 'Lecturer not found' })
@@ -106,10 +106,10 @@ export class AuthController {
   @Post('lecturer/signin')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Sign in lecturer' })
-  @ApiBody({ type: () => AuthUserBody })
+  @ApiBody({ type: AuthUserBody })
   @ApiOkResponse({
     description: 'Lecturer signed in successfully',
-    type: () => SigninResponse,
+    type: SigninResponse,
   })
   @ApiUnauthorizedResponse({
     description: 'Lecturer not found or invalid credentials',
@@ -134,10 +134,10 @@ export class AuthController {
   @Post('lecturer/reset-password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset lecturer password' })
-  @ApiBody({ type: () => AuthUserBody })
+  @ApiBody({ type: AuthUserBody })
   @ApiOkResponse({
     description: 'Lecturer password reset successfully',
-    type: () => LecturerProfileResponse,
+    type: LecturerProfileResponse,
   })
   @ApiNotFoundResponse({ description: 'Lecturer not found' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
@@ -148,10 +148,10 @@ export class AuthController {
   @Post('student/activate-account')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Activate student account' })
-  @ApiBody({ type: () => AuthStudentBody })
+  @ApiBody({ type: AuthStudentBody })
   @ApiOkResponse({
     description: 'Student account activated successfully',
-    type: () => StudentProfileResponse,
+    type: StudentProfileResponse,
   })
   @ApiUnauthorizedResponse({ description: 'Student already activated' })
   @ApiNotFoundResponse({ description: 'Student not found' })
@@ -163,10 +163,10 @@ export class AuthController {
   @Post('student/signin')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Sign in student' })
-  @ApiBody({ type: () => AuthStudentBody })
+  @ApiBody({ type: AuthStudentBody })
   @ApiOkResponse({
     description: 'Student signed in successfully',
-    type: () => SigninResponse,
+    type: SigninResponse,
   })
   @ApiUnauthorizedResponse({
     description: 'Student not found or invalid credentials',
@@ -180,7 +180,7 @@ export class AuthController {
   @Post('student/reset-password/request')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Request student password reset' })
-  @ApiBody({ type: () => StudentIdentifierBody })
+  @ApiBody({ type: StudentIdentifierBody })
   @ApiOkResponse({ description: 'Reset link sent to student email' })
   @ApiNotFoundResponse({ description: 'Student not found' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
@@ -191,10 +191,10 @@ export class AuthController {
   @Post('student/reset-password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset student password' })
-  @ApiBody({ type: () => AuthStudentBody })
+  @ApiBody({ type: AuthStudentBody })
   @ApiOkResponse({
     description: 'Student password reset successfully',
-    type: () => StudentProfileResponse,
+    type: StudentProfileResponse,
   })
   @ApiNotFoundResponse({ description: 'Student not found' })
   @ApiBadRequestResponse({ description: 'Bad Request' })

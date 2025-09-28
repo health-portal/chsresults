@@ -8,15 +8,15 @@ export declare class LecturerService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
         description: string | null;
+        title: string;
         code: string;
         units: number;
         semester: number;
         lecturerId: string;
     }[]>;
     registerStudentsBatch(lecturerId: string, courseId: string, file: Express.Multer.File): Promise<BatchStudentRegistrationResponse>;
-    registerStudent(lecturerId: string, courseId: string, { studentIdentifier, identifierType }: RegisterStudentBody): Promise<{
+    registerStudent(lecturerId: string, courseId: string, { studentIdentifier, identifierType, session }: RegisterStudentBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;

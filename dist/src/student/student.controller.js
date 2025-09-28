@@ -43,7 +43,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'List all enrollments for the student' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Enrollments retrieved successfully',
-        type: () => [courses_schema_1.EnrollmentResponse],
+        type: [courses_schema_1.EnrollmentResponse],
     }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
@@ -62,7 +62,7 @@ __decorate([
     }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Enrollment retrieved successfully',
-        type: () => courses_schema_1.EnrollmentResponse,
+        type: courses_schema_1.EnrollmentResponse,
     }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Enrollment not found' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
@@ -78,7 +78,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get student profile' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Profile retrieved successfully',
-        type: () => student_schema_1.StudentProfileResponse,
+        type: student_schema_1.StudentProfileResponse,
     }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),

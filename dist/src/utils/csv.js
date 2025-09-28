@@ -74,11 +74,11 @@ __decorate([
     __metadata("design:type", Number)
 ], ParseCsvData.prototype, "numberOfRows", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ type: () => [Object] }),
+    (0, swagger_1.ApiProperty)({ type: [Object] }),
     __metadata("design:type", Array)
 ], ParseCsvData.prototype, "validRows", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ type: () => [RowValidationError] }),
+    (0, swagger_1.ApiProperty)({ type: [RowValidationError] }),
     __metadata("design:type", Array)
 ], ParseCsvData.prototype, "invalidRows", void 0);
 async function parseCsvFile(file, validationClass) {

@@ -44,7 +44,7 @@ let LecturerService = class LecturerService {
             ...parsedData,
         };
         await this.db.client.transaction(async (tx) => {
-            for (const { matricNumber } of parsedData.validRows) {
+            for (const { matricNumber, session } of parsedData.validRows) {
                 const foundStudent = await tx.query.student.findFirst({
                     where: (0, drizzle_orm_1.eq)(schema_1.student.matricNumber, matricNumber),
                 });
@@ -62,7 +62,7 @@ let LecturerService = class LecturerService {
         });
         return result;
     }
-    async registerStudent(lecturerId, courseId, { studentIdentifier, identifierType }) {
+    async registerStudent(lecturerId, courseId, { studentIdentifier, identifierType, session }) {
         await this.validateCourseAccess(lecturerId, courseId);
         const whereCondition = identifierType === auth_schema_1.StudentIdentifierType.EMAIL
             ? (0, drizzle_orm_1.eq)(schema_1.student.email, studentIdentifier)
@@ -84,6 +84,7 @@ let LecturerService = class LecturerService {
             .values({
             courseId,
             studentId: foundStudent.id,
+            session,
         })
             .returning();
         return insertedEnrollment;

@@ -13,6 +13,11 @@ export class RegisterStudentBody {
   @IsString()
   @IsNotEmpty()
   identifierType: StudentIdentifierType;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  session: string;
 }
 
 export class Scores {
@@ -39,6 +44,11 @@ export class RegisterStudentRow {
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  session: string;
 }
 
 export class UploadScoreRow extends Scores {

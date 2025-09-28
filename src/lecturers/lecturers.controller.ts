@@ -50,10 +50,10 @@ export class LecturersController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new lecturer' })
-  @ApiBody({ type: () => CreateLecturerBody })
+  @ApiBody({ type: CreateLecturerBody })
   @ApiCreatedResponse({
     description: 'Lecturer created successfully',
-    type: () => LecturerProfileResponse,
+    type: LecturerProfileResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -79,7 +79,7 @@ export class LecturersController {
   })
   @ApiCreatedResponse({
     description: 'Lecturers created successfully',
-    type: () => CreateLecturersResponse,
+    type: CreateLecturersResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnprocessableEntityResponse({
@@ -102,7 +102,7 @@ export class LecturersController {
   @ApiOperation({ summary: 'Get all lecturers' })
   @ApiOkResponse({
     description: 'Lecturers retrieved successfully',
-    type: () => [LecturerProfileResponse],
+    type: [LecturerProfileResponse],
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -113,10 +113,10 @@ export class LecturersController {
   @Patch(':lecturerId')
   @ApiOperation({ summary: 'Update a lecturer' })
   @ApiParam({ name: 'lecturerId', type: String, description: 'Lecturer UUID' })
-  @ApiBody({ type: () => UpdateLecturerBody })
+  @ApiBody({ type: UpdateLecturerBody })
   @ApiOkResponse({
     description: 'Lecturer updated successfully',
-    type: () => LecturerProfileResponse,
+    type: LecturerProfileResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Lecturer not found' })
@@ -134,7 +134,7 @@ export class LecturersController {
   @ApiParam({ name: 'lecturerId', type: String, description: 'Lecturer UUID' })
   @ApiOkResponse({
     description: 'Lecturer deleted successfully',
-    type: () => LecturerProfileResponse,
+    type: LecturerProfileResponse,
   })
   @ApiNotFoundResponse({ description: 'Lecturer not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })

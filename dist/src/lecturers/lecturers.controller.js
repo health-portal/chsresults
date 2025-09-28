@@ -47,10 +47,10 @@ exports.LecturersController = LecturersController;
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new lecturer' }),
-    (0, swagger_1.ApiBody)({ type: () => lecturers_schema_1.CreateLecturerBody }),
+    (0, swagger_1.ApiBody)({ type: lecturers_schema_1.CreateLecturerBody }),
     (0, swagger_1.ApiCreatedResponse)({
         description: 'Lecturer created successfully',
-        type: () => lecturer_schema_1.LecturerProfileResponse,
+        type: lecturer_schema_1.LecturerProfileResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
@@ -78,7 +78,7 @@ __decorate([
     }),
     (0, swagger_1.ApiCreatedResponse)({
         description: 'Lecturers created successfully',
-        type: () => lecturers_schema_1.CreateLecturersResponse,
+        type: lecturers_schema_1.CreateLecturersResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiUnprocessableEntityResponse)({
@@ -98,7 +98,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get all lecturers' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Lecturers retrieved successfully',
-        type: () => [lecturer_schema_1.LecturerProfileResponse],
+        type: [lecturer_schema_1.LecturerProfileResponse],
     }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
@@ -110,10 +110,10 @@ __decorate([
     (0, common_1.Patch)(':lecturerId'),
     (0, swagger_1.ApiOperation)({ summary: 'Update a lecturer' }),
     (0, swagger_1.ApiParam)({ name: 'lecturerId', type: String, description: 'Lecturer UUID' }),
-    (0, swagger_1.ApiBody)({ type: () => lecturers_schema_1.UpdateLecturerBody }),
+    (0, swagger_1.ApiBody)({ type: lecturers_schema_1.UpdateLecturerBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Lecturer updated successfully',
-        type: () => lecturer_schema_1.LecturerProfileResponse,
+        type: lecturer_schema_1.LecturerProfileResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Lecturer not found' }),
@@ -131,7 +131,7 @@ __decorate([
     (0, swagger_1.ApiParam)({ name: 'lecturerId', type: String, description: 'Lecturer UUID' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Lecturer deleted successfully',
-        type: () => lecturer_schema_1.LecturerProfileResponse,
+        type: lecturer_schema_1.LecturerProfileResponse,
     }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Lecturer not found' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),

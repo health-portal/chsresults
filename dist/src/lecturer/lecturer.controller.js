@@ -59,7 +59,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'List courses assigned to the lecturer' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Courses retrieved successfully',
-        type: () => [courses_schema_1.CourseResponse],
+        type: [courses_schema_1.CourseResponse],
     }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
@@ -89,7 +89,7 @@ __decorate([
     }),
     (0, swagger_1.ApiCreatedResponse)({
         description: 'Students registered successfully',
-        type: () => lecturer_schema_1.BatchStudentRegistrationResponse,
+        type: lecturer_schema_1.BatchStudentRegistrationResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Course not found' }),
@@ -111,10 +111,10 @@ __decorate([
     (0, common_1.Post)('courses/:courseId/students'),
     (0, swagger_1.ApiOperation)({ summary: 'Register a single student to a course' }),
     (0, swagger_1.ApiParam)({ name: 'courseId', type: String, description: 'Course UUID' }),
-    (0, swagger_1.ApiBody)({ type: () => lecturer_schema_1.RegisterStudentBody }),
+    (0, swagger_1.ApiBody)({ type: lecturer_schema_1.RegisterStudentBody }),
     (0, swagger_1.ApiCreatedResponse)({
         description: 'Student registered successfully',
-        type: () => courses_schema_1.EnrollmentResponse,
+        type: courses_schema_1.EnrollmentResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Course not found' }),
@@ -146,7 +146,7 @@ __decorate([
     }),
     (0, swagger_1.ApiCreatedResponse)({
         description: 'Scores uploaded successfully',
-        type: () => lecturer_schema_1.UploadScoresResponse,
+        type: lecturer_schema_1.UploadScoresResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Course not found' }),
@@ -164,10 +164,10 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Edit a student’s score for a course' }),
     (0, swagger_1.ApiParam)({ name: 'courseId', type: String, description: 'Course UUID' }),
     (0, swagger_1.ApiParam)({ name: 'studentId', type: String, description: 'Student UUID' }),
-    (0, swagger_1.ApiBody)({ type: () => lecturer_schema_1.EditScoreBody }),
+    (0, swagger_1.ApiBody)({ type: lecturer_schema_1.EditScoreBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Score updated successfully',
-        type: () => courses_schema_1.EnrollmentResponse,
+        type: courses_schema_1.EnrollmentResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Course or student not found' }),
@@ -187,7 +187,7 @@ __decorate([
     (0, swagger_1.ApiParam)({ name: 'courseId', type: String, description: 'Course UUID' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Course scores retrieved successfully',
-        type: () => [courses_schema_1.EnrollmentResponse],
+        type: [courses_schema_1.EnrollmentResponse],
     }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Course not found' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
@@ -204,7 +204,7 @@ __decorate([
     (0, swagger_1.ApiParam)({ name: 'courseId', type: String, description: 'Course UUID' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Course students retrieved successfully',
-        type: () => [courses_schema_1.EnrollmentResponse],
+        type: [courses_schema_1.EnrollmentResponse],
     }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Course not found' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
@@ -220,7 +220,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get lecturer profile' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Profile retrieved successfully',
-        type: () => lecturer_schema_1.LecturerProfileResponse,
+        type: lecturer_schema_1.LecturerProfileResponse,
     }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),

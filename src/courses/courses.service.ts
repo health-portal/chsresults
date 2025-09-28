@@ -98,7 +98,7 @@ export class CoursesService {
     });
     if (!foundLecturer) throw new BadRequestException('Lecturer not found');
 
-    const updatedCourse = await this.db.client
+    const [updatedCourse] = await this.db.client
       .update(course)
       .set({
         code,
@@ -109,7 +109,7 @@ export class CoursesService {
         units,
       })
       .returning();
-    return updatedCourse[0];
+    return updatedCourse;
   }
 
   async deleteCourse(courseId: string) {
@@ -118,10 +118,10 @@ export class CoursesService {
     });
     if (!foundCourse) throw new NotFoundException('Course not found');
 
-    const deletedCourse = await this.db.client
+    const [deletedCourse] = await this.db.client
       .delete(course)
       .where(eq(course.id, courseId))
       .returning();
-    return deletedCourse[0];
+    return deletedCourse;
   }
 }

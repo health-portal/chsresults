@@ -3,6 +3,7 @@ import { ParseCsvData } from 'src/utils/csv';
 export declare class RegisterStudentBody {
     studentIdentifier: string;
     identifierType: StudentIdentifierType;
+    session: string;
 }
 export declare class Scores {
     continuousAssessment: number;
@@ -13,6 +14,7 @@ export declare class EditScoreBody extends Scores {
 export declare class RegisterStudentRow {
     matricNumber: string;
     name: string;
+    session: string;
 }
 export declare class UploadScoreRow extends Scores {
     matricNumber: string;

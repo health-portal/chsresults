@@ -44,7 +44,7 @@ export class CreateCourseResponse extends UpsertCourseBody {
 }
 
 export class CreateCoursesResponse extends ParseCsvData<UpsertCourseBody> {
-  @ApiProperty({ type: () => [CreateCourseResponse] })
+  @ApiProperty({ type: [CreateCourseResponse] })
   courses: CreateCourseResponse[];
 }
 

@@ -1,4 +1,3 @@
-import { OmitType, PartialType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
@@ -31,7 +30,7 @@ export class CreateStudentBody {
   @IsNotEmpty()
   lastName: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: true })
   @IsString()
   @IsOptional()
   otherName?: string;
@@ -55,10 +54,40 @@ export class CreateStudentBody {
   degree: string;
 }
 
-export class UpdateStudentBody extends OmitType(
-  PartialType(CreateStudentBody),
-  ['email', 'matricNumber'] as const,
-) {}
+export class UpdateStudentBody {
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  firstName?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  lastName?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  otherName?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  department?: string;
+
+  @ApiProperty()
+  @IsNumber()
+  level: number;
+
+  @ApiProperty({ enum: Gender, required: false })
+  @IsEnum(Gender)
+  gender?: Gender;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  degree?: string;
+}
 
 export class CreateStudentResponse extends CreateStudentBody {
   @ApiProperty()
@@ -66,6 +95,6 @@ export class CreateStudentResponse extends CreateStudentBody {
 }
 
 export class CreateStudentsResponse extends ParseCsvData<CreateStudentBody> {
-  @ApiProperty({ type: () => [CreateStudentResponse] })
+  @ApiProperty({ type: [CreateStudentResponse] })
   students: CreateStudentResponse[];
 }

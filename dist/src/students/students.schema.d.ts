@@ -11,8 +11,14 @@ export declare class CreateStudentBody {
     gender: Gender;
     degree: string;
 }
-declare const UpdateStudentBody_base: import("@nestjs/mapped-types").MappedType<Omit<Partial<CreateStudentBody>, "email" | "matricNumber">>;
-export declare class UpdateStudentBody extends UpdateStudentBody_base {
+export declare class UpdateStudentBody {
+    firstName?: string;
+    lastName?: string;
+    otherName?: string;
+    department?: string;
+    level: number;
+    gender?: Gender;
+    degree?: string;
 }
 export declare class CreateStudentResponse extends CreateStudentBody {
     isCreated: boolean;
@@ -20,4 +26,3 @@ export declare class CreateStudentResponse extends CreateStudentBody {
 export declare class CreateStudentsResponse extends ParseCsvData<CreateStudentBody> {
     students: CreateStudentResponse[];
 }
-export {};

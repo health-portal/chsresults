@@ -79,7 +79,7 @@ let CoursesService = class CoursesService {
         });
         if (!foundLecturer)
             throw new common_1.BadRequestException('Lecturer not found');
-        const updatedCourse = await this.db.client
+        const [updatedCourse] = await this.db.client
             .update(schema_1.course)
             .set({
             code,
@@ -90,7 +90,7 @@ let CoursesService = class CoursesService {
             units,
         })
             .returning();
-        return updatedCourse[0];
+        return updatedCourse;
     }
     async deleteCourse(courseId) {
         const foundCourse = await this.db.client.query.course.findFirst({
@@ -98,11 +98,11 @@ let CoursesService = class CoursesService {
         });
         if (!foundCourse)
             throw new common_1.NotFoundException('Course not found');
-        const deletedCourse = await this.db.client
+        const [deletedCourse] = await this.db.client
             .delete(schema_1.course)
             .where((0, drizzle_orm_1.eq)(schema_1.course.id, courseId))
             .returning();
-        return deletedCourse[0];
+        return deletedCourse;
     }
 };
 exports.CoursesService = CoursesService;

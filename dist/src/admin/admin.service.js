@@ -25,11 +25,11 @@ let AdminService = class AdminService {
         });
         if (foundAdmin)
             throw new common_1.BadRequestException('Admin already exists');
-        const insertedAdmin = await this.db.client
+        const [insertedAdmin] = await this.db.client
             .insert(schema_1.admin)
             .values({ email, name })
             .returning();
-        const { password: _, ...adminProfile } = insertedAdmin[0];
+        const { password: _, ...adminProfile } = insertedAdmin;
         return adminProfile;
     }
     async getProfile(adminId) {
@@ -47,11 +47,11 @@ let AdminService = class AdminService {
         });
         if (!foundAdmin)
             throw new common_1.BadRequestException('Admin not found');
-        const updatedAdmin = await this.db.client
+        const [updatedAdmin] = await this.db.client
             .update(schema_1.admin)
             .set({ name, phone })
             .returning();
-        const { password: _, ...adminProfile } = updatedAdmin[0];
+        const { password: _, ...adminProfile } = updatedAdmin;
         return adminProfile;
     }
 };

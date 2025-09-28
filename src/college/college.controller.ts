@@ -41,15 +41,15 @@ export class CollegeController {
 
   @Get('departments')
   @ApiOperation({ summary: 'Get all faculties with departments' })
-  @ApiOkResponse({ type: () => [GetDepartmentsResponse] })
+  @ApiOkResponse({ type: [GetDepartmentsResponse] })
   async getDepartments() {
     return await this.collegeService.getDepartments();
   }
 
   @Post('faculties')
   @ApiOperation({ summary: 'Create a faculty' })
-  @ApiBody({ type: () => UpsertFacultyAndDepartmentBody })
-  @ApiCreatedResponse({ type: () => FacultyResponse })
+  @ApiBody({ type: UpsertFacultyAndDepartmentBody })
+  @ApiCreatedResponse({ type: FacultyResponse })
   async createFaculty(@Body() body: UpsertFacultyAndDepartmentBody) {
     return await this.collegeService.createFaculty(body);
   }
@@ -57,8 +57,8 @@ export class CollegeController {
   @Patch('faculties/:facultyId')
   @ApiOperation({ summary: 'Update faculty name' })
   @ApiParam({ name: 'facultyId', type: String, description: 'Faculty UUID' })
-  @ApiBody({ type: () => UpsertFacultyAndDepartmentBody })
-  @ApiOkResponse({ type: () => FacultyResponse })
+  @ApiBody({ type: UpsertFacultyAndDepartmentBody })
+  @ApiOkResponse({ type: FacultyResponse })
   @ApiNotFoundResponse({ description: 'Faculty not found' })
   async updateFaculty(
     @Param('facultyId', ParseUUIDPipe) facultyId: string,
@@ -78,8 +78,8 @@ export class CollegeController {
 
   @Post('departments')
   @ApiOperation({ summary: 'Create a department under a faculty' })
-  @ApiBody({ type: () => CreateDepartmentBody })
-  @ApiCreatedResponse({ type: () => DepartmentResponse })
+  @ApiBody({ type: CreateDepartmentBody })
+  @ApiCreatedResponse({ type: DepartmentResponse })
   async createDepartment(@Body() body: CreateDepartmentBody) {
     return await this.collegeService.createDepartment(body);
   }
@@ -87,8 +87,8 @@ export class CollegeController {
   @Patch('departments/:deptId')
   @ApiOperation({ summary: 'Update department name' })
   @ApiParam({ name: 'deptId', type: String, description: 'Department UUID' })
-  @ApiBody({ type: () => UpsertFacultyAndDepartmentBody })
-  @ApiOkResponse({ type: () => DepartmentResponse })
+  @ApiBody({ type: UpsertFacultyAndDepartmentBody })
+  @ApiOkResponse({ type: DepartmentResponse })
   @ApiNotFoundResponse({ description: 'Department not found' })
   async updateDepartment(
     @Param('deptId', ParseUUIDPipe) deptId: string,

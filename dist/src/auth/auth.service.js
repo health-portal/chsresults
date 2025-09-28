@@ -191,13 +191,13 @@ let AuthService = class AuthService {
         return foundStudent;
     }
     async updateStudentPassword(id, hashedPassword) {
-        const updated = await this.db.client
+        const [updatedStudent] = await this.db.client
             .update(schema_1.student)
             .set({ password: hashedPassword })
             .where((0, drizzle_orm_1.eq)(schema_1.student.id, id))
             .returning();
-        const { password: _, ...profile } = updated[0];
-        return profile;
+        const { password: _, ...studentProfile } = updatedStudent;
+        return studentProfile;
     }
     async activateStudent({ studentIdentifier, identifierType, password, }) {
         const foundStudent = await this.findStudent({

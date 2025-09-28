@@ -47,10 +47,10 @@ exports.StudentsController = StudentsController;
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new student' }),
-    (0, swagger_1.ApiBody)({ type: () => students_schema_1.CreateStudentBody }),
+    (0, swagger_1.ApiBody)({ type: students_schema_1.CreateStudentBody }),
     (0, swagger_1.ApiCreatedResponse)({
         description: 'Student created successfully',
-        type: () => student_schema_1.StudentProfileResponse,
+        type: student_schema_1.StudentProfileResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
@@ -78,7 +78,7 @@ __decorate([
     }),
     (0, swagger_1.ApiCreatedResponse)({
         description: 'Students created successfully',
-        type: () => students_schema_1.CreateStudentsResponse,
+        type: students_schema_1.CreateStudentsResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiUnprocessableEntityResponse)({
@@ -98,7 +98,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get all students' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Students retrieved successfully',
-        type: () => [student_schema_1.StudentProfileResponse],
+        type: [student_schema_1.StudentProfileResponse],
     }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
@@ -109,11 +109,11 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':studentId'),
     (0, swagger_1.ApiOperation)({ summary: 'Update a student' }),
-    (0, swagger_1.ApiParam)({ name: 'id', type: String, description: 'Student UUID' }),
-    (0, swagger_1.ApiBody)({ type: () => students_schema_1.UpdateStudentBody }),
+    (0, swagger_1.ApiParam)({ name: 'studentId', type: String, description: 'Student UUID' }),
+    (0, swagger_1.ApiBody)({ type: students_schema_1.UpdateStudentBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Student updated successfully',
-        type: () => student_schema_1.StudentProfileResponse,
+        type: student_schema_1.StudentProfileResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Student not found' }),
@@ -131,7 +131,7 @@ __decorate([
     (0, swagger_1.ApiParam)({ name: 'studentId', type: String, description: 'Student UUID' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Student deleted successfully',
-        type: () => student_schema_1.StudentProfileResponse,
+        type: student_schema_1.StudentProfileResponse,
     }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Student not found' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),

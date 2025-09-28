@@ -40,8 +40,11 @@ exports.AdminController = AdminController;
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Add a new admin user' }),
-    (0, swagger_1.ApiBody)({ type: () => admin_schema_1.AddAdminBody }),
-    (0, swagger_1.ApiCreatedResponse)({ description: 'Admin successfully added' }),
+    (0, swagger_1.ApiBody)({ type: admin_schema_1.AddAdminBody }),
+    (0, swagger_1.ApiCreatedResponse)({
+        description: 'Admin successfully added',
+        type: admin_schema_1.AdminProfileResponse,
+    }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
     __param(0, (0, common_1.Body)()),
@@ -54,7 +57,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get admin profile' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Profile retrieved successfully',
-        type: () => admin_schema_1.AdminProfileResponse,
+        type: admin_schema_1.AdminProfileResponse,
     }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
@@ -66,10 +69,10 @@ __decorate([
 __decorate([
     (0, common_1.Patch)('profile'),
     (0, swagger_1.ApiOperation)({ summary: 'Update admin profile' }),
-    (0, swagger_1.ApiBody)({ type: () => admin_schema_1.UpdateAdminBody }),
+    (0, swagger_1.ApiBody)({ type: admin_schema_1.UpdateAdminBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Profile updated successfully',
-        type: () => admin_schema_1.AdminProfileResponse,
+        type: admin_schema_1.AdminProfileResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),

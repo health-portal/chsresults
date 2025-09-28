@@ -54,7 +54,7 @@ export class LecturerController {
   @ApiOperation({ summary: 'List courses assigned to the lecturer' })
   @ApiOkResponse({
     description: 'Courses retrieved successfully',
-    type: () => [CourseResponse],
+    type: [CourseResponse],
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -82,7 +82,7 @@ export class LecturerController {
   })
   @ApiCreatedResponse({
     description: 'Students registered successfully',
-    type: () => BatchStudentRegistrationResponse,
+    type: BatchStudentRegistrationResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Course not found' })
@@ -111,10 +111,10 @@ export class LecturerController {
   @Post('courses/:courseId/students')
   @ApiOperation({ summary: 'Register a single student to a course' })
   @ApiParam({ name: 'courseId', type: String, description: 'Course UUID' })
-  @ApiBody({ type: () => RegisterStudentBody })
+  @ApiBody({ type: RegisterStudentBody })
   @ApiCreatedResponse({
     description: 'Student registered successfully',
-    type: () => EnrollmentResponse,
+    type: EnrollmentResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Course not found' })
@@ -150,7 +150,7 @@ export class LecturerController {
   })
   @ApiCreatedResponse({
     description: 'Scores uploaded successfully',
-    type: () => UploadScoresResponse,
+    type: UploadScoresResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Course not found' })
@@ -168,10 +168,10 @@ export class LecturerController {
   @ApiOperation({ summary: 'Edit a student’s score for a course' })
   @ApiParam({ name: 'courseId', type: String, description: 'Course UUID' })
   @ApiParam({ name: 'studentId', type: String, description: 'Student UUID' })
-  @ApiBody({ type: () => EditScoreBody })
+  @ApiBody({ type: EditScoreBody })
   @ApiOkResponse({
     description: 'Score updated successfully',
-    type: () => EnrollmentResponse,
+    type: EnrollmentResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Course or student not found' })
@@ -196,7 +196,7 @@ export class LecturerController {
   @ApiParam({ name: 'courseId', type: String, description: 'Course UUID' })
   @ApiOkResponse({
     description: 'Course scores retrieved successfully',
-    type: () => [EnrollmentResponse],
+    type: [EnrollmentResponse],
   })
   @ApiNotFoundResponse({ description: 'Course not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -213,7 +213,7 @@ export class LecturerController {
   @ApiParam({ name: 'courseId', type: String, description: 'Course UUID' })
   @ApiOkResponse({
     description: 'Course students retrieved successfully',
-    type: () => [EnrollmentResponse],
+    type: [EnrollmentResponse],
   })
   @ApiNotFoundResponse({ description: 'Course not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -229,7 +229,7 @@ export class LecturerController {
   @ApiOperation({ summary: 'Get lecturer profile' })
   @ApiOkResponse({
     description: 'Profile retrieved successfully',
-    type: () => LecturerProfileResponse,
+    type: LecturerProfileResponse,
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })

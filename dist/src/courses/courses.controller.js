@@ -46,10 +46,10 @@ exports.CoursesController = CoursesController;
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new course' }),
-    (0, swagger_1.ApiBody)({ type: () => courses_schema_1.UpsertCourseBody }),
+    (0, swagger_1.ApiBody)({ type: courses_schema_1.UpsertCourseBody }),
     (0, swagger_1.ApiCreatedResponse)({
         description: 'Course created successfully',
-        type: () => courses_schema_1.CourseResponse,
+        type: courses_schema_1.CourseResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     __param(0, (0, common_1.Body)()),
@@ -75,7 +75,7 @@ __decorate([
     }),
     (0, swagger_1.ApiCreatedResponse)({
         description: 'Courses created successfully',
-        type: () => courses_schema_1.CreateCoursesResponse,
+        type: courses_schema_1.CreateCoursesResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiUnprocessableEntityResponse)({
@@ -93,7 +93,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get all courses' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Courses retrieved successfully',
-        type: () => [courses_schema_1.CourseResponse],
+        type: [courses_schema_1.CourseResponse],
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -103,10 +103,10 @@ __decorate([
     (0, common_1.Patch)(':courseId'),
     (0, swagger_1.ApiOperation)({ summary: 'Update a course' }),
     (0, swagger_1.ApiParam)({ name: 'courseId', type: String, description: 'Course ID' }),
-    (0, swagger_1.ApiBody)({ type: () => courses_schema_1.UpsertCourseBody }),
+    (0, swagger_1.ApiBody)({ type: courses_schema_1.UpsertCourseBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Course updated successfully',
-        type: () => courses_schema_1.CourseResponse,
+        type: courses_schema_1.CourseResponse,
     }),
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Course not found' }),
@@ -122,7 +122,7 @@ __decorate([
     (0, swagger_1.ApiParam)({ name: 'courseId', type: String, description: 'Course ID' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Course deleted successfully',
-        type: () => courses_schema_1.CourseResponse,
+        type: courses_schema_1.CourseResponse,
     }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Course not found' }),
     __param(0, (0, common_1.Param)('courseId')),

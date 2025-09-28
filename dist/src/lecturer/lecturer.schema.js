@@ -16,6 +16,7 @@ const csv_1 = require("../utils/csv");
 class RegisterStudentBody {
     studentIdentifier;
     identifierType;
+    session;
 }
 exports.RegisterStudentBody = RegisterStudentBody;
 __decorate([
@@ -30,6 +31,12 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], RegisterStudentBody.prototype, "identifierType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], RegisterStudentBody.prototype, "session", void 0);
 class Scores {
     continuousAssessment;
     examination;
@@ -53,6 +60,7 @@ exports.EditScoreBody = EditScoreBody;
 class RegisterStudentRow {
     matricNumber;
     name;
+    session;
 }
 exports.RegisterStudentRow = RegisterStudentRow;
 __decorate([
@@ -67,6 +75,12 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], RegisterStudentRow.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], RegisterStudentRow.prototype, "session", void 0);
 class UploadScoreRow extends Scores {
     matricNumber;
 }
