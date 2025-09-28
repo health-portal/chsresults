@@ -1,0 +1,21 @@
+studentIdentifier,identifierType
+ANA/2025/001@student.oauife.edu.ng,email
+CHE/2025/002,matricNumber
+wrong-email-format,oauife,email
+BIO/2025/004@student.oauife.edu.ng,email
+PHA/2025/005,matricNumber
+invalidMatric/9999,matricNumber
+MOR/2025/007@student.oauife.edu.ng,email
+NUR/2025/008@student.oauife.edu.ng,email
+12345,matricNumber
+ANE/2025/010,matricNumber
+bademail@student, email
+COM/2025/011@student.oauife.edu.ng,email
+wrongMatric2025,matricNumber
+OBS/2025/015@student.oauife.edu.ng,email
+ANA/2025/016,matricNumber
+CHE/2025/017@student.oauife.edu.ng,email
+COM/2025/999@student.oauife.edu.ng,email
+PHA/2025/018,matricNumber
+NUR/2025/019@student.oauife.edu.ng,email
+MEN/2025/014x,matricNumber
