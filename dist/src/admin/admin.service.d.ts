@@ -6,19 +6,19 @@ export declare class AdminService {
     private readonly emailQueueService;
     constructor(db: DatabaseService, emailQueueService: EmailQueueService);
     addAdmin({ email, name }: AddAdminBody): Promise<{
-        email: string;
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         phone: string | null;
     }>;
     getProfile(adminId: string): Promise<{
-        email: string;
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         phone: string | null;
     }>;
     updateProfile(adminId: string, { name, phone }: UpdateAdminBody): Promise<{

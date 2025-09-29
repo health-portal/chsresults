@@ -83,13 +83,12 @@ export class UpdateCourseBody {
   semester: number;
 }
 
-
 export class CreateCourseResponse extends CreateCourseBody {
   @ApiProperty()
   isCreated: boolean;
 }
 
-export class CreateCoursesResponse extends ParseCsvData<UpsertCourseBody> {
+export class CreateCoursesResponse extends ParseCsvData<CreateCourseBody> {
   @ApiProperty({ type: [CreateCourseResponse] })
   courses: CreateCourseResponse[];
 }

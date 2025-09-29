@@ -19,7 +19,7 @@ export declare class UpdateCourseBody {
 export declare class CreateCourseResponse extends CreateCourseBody {
     isCreated: boolean;
 }
-export declare class CreateCoursesResponse extends ParseCsvData<UpsertCourseBody> {
+export declare class CreateCoursesResponse extends ParseCsvData<CreateCourseBody> {
     courses: CreateCourseResponse[];
 }
 type Course = typeof course.$inferSelect;
