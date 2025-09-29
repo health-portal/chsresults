@@ -40,9 +40,7 @@ dotenv.config();
 exports.env = (0, envalid_1.cleanEnv)(process.env, {
     DATABASE_URL: (0, envalid_1.str)(),
     DEFAULT_ADMINS: (0, envalid_1.json)(),
-    FRONTEND_BASE_URL: (0, envalid_1.str)(),
     JWT_SECRET: (0, envalid_1.str)(),
     PORT: (0, envalid_1.num)(),
-    RESEND_API_KEY: (0, envalid_1.str)(),
 });
 //# sourceMappingURL=environment.js.map
