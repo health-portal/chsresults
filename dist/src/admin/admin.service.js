@@ -14,14 +14,14 @@ const common_1 = require("@nestjs/common");
 const drizzle_orm_1 = require("drizzle-orm");
 const schema_1 = require("../../drizzle/schema");
 const database_service_1 = require("../database/database.service");
-const email_service_1 = require("../email/email.service");
-const email_schema_1 = require("../email/email.schema");
+const email_queue_service_1 = require("../email-queue/email-queue.service");
+const email_queue_schema_1 = require("../email-queue/email-queue.schema");
 let AdminService = class AdminService {
     db;
-    emailService;
-    constructor(db, emailService) {
+    emailQueueService;
+    constructor(db, emailQueueService) {
         this.db = db;
-        this.emailService = emailService;
+        this.emailQueueService = emailQueueService;
     }
     async addAdmin({ email, name }) {
         const foundAdmin = await this.db.client.query.admin.findFirst({
@@ -33,10 +33,10 @@ let AdminService = class AdminService {
             .insert(schema_1.admin)
             .values({ email, name })
             .returning();
-        await this.emailService.sendMail({
+        await this.emailQueueService.createTask({
             subject: 'Invitation to Activate Admin',
             toEmail: insertedAdmin.email,
-            htmlContent: (0, email_schema_1.InvitationTemplate)({
+            htmlContent: (0, email_queue_schema_1.InvitationTemplate)({
                 name: insertedAdmin.name,
                 registrationLink: '',
             }),
@@ -72,6 +72,6 @@ exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [database_service_1.DatabaseService,
-        email_service_1.EmailService])
+        email_queue_service_1.EmailQueueService])
 ], AdminService);
 //# sourceMappingURL=admin.service.js.map

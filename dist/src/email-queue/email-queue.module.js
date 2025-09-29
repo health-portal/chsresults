@@ -6,17 +6,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EmailModule = void 0;
+exports.EmailQueueModule = void 0;
 const common_1 = require("@nestjs/common");
-const email_service_1 = require("./email.service");
-let EmailModule = class EmailModule {
+const email_queue_service_1 = require("./email-queue.service");
+let EmailQueueModule = class EmailQueueModule {
 };
-exports.EmailModule = EmailModule;
-exports.EmailModule = EmailModule = __decorate([
+exports.EmailQueueModule = EmailQueueModule;
+exports.EmailQueueModule = EmailQueueModule = __decorate([
     (0, common_1.Global)(),
     (0, common_1.Module)({
-        providers: [email_service_1.EmailService],
-        exports: [email_service_1.EmailService],
+        providers: [email_queue_service_1.EmailQueueService],
+        exports: [email_queue_service_1.EmailQueueService],
     })
-], EmailModule);
-//# sourceMappingURL=email.module.js.map
+], EmailQueueModule);
+//# sourceMappingURL=email-queue.module.js.map

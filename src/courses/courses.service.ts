@@ -4,7 +4,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { UpsertCourseBody, CreateCoursesResponse } from './courses.schema';
+import {
+  CreateCourseBody,
+  UpdateCourseBody,
+  CreateCoursesResponse,
+} from './courses.schema';
 import { eq, or } from 'drizzle-orm';
 import { course, lecturer } from 'drizzle/schema';
 import { parseCsvFile } from 'src/utils/csv';
@@ -19,7 +23,7 @@ export class CoursesService {
     lecturerEmail,
     semester,
     units,
-  }: UpsertCourseBody) {
+  }: CreateCourseBody) {
     const foundCourse = await this.db.client.query.course.findFirst({
       where: or(eq(course.title, title), eq(course.code, code)),
     });
@@ -41,7 +45,7 @@ export class CoursesService {
   }
 
   async createCourses(file: Express.Multer.File) {
-    const parsedData = await parseCsvFile(file, UpsertCourseBody);
+    const parsedData = await parseCsvFile(file, CreateCourseBody);
     const result: CreateCoursesResponse = { courses: [], ...parsedData };
 
     await this.db.client.transaction(async (tx) => {
@@ -89,29 +93,34 @@ export class CoursesService {
       description,
       semester,
       units,
-    }: UpsertCourseBody,
+    }: UpdateCourseBody,
   ) {
     const foundCourse = await this.db.client.query.course.findFirst({
       where: eq(course.id, courseId),
     });
-    if (!foundCourse)
-      throw new BadRequestException('Course with name or title not found');
+    if (!foundCourse) throw new BadRequestException('Course not found');
 
-    const foundLecturer = await this.db.client.query.lecturer.findFirst({
-      where: eq(lecturer.email, lecturerEmail),
-    });
-    if (!foundLecturer) throw new BadRequestException('Lecturer not found');
+    let lecturerId = foundCourse.lecturerId;
+    if (lecturerEmail) {
+      const foundLecturer = await this.db.client.query.lecturer.findFirst({
+        where: eq(lecturer.email, lecturerEmail),
+      });
+      if (!foundLecturer) throw new NotFoundException('Lecturer not found');
+
+      lecturerId = foundLecturer.id;
+    }
 
     const [updatedCourse] = await this.db.client
       .update(course)
       .set({
         code,
         title,
-        lecturerId: foundLecturer.id,
+        lecturerId,
         description,
         semester,
         units,
       })
+      .where(eq(course.id, courseId))
       .returning();
     return updatedCourse;
   }

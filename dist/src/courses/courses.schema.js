@@ -9,12 +9,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EnrollmentResponse = exports.CourseResponse = exports.CreateCoursesResponse = exports.CreateCourseResponse = exports.UpsertCourseBody = void 0;
+exports.EnrollmentResponse = exports.CourseResponse = exports.CreateCoursesResponse = exports.CreateCourseResponse = exports.UpdateCourseBody = exports.CreateCourseBody = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 const csv_1 = require("../utils/csv");
-class UpsertCourseBody {
+class CreateCourseBody {
     code;
     title;
     lecturerEmail;
@@ -22,30 +22,30 @@ class UpsertCourseBody {
     units;
     semester;
 }
-exports.UpsertCourseBody = UpsertCourseBody;
+exports.CreateCourseBody = CreateCourseBody;
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], UpsertCourseBody.prototype, "code", void 0);
+], CreateCourseBody.prototype, "code", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], UpsertCourseBody.prototype, "title", void 0);
+], CreateCourseBody.prototype, "title", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsEmail)(),
     __metadata("design:type", String)
-], UpsertCourseBody.prototype, "lecturerEmail", void 0);
+], CreateCourseBody.prototype, "lecturerEmail", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], UpsertCourseBody.prototype, "description", void 0);
+], CreateCourseBody.prototype, "description", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNumber)(),
@@ -53,7 +53,7 @@ __decorate([
         toClassOnly: true,
     }),
     __metadata("design:type", Number)
-], UpsertCourseBody.prototype, "units", void 0);
+], CreateCourseBody.prototype, "units", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNumber)(),
@@ -61,8 +61,59 @@ __decorate([
         toClassOnly: true,
     }),
     __metadata("design:type", Number)
-], UpsertCourseBody.prototype, "semester", void 0);
-class CreateCourseResponse extends UpsertCourseBody {
+], CreateCourseBody.prototype, "semester", void 0);
+class UpdateCourseBody {
+    code;
+    title;
+    lecturerEmail;
+    description;
+    units;
+    semester;
+}
+exports.UpdateCourseBody = UpdateCourseBody;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCourseBody.prototype, "code", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCourseBody.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCourseBody.prototype, "lecturerEmail", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateCourseBody.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Transform)(({ value }) => parseInt(value, 10), {
+        toClassOnly: true,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateCourseBody.prototype, "units", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Transform)(({ value }) => parseInt(value, 10), {
+        toClassOnly: true,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateCourseBody.prototype, "semester", void 0);
+class CreateCourseResponse extends CreateCourseBody {
     isCreated;
 }
 exports.CreateCourseResponse = CreateCourseResponse;

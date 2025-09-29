@@ -1,6 +1,6 @@
 import { course, enrollment } from 'drizzle/schema';
 import { ParseCsvData } from 'src/utils/csv';
-export declare class UpsertCourseBody {
+export declare class CreateCourseBody {
     code: string;
     title: string;
     lecturerEmail: string;
@@ -8,7 +8,15 @@ export declare class UpsertCourseBody {
     units: number;
     semester: number;
 }
-export declare class CreateCourseResponse extends UpsertCourseBody {
+export declare class UpdateCourseBody {
+    code?: string;
+    title?: string;
+    lecturerEmail: string;
+    description?: string;
+    units?: number;
+    semester: number;
+}
+export declare class CreateCourseResponse extends CreateCourseBody {
     isCreated: boolean;
 }
 export declare class CreateCoursesResponse extends ParseCsvData<UpsertCourseBody> {

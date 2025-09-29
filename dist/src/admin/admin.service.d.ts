@@ -1,24 +1,24 @@
 import { DatabaseService } from 'src/database/database.service';
 import { AddAdminBody, UpdateAdminBody } from './admin.schema';
-import { EmailService } from 'src/email/email.service';
+import { EmailQueueService } from 'src/email-queue/email-queue.service';
 export declare class AdminService {
     private readonly db;
-    private readonly emailService;
-    constructor(db: DatabaseService, emailService: EmailService);
+    private readonly emailQueueService;
+    constructor(db: DatabaseService, emailQueueService: EmailQueueService);
     addAdmin({ email, name }: AddAdminBody): Promise<{
-        id: string;
+        email: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
-        email: string;
         phone: string | null;
     }>;
     getProfile(adminId: string): Promise<{
-        id: string;
+        email: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
-        email: string;
         phone: string | null;
     }>;
     updateProfile(adminId: string, { name, phone }: UpdateAdminBody): Promise<{

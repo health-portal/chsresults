@@ -139,4 +139,4 @@ const NotificationTemplate = ({ name, title, message, portalLink, }) => {
 </html>`;
 };
 exports.NotificationTemplate = NotificationTemplate;
-//# sourceMappingURL=email.schema.js.map
+//# sourceMappingURL=email-queue.schema.js.map

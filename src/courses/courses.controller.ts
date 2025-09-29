@@ -16,8 +16,9 @@ import { CoursesService } from './courses.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   CourseResponse,
+  CreateCourseBody,
   CreateCoursesResponse,
-  UpsertCourseBody,
+  UpdateCourseBody,
 } from './courses.schema';
 import {
   ApiTags,
@@ -46,13 +47,13 @@ export class CoursesController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new course' })
-  @ApiBody({ type: UpsertCourseBody })
+  @ApiBody({ type: CreateCourseBody })
   @ApiCreatedResponse({
     description: 'Course created successfully',
     type: CourseResponse,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  async createCourse(@Body() body: UpsertCourseBody) {
+  async createCourse(@Body() body: CreateCourseBody) {
     return await this.coursesService.createCourse(body);
   }
 
@@ -103,7 +104,7 @@ export class CoursesController {
   @Patch(':courseId')
   @ApiOperation({ summary: 'Update a course' })
   @ApiParam({ name: 'courseId', type: String, description: 'Course ID' })
-  @ApiBody({ type: UpsertCourseBody })
+  @ApiBody({ type: UpdateCourseBody })
   @ApiOkResponse({
     description: 'Course updated successfully',
     type: CourseResponse,
@@ -112,7 +113,7 @@ export class CoursesController {
   @ApiNotFoundResponse({ description: 'Course not found' })
   async updateCourse(
     @Param('courseId') courseId: string,
-    @Body() body: UpsertCourseBody,
+    @Body() body: UpdateCourseBody,
   ) {
     return await this.coursesService.updateCourse(courseId, body);
   }

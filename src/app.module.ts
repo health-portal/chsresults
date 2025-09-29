@@ -8,7 +8,8 @@ import { StudentsModule } from './students/students.module';
 import { LecturersModule } from './lecturers/lecturers.module';
 import { CoursesModule } from './courses/courses.module';
 import { CollegeModule } from './college/college.module';
-import { EmailModule } from './email/email.module';
+import { EmailQueueModule } from './email-queue/email-queue.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { EmailModule } from './email/email.module';
     LecturersModule,
     CoursesModule,
     CollegeModule,
-    EmailModule,
+    EmailQueueModule,
+    ScheduleModule.forRoot(),
   ],
 })
 export class AppModule {}

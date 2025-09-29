@@ -1,12 +1,12 @@
 import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from 'src/database/database.service';
 import { AuthUserBody, AuthStudentBody, StudentIdentifierBody } from './auth.schema';
-import { EmailService } from 'src/email/email.service';
+import { EmailQueueService } from 'src/email-queue/email-queue.service';
 export declare class AuthService {
     private readonly db;
     private readonly jwtService;
-    private readonly emailService;
-    constructor(db: DatabaseService, jwtService: JwtService, emailService: EmailService);
+    private readonly emailQueueService;
+    constructor(db: DatabaseService, jwtService: JwtService, emailQueueService: EmailQueueService);
     private generateToken;
     private findAdmin;
     private updateAdminPassword;

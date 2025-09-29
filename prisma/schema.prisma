@@ -5,6 +5,6 @@ generator client {
 
 datasource db {
   provider   = "postgresql"
-  url        = env("DATABASE_URL")
+  url        = env("MESSAGE_QUEUE_DATABASE_URL")
   extensions = [pgmq]
 }

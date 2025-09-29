@@ -1,15 +1,15 @@
 import { DatabaseService } from 'src/database/database.service';
-import { UpsertCourseBody, CreateCoursesResponse } from './courses.schema';
+import { CreateCourseBody, UpdateCourseBody, CreateCoursesResponse } from './courses.schema';
 export declare class CoursesService {
     private readonly db;
     constructor(db: DatabaseService);
-    createCourse({ code, title, lecturerEmail, semester, units, }: UpsertCourseBody): Promise<{
+    createCourse({ code, title, lecturerEmail, semester, units, }: CreateCourseBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        code: string;
         title: string;
         description: string | null;
-        code: string;
         units: number;
         semester: number;
         lecturerId: string;
@@ -19,14 +19,14 @@ export declare class CoursesService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        code: string;
         title: string;
         description: string | null;
-        code: string;
         units: number;
         semester: number;
         lecturerId: string;
     }[]>;
-    updateCourse(courseId: string, { code, title, lecturerEmail, description, semester, units, }: UpsertCourseBody): Promise<{
+    updateCourse(courseId: string, { code, title, lecturerEmail, description, semester, units, }: UpdateCourseBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -41,9 +41,9 @@ export declare class CoursesService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        code: string;
         title: string;
         description: string | null;
-        code: string;
         units: number;
         semester: number;
         lecturerId: string;

@@ -50,16 +50,16 @@ const auth_schema_1 = require("./auth.schema");
 const schema_1 = require("../../drizzle/schema");
 const drizzle_orm_1 = require("drizzle-orm");
 const bcrypt = __importStar(require("bcrypt"));
-const email_service_1 = require("../email/email.service");
-const email_schema_1 = require("../email/email.schema");
+const email_queue_service_1 = require("../email-queue/email-queue.service");
+const email_queue_schema_1 = require("../email-queue/email-queue.schema");
 let AuthService = class AuthService {
     db;
     jwtService;
-    emailService;
-    constructor(db, jwtService, emailService) {
+    emailQueueService;
+    constructor(db, jwtService, emailQueueService) {
         this.db = db;
         this.jwtService = jwtService;
-        this.emailService = emailService;
+        this.emailQueueService = emailQueueService;
     }
     generateToken(payload, expiresIn = '1d') {
         return { accessToken: this.jwtService.sign(payload, { expiresIn }) };
@@ -105,10 +105,10 @@ let AuthService = class AuthService {
         const foundAdmin = await this.findAdmin(email);
         if (!foundAdmin)
             throw new common_1.NotFoundException(`Admin not found`);
-        await this.emailService.sendMail({
+        await this.emailQueueService.createTask({
             subject: 'Reset Password',
             toEmail: foundAdmin.email,
-            htmlContent: (0, email_schema_1.ResetPasswordTemplate)({
+            htmlContent: (0, email_queue_schema_1.ResetPasswordTemplate)({
                 name: foundAdmin.name,
                 resetLink: '',
             }),
@@ -163,10 +163,10 @@ let AuthService = class AuthService {
         const foundLecturer = await this.findLecturer(email);
         if (!foundLecturer)
             throw new common_1.NotFoundException(`Lecturer not found`);
-        await this.emailService.sendMail({
+        await this.emailQueueService.createTask({
             subject: 'Reset Password',
             toEmail: foundLecturer.email,
-            htmlContent: (0, email_schema_1.ResetPasswordTemplate)({
+            htmlContent: (0, email_queue_schema_1.ResetPasswordTemplate)({
                 name: `${foundLecturer.firstName} ${foundLecturer.lastName}`,
                 resetLink: '',
             }),
@@ -229,10 +229,10 @@ let AuthService = class AuthService {
             studentIdentifier,
             identifierType,
         });
-        await this.emailService.sendMail({
+        await this.emailQueueService.createTask({
             subject: 'Reset Password',
             toEmail: foundStudent.email,
-            htmlContent: (0, email_schema_1.ResetPasswordTemplate)({
+            htmlContent: (0, email_queue_schema_1.ResetPasswordTemplate)({
                 name: `${foundStudent.firstName} ${foundStudent.lastName}`,
                 resetLink: '',
             }),
@@ -256,6 +256,6 @@ exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [database_service_1.DatabaseService,
         jwt_1.JwtService,
-        email_service_1.EmailService])
+        email_queue_service_1.EmailQueueService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

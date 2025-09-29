@@ -39,7 +39,7 @@ let CoursesService = class CoursesService {
         return insertedCourse;
     }
     async createCourses(file) {
-        const parsedData = await (0, csv_1.parseCsvFile)(file, courses_schema_1.UpsertCourseBody);
+        const parsedData = await (0, csv_1.parseCsvFile)(file, courses_schema_1.CreateCourseBody);
         const result = { courses: [], ...parsedData };
         await this.db.client.transaction(async (tx) => {
             for (const row of parsedData.validRows) {
@@ -78,22 +78,27 @@ let CoursesService = class CoursesService {
             where: (0, drizzle_orm_1.eq)(schema_1.course.id, courseId),
         });
         if (!foundCourse)
-            throw new common_1.BadRequestException('Course with name or title not found');
-        const foundLecturer = await this.db.client.query.lecturer.findFirst({
-            where: (0, drizzle_orm_1.eq)(schema_1.lecturer.email, lecturerEmail),
-        });
-        if (!foundLecturer)
-            throw new common_1.BadRequestException('Lecturer not found');
+            throw new common_1.BadRequestException('Course not found');
+        let lecturerId = foundCourse.lecturerId;
+        if (lecturerEmail) {
+            const foundLecturer = await this.db.client.query.lecturer.findFirst({
+                where: (0, drizzle_orm_1.eq)(schema_1.lecturer.email, lecturerEmail),
+            });
+            if (!foundLecturer)
+                throw new common_1.NotFoundException('Lecturer not found');
+            lecturerId = foundLecturer.id;
+        }
         const [updatedCourse] = await this.db.client
             .update(schema_1.course)
             .set({
             code,
             title,
-            lecturerId: foundLecturer.id,
+            lecturerId,
             description,
             semester,
             units,
         })
+            .where((0, drizzle_orm_1.eq)(schema_1.course.id, courseId))
             .returning();
         return updatedCourse;
     }

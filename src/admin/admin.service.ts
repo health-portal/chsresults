@@ -7,14 +7,14 @@ import { eq } from 'drizzle-orm';
 import { admin } from 'drizzle/schema';
 import { DatabaseService } from 'src/database/database.service';
 import { AddAdminBody, UpdateAdminBody } from './admin.schema';
-import { EmailService } from 'src/email/email.service';
-import { InvitationTemplate } from 'src/email/email.schema';
+import { EmailQueueService } from 'src/email-queue/email-queue.service';
+import { InvitationTemplate } from 'src/email-queue/email-queue.schema';
 
 @Injectable()
 export class AdminService {
   constructor(
     private readonly db: DatabaseService,
-    private readonly emailService: EmailService,
+    private readonly emailQueueService: EmailQueueService,
   ) {}
 
   async addAdmin({ email, name }: AddAdminBody) {
@@ -28,7 +28,7 @@ export class AdminService {
       .values({ email, name })
       .returning();
 
-    await this.emailService.sendMail({
+    await this.emailQueueService.createTask({
       subject: 'Invitation to Activate Admin',
       toEmail: insertedAdmin.email,
       htmlContent: InvitationTemplate({

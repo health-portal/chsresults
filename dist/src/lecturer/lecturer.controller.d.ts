@@ -4,14 +4,14 @@ export declare class LecturerController {
     private readonly lecturerService;
     constructor(lecturerService: LecturerService);
     listCourses(lecturerId: string): Promise<{
+        code: string;
+        title: string;
+        description: string | null;
+        units: number;
+        semester: number;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
-        description: string | null;
-        code: string;
-        units: number;
-        semester: number;
         lecturerId: string;
     }[]>;
     registerStudentsBatch(lecturerId: string, courseId: string, file: Express.Multer.File): Promise<BatchStudentRegistrationResponse>;
@@ -53,15 +53,15 @@ export declare class LecturerController {
         studentId: string;
     }[]>;
     getProfile(lecturerId: string): Promise<{
+        title: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         email: string;
-        phone: string | null;
         firstName: string;
         lastName: string;
         otherName: string | null;
-        title: string;
+        phone: string | null;
         departmentId: string;
     }>;
 }

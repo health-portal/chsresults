@@ -18,15 +18,15 @@ import {
 import { admin, lecturer, student } from 'drizzle/schema';
 import { eq } from 'drizzle-orm';
 import * as bcrypt from 'bcrypt';
-import { EmailService } from 'src/email/email.service';
-import { ResetPasswordTemplate } from 'src/email/email.schema';
+import { EmailQueueService } from 'src/email-queue/email-queue.service';
+import { ResetPasswordTemplate } from 'src/email-queue/email-queue.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly db: DatabaseService,
     private readonly jwtService: JwtService,
-    private readonly emailService: EmailService,
+    private readonly emailQueueService: EmailQueueService,
   ) {}
 
   private generateToken(payload: JwtPayload, expiresIn: string = '1d') {
@@ -79,7 +79,7 @@ export class AuthService {
     const foundAdmin = await this.findAdmin(email);
     if (!foundAdmin) throw new NotFoundException(`Admin not found`);
 
-    await this.emailService.sendMail({
+    await this.emailQueueService.createTask({
       subject: 'Reset Password',
       toEmail: foundAdmin.email,
       htmlContent: ResetPasswordTemplate({
@@ -145,7 +145,7 @@ export class AuthService {
     const foundLecturer = await this.findLecturer(email);
     if (!foundLecturer) throw new NotFoundException(`Lecturer not found`);
 
-    await this.emailService.sendMail({
+    await this.emailQueueService.createTask({
       subject: 'Reset Password',
       toEmail: foundLecturer.email,
       htmlContent: ResetPasswordTemplate({
@@ -237,7 +237,7 @@ export class AuthService {
       identifierType,
     });
 
-    await this.emailService.sendMail({
+    await this.emailQueueService.createTask({
       subject: 'Reset Password',
       toEmail: foundStudent.email,
       htmlContent: ResetPasswordTemplate({

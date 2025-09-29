@@ -10,7 +10,7 @@ import {
 import { course, enrollment } from 'drizzle/schema';
 import { ParseCsvData } from 'src/utils/csv';
 
-export class UpsertCourseBody {
+export class CreateCourseBody {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -45,7 +45,46 @@ export class UpsertCourseBody {
   semester: number;
 }
 
-export class CreateCourseResponse extends UpsertCourseBody {
+export class UpdateCourseBody {
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  code?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  title?: string;
+
+  @ApiProperty()
+  @IsEmail()
+  @IsOptional()
+  lecturerEmail: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @Transform(({ value }: { value: string }) => parseInt(value, 10), {
+    toClassOnly: true,
+  })
+  @IsOptional()
+  units?: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @Transform(({ value }: { value: string }) => parseInt(value, 10), {
+    toClassOnly: true,
+  })
+  @IsOptional()
+  semester: number;
+}
+
+
+export class CreateCourseResponse extends CreateCourseBody {
   @ApiProperty()
   isCreated: boolean;
 }

@@ -46,7 +46,7 @@ exports.CoursesController = CoursesController;
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new course' }),
-    (0, swagger_1.ApiBody)({ type: courses_schema_1.UpsertCourseBody }),
+    (0, swagger_1.ApiBody)({ type: courses_schema_1.CreateCourseBody }),
     (0, swagger_1.ApiCreatedResponse)({
         description: 'Course created successfully',
         type: courses_schema_1.CourseResponse,
@@ -54,7 +54,7 @@ __decorate([
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [courses_schema_1.UpsertCourseBody]),
+    __metadata("design:paramtypes", [courses_schema_1.CreateCourseBody]),
     __metadata("design:returntype", Promise)
 ], CoursesController.prototype, "createCourse", null);
 __decorate([
@@ -103,7 +103,7 @@ __decorate([
     (0, common_1.Patch)(':courseId'),
     (0, swagger_1.ApiOperation)({ summary: 'Update a course' }),
     (0, swagger_1.ApiParam)({ name: 'courseId', type: String, description: 'Course ID' }),
-    (0, swagger_1.ApiBody)({ type: courses_schema_1.UpsertCourseBody }),
+    (0, swagger_1.ApiBody)({ type: courses_schema_1.UpdateCourseBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Course updated successfully',
         type: courses_schema_1.CourseResponse,
@@ -113,7 +113,7 @@ __decorate([
     __param(0, (0, common_1.Param)('courseId')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, courses_schema_1.UpsertCourseBody]),
+    __metadata("design:paramtypes", [String, courses_schema_1.UpdateCourseBody]),
     __metadata("design:returntype", Promise)
 ], CoursesController.prototype, "updateCourse", null);
 __decorate([

@@ -8,4 +8,7 @@ export const env = cleanEnv(process.env, {
   DEFAULT_ADMINS: json<{ name: string; email: string }[]>(),
   JWT_SECRET: str(),
   PORT: num(),
+  SMTPEXPRESS_PROJECT_ID: str(),
+  SMTPEXPRESS_PROJECT_SECRET: str(),
+  SMTPEXPRESS_SENDER_EMAIL: str(),
 });

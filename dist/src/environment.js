@@ -42,5 +42,8 @@ exports.env = (0, envalid_1.cleanEnv)(process.env, {
     DEFAULT_ADMINS: (0, envalid_1.json)(),
     JWT_SECRET: (0, envalid_1.str)(),
     PORT: (0, envalid_1.num)(),
+    SMTPEXPRESS_PROJECT_ID: (0, envalid_1.str)(),
+    SMTPEXPRESS_PROJECT_SECRET: (0, envalid_1.str)(),
+    SMTPEXPRESS_SENDER_EMAIL: (0, envalid_1.str)(),
 });
 //# sourceMappingURL=environment.js.map
