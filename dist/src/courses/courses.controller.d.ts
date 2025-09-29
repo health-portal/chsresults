@@ -7,9 +7,9 @@ export declare class CoursesController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        code: string;
         title: string;
         description: string | null;
+        code: string;
         units: number;
         semester: number;
         lecturerId: string;
@@ -19,9 +19,9 @@ export declare class CoursesController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        code: string;
         title: string;
         description: string | null;
+        code: string;
         units: number;
         semester: number;
         lecturerId: string;
@@ -41,9 +41,9 @@ export declare class CoursesController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        code: string;
         title: string;
         description: string | null;
+        code: string;
         units: number;
         semester: number;
         lecturerId: string;

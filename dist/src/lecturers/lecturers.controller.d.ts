@@ -8,10 +8,10 @@ export declare class LecturersController {
         createdAt: Date;
         updatedAt: Date;
         email: string;
+        phone: string | null;
         firstName: string;
         lastName: string;
         otherName: string | null;
-        phone: string | null;
         title: string;
         departmentId: string;
     }>;
@@ -21,10 +21,10 @@ export declare class LecturersController {
         createdAt: Date;
         updatedAt: Date;
         email: string;
+        phone: string | null;
         firstName: string;
         lastName: string;
         otherName: string | null;
-        phone: string | null;
         title: string;
         departmentId: string;
     }[]>;
@@ -45,10 +45,10 @@ export declare class LecturersController {
         createdAt: Date;
         updatedAt: Date;
         email: string;
+        phone: string | null;
         firstName: string;
         lastName: string;
         otherName: string | null;
-        phone: string | null;
         title: string;
         departmentId: string;
     }>;
