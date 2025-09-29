@@ -8,6 +8,7 @@ import {
   IsString,
 } from 'class-validator';
 import { course, enrollment } from 'drizzle/schema';
+import { LecturerProfileResponse } from 'src/lecturer/lecturer.schema';
 import { ParseCsvData } from 'src/utils/csv';
 
 export class CreateCourseBody {
@@ -122,6 +123,9 @@ export class CourseResponse implements Course {
 
   @ApiProperty()
   lecturerId: string;
+
+  @ApiProperty({ type: LecturerProfileResponse })
+  lecturer: LecturerProfileResponse;
 }
 
 type Enrollment = typeof enrollment.$inferSelect;
