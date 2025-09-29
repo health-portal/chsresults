@@ -71,7 +71,25 @@ let CoursesService = class CoursesService {
         return result;
     }
     async getCourses() {
-        return await this.db.client.query.course.findMany();
+        return await this.db.client.query.course.findMany({
+            with: {
+                lecturer: {
+                    columns: {
+                        title: true,
+                        id: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        email: true,
+                        phone: true,
+                        password: false,
+                        firstName: true,
+                        lastName: true,
+                        otherName: true,
+                        departmentId: true,
+                    },
+                },
+            },
+        });
     }
     async updateCourse(courseId, { code, title, lecturerEmail, description, semester, units, }) {
         const foundCourse = await this.db.client.query.course.findFirst({

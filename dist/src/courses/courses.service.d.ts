@@ -25,6 +25,18 @@ export declare class CoursesService {
         units: number;
         semester: number;
         lecturerId: string;
+        lecturer: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            email: string;
+            phone: string | null;
+            firstName: string;
+            lastName: string;
+            otherName: string | null;
+            title: string;
+            departmentId: string;
+        };
     }[]>;
     updateCourse(courseId: string, { code, title, lecturerEmail, description, semester, units, }: UpdateCourseBody): Promise<{
         id: string;

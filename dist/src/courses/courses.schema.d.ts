@@ -1,4 +1,5 @@
 import { course, enrollment } from 'drizzle/schema';
+import { LecturerProfileResponse } from 'src/lecturer/lecturer.schema';
 import { ParseCsvData } from 'src/utils/csv';
 export declare class CreateCourseBody {
     code: string;
@@ -33,6 +34,7 @@ export declare class CourseResponse implements Course {
     units: number;
     semester: number;
     lecturerId: string;
+    lecturer: LecturerProfileResponse;
 }
 type Enrollment = typeof enrollment.$inferSelect;
 export declare class EnrollmentResponse implements Enrollment {

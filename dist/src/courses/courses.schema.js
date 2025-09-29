@@ -13,6 +13,7 @@ exports.EnrollmentResponse = exports.CourseResponse = exports.CreateCoursesRespo
 const swagger_1 = require("@nestjs/swagger");
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
+const lecturer_schema_1 = require("../lecturer/lecturer.schema");
 const csv_1 = require("../utils/csv");
 class CreateCourseBody {
     code;
@@ -139,6 +140,7 @@ class CourseResponse {
     units;
     semester;
     lecturerId;
+    lecturer;
 }
 exports.CourseResponse = CourseResponse;
 __decorate([
@@ -177,6 +179,10 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], CourseResponse.prototype, "lecturerId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: lecturer_schema_1.LecturerProfileResponse }),
+    __metadata("design:type", lecturer_schema_1.LecturerProfileResponse)
+], CourseResponse.prototype, "lecturer", void 0);
 class EnrollmentResponse {
     id;
     createdAt;
