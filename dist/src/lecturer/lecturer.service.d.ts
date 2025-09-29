@@ -8,8 +8,8 @@ export declare class LecturerService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
         title: string;
+        description: string | null;
         code: string;
         units: number;
         semester: number;
@@ -62,7 +62,7 @@ export declare class LecturerService {
         firstName: string;
         lastName: string;
         otherName: string | null;
-        title: string | null;
+        title: string;
         departmentId: string;
     }>;
 }

@@ -61,7 +61,7 @@ export declare class LecturerController {
         firstName: string;
         lastName: string;
         otherName: string | null;
-        title: string | null;
+        title: string;
         departmentId: string;
     }>;
 }

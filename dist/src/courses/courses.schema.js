@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EnrollmentResponse = exports.CourseResponse = exports.CreateCoursesResponse = exports.CreateCourseResponse = exports.UpsertCourseBody = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 const csv_1 = require("../utils/csv");
 class UpsertCourseBody {
@@ -36,7 +37,7 @@ __decorate([
 ], UpsertCourseBody.prototype, "title", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsUUID)(),
+    (0, class_validator_1.IsEmail)(),
     __metadata("design:type", String)
 ], UpsertCourseBody.prototype, "lecturerEmail", void 0);
 __decorate([
@@ -48,11 +49,17 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Transform)(({ value }) => parseInt(value, 10), {
+        toClassOnly: true,
+    }),
     __metadata("design:type", Number)
 ], UpsertCourseBody.prototype, "units", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Transform)(({ value }) => parseInt(value, 10), {
+        toClassOnly: true,
+    }),
     __metadata("design:type", Number)
 ], UpsertCourseBody.prototype, "semester", void 0);
 class CreateCourseResponse extends UpsertCourseBody {

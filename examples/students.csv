@@ -1,21 +1,20 @@
-email,matricNumber,firstName,lastName,otherName,department
-ANA/2025/001@student.oauife.edu.ng,ANA/2025/001,James,Udo,Chinedu,Anatomy and Cell Biology
-CHE/2025/002@student.oauife.edu.ng,CHE/2025/002,Ngozi,Adeleke,Oluwaseun,Chemical Pathology
-HAE/2025/003@student.oauife.edu.ng,HAE/2025/003,Emeka,Okafor,Obinna,Haematology and Immunology
-BIO/2025/004@student.oauife.edu.ng,BIO/2025/004,Amina,Bello,Zainab,Medical Biochemistry
-PHA/2025/005@student.oauife.edu.ng,PHA/2025/005,Victor,Ogunleye,Temitope,Medical Pharmacology and Therapeutics
-REB/2025/006@student.oauife.edu.ng,REB/2025/006,Grace,Edet,Ime,Department of Medical Rehabilitation
-MOR/2025/007@student.oauife.edu.ng,MOR/2025/007,Felix,Adam,Segun,Morbid Anatomy and Forensic Medicine
-NUR/2025/008@student.oauife.edu.ng,NUR/2025/008,Ruth,Okon,Ekaette,Nursing Science
-PHY/2025/009@student.oauife.edu.ng,PHY/2025/009,Michael,Ali,Osas,Physiological Sciences
-ANE/2025/010@student.oauife.edu.ng,ANE/2025/010,Hannah,Johnson,Yetunde,Anaethesia and Intensive Care
-COM/2025/011@student.oauife.edu.ng,COM/2025/011,Olamide,Bakare,Ademola,Community Health
-DER/2025/012@student.oauife.edu.ng,DER/2025/012,Susan,Igwe,Ngozi,Dermatology and Venereology
-MED/2025/013@student.oauife.edu.ng,MED/2025/013,Ibrahim,Sule,Musa,Medicine
-MEN/2025/014@student.oauife.edu.ng,MEN/2025/014,Chika,Eze,Amarachi,Mental Health
-OBS/2025/015@student.oauife.edu.ng,OBS/2025/015,Samuel,Adeniran,Ayomide,Obstetrics, Gyanaecology and Perinatology
-ANA/2025/016@student.oauife.edu.ng,ANA/2025/016,,Okoro,,Anatomy and Cell Biology
-CHE/2025/017@student.oauife.edu.ng,,Grace,Adeleke,Ime,Chemical Pathology
-,,Olamide,Bakare,Ademola,Community Health
-PHA/2025/018@student.oauife.edu.ng,PHA/2025/018,Felix,Adam,Segun,
-NUR/2025/019@student.oauife.edu.ng,NUR/2025/019,Ruth,Okon,,Nursing Science
+email,matricNumber,firstName,lastName,otherName,department,gender,degree,level
+ANA/2025/001@student.oauife.edu.ng,ANA/2025/001,James,Udo,Chinedu,Anatomy and Cell Biology,male,BSc,100
+CHE/2025/002@student.oauife.edu.ng,CHE/2025/002,Ngozi,Adeleke,Oluwaseun,Chemical Pathology,female,BSc,100
+HAE/2025/003@student.oauife.edu.ng,HAE/2025/003,Emeka,Okafor,Obinna,Haematology and Immunology,male,BSc,100
+BIO/2025/004@student.oauife.edu.ng,BIO/2025/004,Amina,Bello,Zainab,Medical Biochemistry,female,BSc,100
+PHA/2025/005@student.oauife.edu.ng,PHA/2025/005,Victor,Ogunleye,Temitope,Medical Pharmacology and Therapeutics,male,BSc,100
+REB/2025/006@student.oauife.edu.ng,REB/2025/006,Grace,Edet,Ime,Department of Medical Rehabilitation,female,BSc,100
+MOR/2025/007@student.oauife.edu.ng,MOR/2025/007,Felix,Adam,Segun,Morbid Anatomy and Forensic Medicine,male,BSc,100
+NUR/2025/008@student.oauife.edu.ng,NUR/2025/008,Ruth,Okon,Ekaette,Nursing Science,female,BSc,100
+PHY/2025/009@student.oauife.edu.ng,PHY/2025/009,Michael,Ali,Osas,Physiological Sciences,male,BSc,100
+ANE/2025/010@student.oauife.edu.ng,ANE/2025/010,Hannah,Johnson,Yetunde,Anaethesia and Intensive Care,female,BSc,100
+COM/2025/011@student.oauife.edu.ng,COM/2025/011,Olamide,Bakare,Ademola,Community Health,male,BSc,100
+DER/2025/012@student.oauife.edu.ng,DER/2025/012,Susan,Igwe,Ngozi,Dermatology and Venereology,female,BSc,100
+MED/2025/013@student.oauife.edu.ng,MED/2025/013,Ibrahim,Sule,Musa,Medicine,male,MBBS,100
+MEN/2025/014@student.oauife.edu.ng,MEN/2025/014,Chika,Eze,Amarachi,Mental Health,female,BSc,100
+ANA/2025/016@student.oauife.edu.ng,ANA/2025/016,,Okoro,,Anatomy and Cell Biology,female,BSc,100
+CHE/2025/017@student.oauife.edu.ng,,Grace,Adeleke,Ime,Chemical Pathology,female,BSc,100
+,,Olamide,Bakare,Ademola,Community Health,male,BSc,100
+PHA/2025/018@student.oauife.edu.ng,PHA/2025/018,Felix,Adam,Segun,,male,BSc,100
+NUR/2025/019@student.oauife.edu.ng,NUR/2025/019,Ruth,Okon,,Nursing Science,female,BSc,100

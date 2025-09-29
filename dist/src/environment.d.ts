@@ -4,6 +4,7 @@ export declare const env: Readonly<{
         name: string;
         email: string;
     }[];
+    FRONTEND_BASE_URL: string;
     JWT_SECRET: string;
     PORT: number;
     RESEND_API_KEY: string;

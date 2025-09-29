@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LecturerProfileResponse = exports.UploadScoresResponse = exports.BatchStudentRegistrationResponse = exports.UploadScoreRow = exports.RegisterStudentRow = exports.EditScoreBody = exports.Scores = exports.RegisterStudentBody = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 const csv_1 = require("../utils/csv");
 class RegisterStudentBody {
@@ -45,13 +46,17 @@ exports.Scores = Scores;
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_transformer_1.Transform)(({ value }) => parseInt(value, 10), {
+        toClassOnly: true,
+    }),
     __metadata("design:type", Number)
 ], Scores.prototype, "continuousAssessment", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_transformer_1.Transform)(({ value }) => parseInt(value, 10), {
+        toClassOnly: true,
+    }),
     __metadata("design:type", Number)
 ], Scores.prototype, "examination", void 0);
 class EditScoreBody extends Scores {
@@ -126,6 +131,7 @@ class LecturerProfileResponse {
     lastName;
     otherName;
     phone;
+    title;
     departmentId;
 }
 exports.LecturerProfileResponse = LecturerProfileResponse;
@@ -154,13 +160,17 @@ __decorate([
     __metadata("design:type", String)
 ], LecturerProfileResponse.prototype, "lastName", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", String)
+    (0, swagger_1.ApiProperty)({ nullable: true }),
+    __metadata("design:type", Object)
 ], LecturerProfileResponse.prototype, "otherName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ nullable: true }),
+    __metadata("design:type", Object)
+], LecturerProfileResponse.prototype, "phone", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
-], LecturerProfileResponse.prototype, "phone", void 0);
+], LecturerProfileResponse.prototype, "title", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)

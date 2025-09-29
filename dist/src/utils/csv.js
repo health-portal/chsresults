@@ -88,7 +88,7 @@ async function parseCsvFile(file, validationClass) {
         let currentRow = 0;
         const stream = stream_1.Readable.from(file.buffer);
         stream
-            .pipe(csv.parse({ headers: true }))
+            .pipe(csv.parse({ headers: true, strictColumnHandling: true }))
             .on('error', (error) => {
             reject(new common_1.UnprocessableEntityException(error.message));
         })

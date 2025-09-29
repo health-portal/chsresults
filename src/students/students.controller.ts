@@ -139,7 +139,7 @@ export class StudentsController {
   @ApiNotFoundResponse({ description: 'Student not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
-  async deleteStudent(@Param('id', ParseUUIDPipe) studentId: string) {
+  async deleteStudent(@Param('studentId', ParseUUIDPipe) studentId: string) {
     return await this.studentsService.deleteStudent(studentId);
   }
 }

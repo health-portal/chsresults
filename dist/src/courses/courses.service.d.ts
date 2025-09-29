@@ -7,9 +7,9 @@ export declare class CoursesService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
-        title: string;
         code: string;
+        title: string;
+        description: string | null;
         units: number;
         semester: number;
         lecturerId: string;
@@ -19,9 +19,9 @@ export declare class CoursesService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
-        title: string;
         code: string;
+        title: string;
+        description: string | null;
         units: number;
         semester: number;
         lecturerId: string;
@@ -41,9 +41,9 @@ export declare class CoursesService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
-        title: string;
         code: string;
+        title: string;
+        description: string | null;
         units: number;
         semester: number;
         lecturerId: string;

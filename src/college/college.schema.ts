@@ -18,9 +18,16 @@ export class CreateDepartmentBody extends UpsertFacultyAndDepartmentBody {
 type Faculty = typeof faculty.$inferSelect;
 
 export class FacultyResponse implements Faculty {
+  @ApiProperty()
   id: string;
+
+  @ApiProperty()
   name: string;
+
+  @ApiProperty()
   createdAt: Date;
+
+  @ApiProperty()
   updatedAt: Date;
 }
 
@@ -30,6 +37,6 @@ export class DepartmentResponse extends FacultyResponse {
 }
 
 export class GetDepartmentsResponse extends FacultyResponse {
-  @ApiProperty({ type:[DepartmentResponse] })
+  @ApiProperty({ type: [DepartmentResponse] })
   departments: DepartmentResponse[];
 }

@@ -1,8 +1,10 @@
 import { DatabaseService } from 'src/database/database.service';
 import { AddAdminBody, UpdateAdminBody } from './admin.schema';
+import { EmailService } from 'src/email/email.service';
 export declare class AdminService {
     private readonly db;
-    constructor(db: DatabaseService);
+    private readonly emailService;
+    constructor(db: DatabaseService, emailService: EmailService);
     addAdmin({ email, name }: AddAdminBody): Promise<{
         id: string;
         name: string;

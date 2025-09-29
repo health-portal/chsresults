@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { lecturer } from 'drizzle/schema';
 import { type StudentIdentifierType } from 'src/auth/auth.schema';
 import { ParseCsvData } from 'src/utils/csv';
 
@@ -23,12 +25,16 @@ export class RegisterStudentBody {
 export class Scores {
   @ApiProperty()
   @IsNumber()
-  @IsNotEmpty()
+  @Transform(({ value }: { value: string }) => parseInt(value, 10), {
+    toClassOnly: true,
+  })
   continuousAssessment: number;
 
   @ApiProperty()
   @IsNumber()
-  @IsNotEmpty()
+  @Transform(({ value }: { value: string }) => parseInt(value, 10), {
+    toClassOnly: true,
+  })
   examination: number;
 }
 
@@ -74,7 +80,9 @@ export class UploadScoresResponse extends ParseCsvData<UploadScoreRow> {
   studentsNotFound: string[];
 }
 
-export class LecturerProfileResponse {
+type Lecturer = Omit<typeof lecturer.$inferSelect, 'password'>;
+
+export class LecturerProfileResponse implements Lecturer {
   @ApiProperty()
   id: string;
 
@@ -93,11 +101,14 @@ export class LecturerProfileResponse {
   @ApiProperty()
   lastName: string;
 
-  @ApiProperty()
-  otherName?: string;
+  @ApiProperty({ nullable: true })
+  otherName: string | null;
+
+  @ApiProperty({ nullable: true })
+  phone: string | null;
 
   @ApiProperty()
-  phone?: string;
+  title: string;
 
   @ApiProperty()
   departmentId: string;

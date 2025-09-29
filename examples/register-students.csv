@@ -1,21 +1,18 @@
-studentIdentifier,identifierType
-ANA/2025/001@student.oauife.edu.ng,email
-CHE/2025/002,matricNumber
-wrong-email-format,oauife,email
-BIO/2025/004@student.oauife.edu.ng,email
-PHA/2025/005,matricNumber
-invalidMatric/9999,matricNumber
-MOR/2025/007@student.oauife.edu.ng,email
-NUR/2025/008@student.oauife.edu.ng,email
-12345,matricNumber
-ANE/2025/010,matricNumber
-bademail@student, email
-COM/2025/011@student.oauife.edu.ng,email
-wrongMatric2025,matricNumber
-OBS/2025/015@student.oauife.edu.ng,email
-ANA/2025/016,matricNumber
-CHE/2025/017@student.oauife.edu.ng,email
-COM/2025/999@student.oauife.edu.ng,email
-PHA/2025/018,matricNumber
-NUR/2025/019@student.oauife.edu.ng,email
-MEN/2025/014x,matricNumber
+matricNumber,session,name
+ANA/2025/001,2024/25,James Udo Chinedu
+CHE/2025/002,2024/25,Ngozi Adeleke Oluwaseun
+HAE/2025/003,2024/25,Emeka Okafor Obinna
+BIO/2025/004,2024/25,Amina Bello Zainab
+MOR/2025/007,2024/25,Felix Adam Segun
+NUR/2025/008,2024/25,Ruth Okon Ekaette
+PHY/2025/009,2024/25,Michael Ali Osas
+ANE/2025/010,2024/25,Hannah Johnson Yetunde
+COM/2025/011,2024/25,Olamide Bakare Ademola
+DER/2025/012,2024/25,Susan Igwe Ngozi
+MED/2025/013,2024/25,Ibrahim Sule Musa
+MEN/2025/014,2024/25,Chika Eze Amarachi
+ANA/2025/016,2024/25,Okoro
+CHE/2025/017,2024/25,Grace Adeleke Ime
+,2024/25,Olamide Bakare Ademola
+PHA/2025/018,2024/25,Felix Adam Segun
+NUR/2025/019,2024/25,Ruth Okon

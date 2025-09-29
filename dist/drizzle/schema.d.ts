@@ -288,7 +288,7 @@ export declare const lecturer: import("drizzle-orm/pg-core").PgTableWithColumns<
             columnType: "PgText";
             data: string;
             driverParam: string;
-            notNull: false;
+            notNull: true;
             hasDefault: false;
             isPrimaryKey: false;
             isAutoincrement: false;

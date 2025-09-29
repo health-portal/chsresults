@@ -53,10 +53,15 @@ export class StudentsService {
         if (!foundDepartment)
           result.students.push({ ...row, isCreated: false });
         else {
-          await tx
+          const [insertedStudent] = await tx
             .insert(student)
-            .values({ ...row, departmentId: foundDepartment.id });
-          result.students.push({ ...row, isCreated: true });
+            .values({ ...row, departmentId: foundDepartment.id })
+            .returning()
+            .onConflictDoNothing();
+
+          if (insertedStudent)
+            result.students.push({ ...row, isCreated: true });
+          else result.students.push({ ...row, isCreated: false });
         }
       }
     });

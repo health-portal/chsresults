@@ -16,7 +16,7 @@ export declare class UpdateStudentBody {
     lastName?: string;
     otherName?: string;
     department?: string;
-    level: number;
+    level?: number;
     gender?: Gender;
     degree?: string;
 }

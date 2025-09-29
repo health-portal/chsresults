@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsEnum,
@@ -30,7 +31,7 @@ export class CreateStudentBody {
   @IsNotEmpty()
   lastName: string;
 
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
   otherName?: string;
@@ -42,6 +43,9 @@ export class CreateStudentBody {
 
   @ApiProperty()
   @IsNumber()
+  @Transform(({ value }: { value: string }) => parseInt(value, 10), {
+    toClassOnly: true,
+  })
   level: number;
 
   @ApiProperty({ enum: Gender })
@@ -77,10 +81,12 @@ export class UpdateStudentBody {
 
   @ApiProperty()
   @IsNumber()
-  level: number;
+  @IsOptional()
+  level?: number;
 
   @ApiProperty({ enum: Gender, required: false })
   @IsEnum(Gender)
+  @IsOptional()
   gender?: Gender;
 
   @ApiProperty({ required: false })

@@ -1,11 +1,11 @@
-code,title,lecturerEmail
-ANA101,Introduction to Anatomy,adeola.ajayi@oauife.edu.ng
-BIO102,Cell Biology,tunde.balogun@oauife.edu.ng
-CHM103,General Chemistry,bisi.ogunleye@oauife.edu.ng
-MED201,Pathophysiology,grace.okafor@oauife.edu.ng
-NUR202,Fundamentals of Nursing,segun.adebayo@oauife.edu.ng
-PHA203,Pharmacology I,amina.yusuf@oauife.edu.ng
-PSY204,Medical Psychology,daniel.eko@oauife.edu.ng
-RAD205,Introduction to Radiology,chika.okoro@oauife.edu.ng
-SUR301,Principles of Surgery,bola.adeniran@oauife.edu.ng
-PED302,Child Health and Paediatrics,fatima.lawal@oauife.edu.ng
+code,title,lecturerEmail,units,semester
+ANA101,Introduction to Anatomy,adeola.ajayi@oauife.edu.ng,3,1
+BIO102,Cell Biology,tunde.balogun@oauife.edu.ng,2,1
+CHM103,General Chemistry,bisi.ogunleye@oauife.edu.ng,3,1
+MED201,Pathophysiology,james.udo@oauife.edu.ng,4,2
+NUR202,Fundamentals of Nursing,segun.adebayo@oauife.edu.ng,3,1
+PHA203,Pharmacology I,amina.yusuf@oauife.edu.ng,3,2
+PSY204,Medical Psychology,daniel.eko@oauife.edu.ng,2,1
+RAD205,Introduction to Radiology,emeka.okafor@oauife.edu.ng,2,2
+SUR301,Principles of Surgery,bola.adenirn@oauife.edu.ng,6,2
+PED302,Child Health and Paediatrics,fatima.lawl@oauife.edu.ng,4,2

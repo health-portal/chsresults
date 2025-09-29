@@ -1,5 +1,5 @@
 export declare class SendEmailSchema {
-    toEmail: string[];
+    toEmail: string;
     subject: string;
     htmlContent: string;
 }

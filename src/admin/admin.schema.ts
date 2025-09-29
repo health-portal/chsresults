@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { admin } from 'drizzle/schema';
 
 export class AddAdminBody {
@@ -15,18 +15,14 @@ export class AddAdminBody {
 
 export class UpdateAdminBody {
   @ApiProperty()
-  @IsEmail()
-  email: string;
+  @IsString()
+  @IsOptional()
+  name?: string;
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  phone: string;
+  @IsOptional()
+  phone?: string;
 }
 
 type Admin = Omit<typeof admin.$inferSelect, 'password'>;

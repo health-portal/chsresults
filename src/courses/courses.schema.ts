@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
+  IsEmail,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
-  IsUUID,
 } from 'class-validator';
 import { course, enrollment } from 'drizzle/schema';
 import { ParseCsvData } from 'src/utils/csv';
@@ -21,7 +22,7 @@ export class UpsertCourseBody {
   title: string;
 
   @ApiProperty()
-  @IsUUID()
+  @IsEmail()
   lecturerEmail: string;
 
   @ApiProperty()
@@ -31,10 +32,16 @@ export class UpsertCourseBody {
 
   @ApiProperty()
   @IsNumber()
+  @Transform(({ value }: { value: string }) => parseInt(value, 10), {
+    toClassOnly: true,
+  })
   units: number;
 
   @ApiProperty()
   @IsNumber()
+  @Transform(({ value }: { value: string }) => parseInt(value, 10), {
+    toClassOnly: true,
+  })
   semester: number;
 }
 

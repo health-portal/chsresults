@@ -6,7 +6,7 @@ export declare class CreateLecturerBody {
     otherName?: string;
     phone?: string;
     department: string;
-    title?: string;
+    title: string;
 }
 export declare class UpdateLecturerBody {
     email: string;

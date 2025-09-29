@@ -29,26 +29,20 @@ __decorate([
     __metadata("design:type", String)
 ], AddAdminBody.prototype, "name", void 0);
 class UpdateAdminBody {
-    email;
     name;
     phone;
 }
 exports.UpdateAdminBody = UpdateAdminBody;
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsEmail)(),
-    __metadata("design:type", String)
-], UpdateAdminBody.prototype, "email", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateAdminBody.prototype, "name", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateAdminBody.prototype, "phone", void 0);
 class AdminProfileResponse {

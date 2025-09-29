@@ -29,8 +29,8 @@ export class AuthService {
     private readonly emailService: EmailService,
   ) {}
 
-  private generateAccessToken(payload: JwtPayload) {
-    return { accessToken: this.jwtService.sign(payload) };
+  private generateToken(payload: JwtPayload, expiresIn: string = '1d') {
+    return { accessToken: this.jwtService.sign(payload, { expiresIn }) };
   }
 
   private async findAdmin(email: string) {
@@ -69,7 +69,7 @@ export class AuthService {
     const isMatched = await bcrypt.compare(password, foundAdmin.password);
     if (!isMatched) throw new UnauthorizedException('Invalid credentials');
 
-    return this.generateAccessToken({
+    return this.generateToken({
       id: foundAdmin.id,
       role: UserRole.ADMIN,
     });
@@ -81,7 +81,7 @@ export class AuthService {
 
     await this.emailService.sendMail({
       subject: 'Reset Password',
-      toEmail: [foundAdmin.email],
+      toEmail: foundAdmin.email,
       htmlContent: ResetPasswordTemplate({
         name: foundAdmin.name,
         resetLink: '',
@@ -135,7 +135,7 @@ export class AuthService {
     const isMatched = await bcrypt.compare(password, foundLecturer.password);
     if (!isMatched) throw new UnauthorizedException('Invalid credentials');
 
-    return this.generateAccessToken({
+    return this.generateToken({
       id: foundLecturer.id,
       role: UserRole.LECTURER,
     });
@@ -147,7 +147,7 @@ export class AuthService {
 
     await this.emailService.sendMail({
       subject: 'Reset Password',
-      toEmail: [foundLecturer.email],
+      toEmail: foundLecturer.email,
       htmlContent: ResetPasswordTemplate({
         name: `${foundLecturer.firstName} ${foundLecturer.lastName}`,
         resetLink: '',
@@ -222,7 +222,7 @@ export class AuthService {
     const isMatched = await bcrypt.compare(password, foundStudent.password);
     if (!isMatched) throw new UnauthorizedException('Invalid credentials');
 
-    return this.generateAccessToken({
+    return this.generateToken({
       id: foundStudent.id,
       role: UserRole.STUDENT,
     });
@@ -239,7 +239,7 @@ export class AuthService {
 
     await this.emailService.sendMail({
       subject: 'Reset Password',
-      toEmail: [foundStudent.email],
+      toEmail: foundStudent.email,
       htmlContent: ResetPasswordTemplate({
         name: `${foundStudent.firstName} ${foundStudent.lastName}`,
         resetLink: '',

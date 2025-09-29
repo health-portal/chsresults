@@ -42,7 +42,7 @@ export const lecturer = pgTable('lecturer', {
   lastName: text('last_name').notNull(),
   otherName: text('other_name'),
   phone: text('phone'),
-  title: text('title'),
+  title: text('title').notNull(),
 
   departmentId: uuid('department_id')
     .references(() => department.id)

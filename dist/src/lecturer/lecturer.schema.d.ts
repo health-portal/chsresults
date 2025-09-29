@@ -1,3 +1,4 @@
+import { lecturer } from 'drizzle/schema';
 import { type StudentIdentifierType } from 'src/auth/auth.schema';
 import { ParseCsvData } from 'src/utils/csv';
 export declare class RegisterStudentBody {
@@ -27,14 +28,17 @@ export declare class UploadScoresResponse extends ParseCsvData<UploadScoreRow> {
     studentsUploadedFor: string[];
     studentsNotFound: string[];
 }
-export declare class LecturerProfileResponse {
+type Lecturer = Omit<typeof lecturer.$inferSelect, 'password'>;
+export declare class LecturerProfileResponse implements Lecturer {
     id: string;
     createdAt: Date;
     updatedAt: Date;
     email: string;
     firstName: string;
     lastName: string;
-    otherName?: string;
-    phone?: string;
+    otherName: string | null;
+    phone: string | null;
+    title: string;
     departmentId: string;
 }
+export {};

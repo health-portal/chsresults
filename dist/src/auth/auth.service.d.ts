@@ -7,7 +7,7 @@ export declare class AuthService {
     private readonly jwtService;
     private readonly emailService;
     constructor(db: DatabaseService, jwtService: JwtService, emailService: EmailService);
-    private generateAccessToken;
+    private generateToken;
     private findAdmin;
     private updateAdminPassword;
     activateAdmin({ email, password }: AuthUserBody): Promise<{
@@ -44,7 +44,7 @@ export declare class AuthService {
         lastName: string;
         otherName: string | null;
         phone: string | null;
-        title: string | null;
+        title: string;
         departmentId: string;
     }>;
     signinLecturer({ email, password }: AuthUserBody): Promise<{
@@ -63,7 +63,7 @@ export declare class AuthService {
         lastName: string;
         otherName: string | null;
         phone: string | null;
-        title: string | null;
+        title: string;
         departmentId: string;
     }>;
     private findStudent;

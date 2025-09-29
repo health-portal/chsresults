@@ -61,8 +61,8 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
         this.emailService = emailService;
     }
-    generateAccessToken(payload) {
-        return { accessToken: this.jwtService.sign(payload) };
+    generateToken(payload, expiresIn = '1d') {
+        return { accessToken: this.jwtService.sign(payload, { expiresIn }) };
     }
     async findAdmin(email) {
         return await this.db.client.query.admin.findFirst({
@@ -96,7 +96,7 @@ let AuthService = class AuthService {
         const isMatched = await bcrypt.compare(password, foundAdmin.password);
         if (!isMatched)
             throw new common_1.UnauthorizedException('Invalid credentials');
-        return this.generateAccessToken({
+        return this.generateToken({
             id: foundAdmin.id,
             role: auth_schema_1.UserRole.ADMIN,
         });
@@ -107,7 +107,7 @@ let AuthService = class AuthService {
             throw new common_1.NotFoundException(`Admin not found`);
         await this.emailService.sendMail({
             subject: 'Reset Password',
-            toEmail: [foundAdmin.email],
+            toEmail: foundAdmin.email,
             htmlContent: (0, email_schema_1.ResetPasswordTemplate)({
                 name: foundAdmin.name,
                 resetLink: '',
@@ -154,7 +154,7 @@ let AuthService = class AuthService {
         const isMatched = await bcrypt.compare(password, foundLecturer.password);
         if (!isMatched)
             throw new common_1.UnauthorizedException('Invalid credentials');
-        return this.generateAccessToken({
+        return this.generateToken({
             id: foundLecturer.id,
             role: auth_schema_1.UserRole.LECTURER,
         });
@@ -165,7 +165,7 @@ let AuthService = class AuthService {
             throw new common_1.NotFoundException(`Lecturer not found`);
         await this.emailService.sendMail({
             subject: 'Reset Password',
-            toEmail: [foundLecturer.email],
+            toEmail: foundLecturer.email,
             htmlContent: (0, email_schema_1.ResetPasswordTemplate)({
                 name: `${foundLecturer.firstName} ${foundLecturer.lastName}`,
                 resetLink: '',
@@ -219,7 +219,7 @@ let AuthService = class AuthService {
         const isMatched = await bcrypt.compare(password, foundStudent.password);
         if (!isMatched)
             throw new common_1.UnauthorizedException('Invalid credentials');
-        return this.generateAccessToken({
+        return this.generateToken({
             id: foundStudent.id,
             role: auth_schema_1.UserRole.STUDENT,
         });
@@ -231,7 +231,7 @@ let AuthService = class AuthService {
         });
         await this.emailService.sendMail({
             subject: 'Reset Password',
-            toEmail: [foundStudent.email],
+            toEmail: foundStudent.email,
             htmlContent: (0, email_schema_1.ResetPasswordTemplate)({
                 name: `${foundStudent.firstName} ${foundStudent.lastName}`,
                 resetLink: '',

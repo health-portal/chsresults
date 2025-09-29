@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateStudentsResponse = exports.CreateStudentResponse = exports.UpdateStudentBody = exports.CreateStudentBody = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 const student_schema_1 = require("../student/student.schema");
 const csv_1 = require("../utils/csv");
@@ -50,7 +51,7 @@ __decorate([
     __metadata("design:type", String)
 ], CreateStudentBody.prototype, "lastName", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ required: true }),
+    (0, swagger_1.ApiProperty)({ required: false }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
@@ -64,6 +65,9 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Transform)(({ value }) => parseInt(value, 10), {
+        toClassOnly: true,
+    }),
     __metadata("design:type", Number)
 ], CreateStudentBody.prototype, "level", void 0);
 __decorate([
@@ -114,11 +118,13 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
 ], UpdateStudentBody.prototype, "level", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ enum: student_schema_1.Gender, required: false }),
     (0, class_validator_1.IsEnum)(student_schema_1.Gender),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateStudentBody.prototype, "gender", void 0);
 __decorate([

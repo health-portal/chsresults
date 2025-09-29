@@ -14,10 +14,14 @@ const common_1 = require("@nestjs/common");
 const drizzle_orm_1 = require("drizzle-orm");
 const schema_1 = require("../../drizzle/schema");
 const database_service_1 = require("../database/database.service");
+const email_service_1 = require("../email/email.service");
+const email_schema_1 = require("../email/email.schema");
 let AdminService = class AdminService {
     db;
-    constructor(db) {
+    emailService;
+    constructor(db, emailService) {
         this.db = db;
+        this.emailService = emailService;
     }
     async addAdmin({ email, name }) {
         const foundAdmin = await this.db.client.query.admin.findFirst({
@@ -29,6 +33,14 @@ let AdminService = class AdminService {
             .insert(schema_1.admin)
             .values({ email, name })
             .returning();
+        await this.emailService.sendMail({
+            subject: 'Invitation to Activate Admin',
+            toEmail: insertedAdmin.email,
+            htmlContent: (0, email_schema_1.InvitationTemplate)({
+                name: insertedAdmin.name,
+                registrationLink: '',
+            }),
+        });
         const { password: _, ...adminProfile } = insertedAdmin;
         return adminProfile;
     }
@@ -50,6 +62,7 @@ let AdminService = class AdminService {
         const [updatedAdmin] = await this.db.client
             .update(schema_1.admin)
             .set({ name, phone })
+            .where((0, drizzle_orm_1.eq)(schema_1.admin.id, foundAdmin.id))
             .returning();
         const { password: _, ...adminProfile } = updatedAdmin;
         return adminProfile;
@@ -58,6 +71,7 @@ let AdminService = class AdminService {
 exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [database_service_1.DatabaseService])
+    __metadata("design:paramtypes", [database_service_1.DatabaseService,
+        email_service_1.EmailService])
 ], AdminService);
 //# sourceMappingURL=admin.service.js.map

@@ -8,6 +8,7 @@ const common_1 = require("@nestjs/common");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.useGlobalPipes(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    app.enableCors();
     const swaggerConfig = new swagger_1.DocumentBuilder()
         .setTitle('Marksheet API')
         .setVersion('1.0')

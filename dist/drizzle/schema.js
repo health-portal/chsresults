@@ -31,7 +31,7 @@ exports.lecturer = (0, pg_core_1.pgTable)('lecturer', {
     lastName: (0, pg_core_1.text)('last_name').notNull(),
     otherName: (0, pg_core_1.text)('other_name'),
     phone: (0, pg_core_1.text)('phone'),
-    title: (0, pg_core_1.text)('title'),
+    title: (0, pg_core_1.text)('title').notNull(),
     departmentId: (0, pg_core_1.uuid)('department_id')
         .references(() => exports.department.id)
         .notNull(),

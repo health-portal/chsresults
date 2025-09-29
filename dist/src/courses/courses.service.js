@@ -57,10 +57,15 @@ let CoursesService = class CoursesService {
                     result.courses.push({ ...row, isCreated: false });
                     continue;
                 }
-                await tx
+                const [insertedCourse] = await tx
                     .insert(schema_1.course)
-                    .values({ ...row, lecturerId: foundLecturer.id });
-                result.courses.push({ ...row, isCreated: true });
+                    .values({ ...row, lecturerId: foundLecturer.id })
+                    .returning()
+                    .onConflictDoNothing();
+                if (insertedCourse)
+                    result.courses.push({ ...row, isCreated: true });
+                else
+                    result.courses.push({ ...row, isCreated: false });
             }
         });
         return result;

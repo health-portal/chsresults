@@ -34,8 +34,8 @@ export class CreateLecturerBody {
 
   @ApiProperty()
   @IsString()
-  @IsOptional()
-  title?: string;
+  @IsNotEmpty()
+  title: string;
 }
 
 export class UpdateLecturerBody {

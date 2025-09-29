@@ -62,11 +62,14 @@ export class LecturerService {
         });
 
         if (foundStudent) {
-          await tx
+          const [insertedEnrollment] = await tx
             .insert(enrollment)
             .values({ courseId, studentId: foundStudent.id, session })
+            .returning()
             .onConflictDoNothing();
-          result.registeredStudents.push(matricNumber);
+
+          if (insertedEnrollment) result.registeredStudents.push(matricNumber);
+          else result.unregisteredStudents.push(matricNumber);
         } else {
           result.unregisteredStudents.push(matricNumber);
         }
@@ -148,7 +151,9 @@ export class LecturerService {
         if (foundStudent) {
           await tx
             .update(enrollment)
-            .set({ scores: { continuousAssessment, examination } });
+            .set({ scores: { continuousAssessment, examination } })
+            .where(eq(enrollment.studentId, foundStudent.id))
+            .returning();
 
           result.studentsUploadedFor.push(matricNumber);
         } else {
@@ -168,20 +173,21 @@ export class LecturerService {
   ) {
     await this.validateCourseAccess(lecturerId, courseId);
 
-    const enrollmentRecord = await this.db.client.query.enrollment.findFirst({
+    const foundEnrollment = await this.db.client.query.enrollment.findFirst({
       where: and(
         eq(enrollment.courseId, courseId),
         eq(enrollment.studentId, studentId),
       ),
     });
 
-    if (!enrollmentRecord) {
+    if (!foundEnrollment) {
       throw new NotFoundException('Student not found in this course');
     }
 
     const [updatedEnrollment] = await this.db.client
       .update(enrollment)
       .set({ scores: body })
+      .where(eq(enrollment.studentId, foundEnrollment.studentId))
       .returning();
 
     return updatedEnrollment;

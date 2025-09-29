@@ -35,7 +35,7 @@ export declare class AuthController {
         lastName: string;
         otherName: string | null;
         phone: string | null;
-        title: string | null;
+        title: string;
         departmentId: string;
     }>;
     signinLecturer(body: AuthUserBody): Promise<{
@@ -54,7 +54,7 @@ export declare class AuthController {
         lastName: string;
         otherName: string | null;
         phone: string | null;
-        title: string | null;
+        title: string;
         departmentId: string;
     }>;
     activateStudent(body: AuthStudentBody): Promise<{

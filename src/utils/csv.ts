@@ -17,10 +17,10 @@ export class ParseCsvData<T extends object> {
   @ApiProperty()
   numberOfRows: number;
 
-  @ApiProperty({ type:[Object] })
+  @ApiProperty({ type: [Object] })
   validRows: T[];
 
-  @ApiProperty({ type:[RowValidationError] })
+  @ApiProperty({ type: [RowValidationError] })
   invalidRows: RowValidationError[];
 }
 
@@ -36,7 +36,7 @@ export async function parseCsvFile<T extends object>(
 
     const stream = Readable.from(file.buffer);
     stream
-      .pipe(csv.parse({ headers: true }))
+      .pipe(csv.parse({ headers: true, strictColumnHandling: true }))
       .on('error', (error) => {
         reject(new UnprocessableEntityException(error.message));
       })

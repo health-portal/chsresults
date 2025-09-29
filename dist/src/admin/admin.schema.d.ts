@@ -4,9 +4,8 @@ export declare class AddAdminBody {
     name: string;
 }
 export declare class UpdateAdminBody {
-    email: string;
-    name: string;
-    phone: string;
+    name?: string;
+    phone?: string;
 }
 type Admin = Omit<typeof admin.$inferSelect, 'password'>;
 export declare class AdminProfileResponse implements Admin {

@@ -49,11 +49,15 @@ let LecturerService = class LecturerService {
                     where: (0, drizzle_orm_1.eq)(schema_1.student.matricNumber, matricNumber),
                 });
                 if (foundStudent) {
-                    await tx
+                    const [insertedEnrollment] = await tx
                         .insert(schema_1.enrollment)
                         .values({ courseId, studentId: foundStudent.id, session })
+                        .returning()
                         .onConflictDoNothing();
-                    result.registeredStudents.push(matricNumber);
+                    if (insertedEnrollment)
+                        result.registeredStudents.push(matricNumber);
+                    else
+                        result.unregisteredStudents.push(matricNumber);
                 }
                 else {
                     result.unregisteredStudents.push(matricNumber);
@@ -105,7 +109,9 @@ let LecturerService = class LecturerService {
                 if (foundStudent) {
                     await tx
                         .update(schema_1.enrollment)
-                        .set({ scores: { continuousAssessment, examination } });
+                        .set({ scores: { continuousAssessment, examination } })
+                        .where((0, drizzle_orm_1.eq)(schema_1.enrollment.studentId, foundStudent.id))
+                        .returning();
                     result.studentsUploadedFor.push(matricNumber);
                 }
                 else {
@@ -117,15 +123,16 @@ let LecturerService = class LecturerService {
     }
     async editScore(lecturerId, courseId, studentId, body) {
         await this.validateCourseAccess(lecturerId, courseId);
-        const enrollmentRecord = await this.db.client.query.enrollment.findFirst({
+        const foundEnrollment = await this.db.client.query.enrollment.findFirst({
             where: (0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.enrollment.courseId, courseId), (0, drizzle_orm_1.eq)(schema_1.enrollment.studentId, studentId)),
         });
-        if (!enrollmentRecord) {
+        if (!foundEnrollment) {
             throw new common_1.NotFoundException('Student not found in this course');
         }
         const [updatedEnrollment] = await this.db.client
             .update(schema_1.enrollment)
             .set({ scores: body })
+            .where((0, drizzle_orm_1.eq)(schema_1.enrollment.studentId, foundEnrollment.studentId))
             .returning();
         return updatedEnrollment;
     }

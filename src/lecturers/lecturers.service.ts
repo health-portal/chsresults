@@ -50,10 +50,15 @@ export class LecturersService {
         if (!foundDepartment)
           result.lecturers.push({ ...row, isCreated: false });
         else {
-          await tx
+          const [insertedLecturer] = await tx
             .insert(lecturer)
-            .values({ ...row, departmentId: foundDepartment.id });
-          result.lecturers.push({ ...row, isCreated: true });
+            .values({ ...row, departmentId: foundDepartment.id })
+            .returning()
+            .onConflictDoNothing();
+
+          if (insertedLecturer)
+            result.lecturers.push({ ...row, isCreated: true });
+          else result.lecturers.push({ ...row, isCreated: false });
         }
       }
     });

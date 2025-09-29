@@ -38,6 +38,22 @@ class FacultyResponse {
     updatedAt;
 }
 exports.FacultyResponse = FacultyResponse;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], FacultyResponse.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], FacultyResponse.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], FacultyResponse.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], FacultyResponse.prototype, "updatedAt", void 0);
 class DepartmentResponse extends FacultyResponse {
     facultyId;
 }
