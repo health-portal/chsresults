@@ -206,6 +206,7 @@ export class LecturerService {
 
     const foundEnrollments = await this.db.client.query.enrollment.findMany({
       where: eq(enrollment.courseId, courseId),
+      with: { student: { columns: { password: false } } },
     });
 
     return foundEnrollments;

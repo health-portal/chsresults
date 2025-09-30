@@ -42,6 +42,20 @@ export declare class LecturerController {
         scores: unknown;
         courseId: string;
         studentId: string;
+        student: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            email: string;
+            firstName: string;
+            lastName: string;
+            otherName: string | null;
+            departmentId: string;
+            matricNumber: string;
+            level: number;
+            gender: string;
+            degree: string;
+        };
     }[]>;
     listCourseStudents(lecturerId: string, courseId: string): Promise<{
         id: string;

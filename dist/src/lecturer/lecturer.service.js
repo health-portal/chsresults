@@ -145,6 +145,7 @@ let LecturerService = class LecturerService {
         }
         const foundEnrollments = await this.db.client.query.enrollment.findMany({
             where: (0, drizzle_orm_1.eq)(schema_1.enrollment.courseId, courseId),
+            with: { student: { columns: { password: false } } },
         });
         return foundEnrollments;
     }
