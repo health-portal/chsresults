@@ -57,7 +57,7 @@ export class CollegeController {
   @Patch('faculties/:facultyId')
   @ApiOperation({ summary: 'Update faculty name' })
   @ApiParam({ name: 'facultyId', type: String, description: 'Faculty UUID' })
-  @ApiBody({ type: UpsertFacultyAndDepartmentBody })
+  @ApiBody({ type: UpsertFacultyAndDepartmentB>ody })
   @ApiOkResponse({ type: FacultyResponse })
   @ApiNotFoundResponse({ description: 'Faculty not found' })
   async updateFaculty(

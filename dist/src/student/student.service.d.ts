@@ -21,10 +21,10 @@ export declare class StudentService {
         studentId: string;
     }>;
     getProfile(studentId: string): Promise<{
+        email: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        email: string;
         firstName: string;
         lastName: string;
         otherName: string | null;

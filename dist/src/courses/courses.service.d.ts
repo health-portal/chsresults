@@ -4,37 +4,37 @@ export declare class CoursesService {
     private readonly db;
     constructor(db: DatabaseService);
     createCourse({ code, title, lecturerEmail, semester, units, }: CreateCourseBody): Promise<{
-        code: string;
-        title: string;
-        description: string | null;
-        units: number;
-        semester: number;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
+        description: string | null;
+        code: string;
+        units: number;
+        semester: number;
         lecturerId: string;
     }>;
     createCourses(file: Express.Multer.File): Promise<CreateCoursesResponse>;
     getCourses(): Promise<{
-        code: string;
-        title: string;
-        description: string | null;
-        units: number;
-        semester: number;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
+        description: string | null;
+        code: string;
+        units: number;
+        semester: number;
         lecturerId: string;
         lecturer: {
-            title: string;
+            email: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            email: string;
+            phone: string | null;
             firstName: string;
             lastName: string;
             otherName: string | null;
-            phone: string | null;
+            title: string;
             departmentId: string;
         };
     }[]>;
@@ -50,14 +50,14 @@ export declare class CoursesService {
         lecturerId: string;
     }>;
     deleteCourse(courseId: string): Promise<{
-        code: string;
-        title: string;
-        description: string | null;
-        units: number;
-        semester: number;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
+        description: string | null;
+        code: string;
+        units: number;
+        semester: number;
         lecturerId: string;
     }>;
 }

@@ -70,7 +70,7 @@ __decorate([
     (0, common_1.Patch)('faculties/:facultyId'),
     (0, swagger_1.ApiOperation)({ summary: 'Update faculty name' }),
     (0, swagger_1.ApiParam)({ name: 'facultyId', type: String, description: 'Faculty UUID' }),
-    (0, swagger_1.ApiBody)({ type: college_schema_1.UpsertFacultyAndDepartmentBody }),
+    (0, swagger_1.ApiBody)({ type: UpsertFacultyAndDepartmentB > ody }),
     (0, swagger_1.ApiOkResponse)({ type: college_schema_1.FacultyResponse }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Faculty not found' }),
     __param(0, (0, common_1.Param)('facultyId', common_1.ParseUUIDPipe)),
