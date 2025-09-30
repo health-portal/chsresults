@@ -184,6 +184,13 @@ __decorate([
     (0, swagger_1.ApiProperty)({ type: lecturer_schema_1.LecturerProfileResponse }),
     __metadata("design:type", lecturer_schema_1.LecturerProfileResponse)
 ], CourseResponse.prototype, "lecturer", void 0);
+class DepartmentName {
+    name;
+}
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], DepartmentName.prototype, "name", void 0);
 class EnrollmentResponse {
     id;
     createdAt;
@@ -193,6 +200,7 @@ class EnrollmentResponse {
     courseId;
     studentId;
     student;
+    department;
 }
 exports.EnrollmentResponse = EnrollmentResponse;
 __decorate([
@@ -227,4 +235,8 @@ __decorate([
     (0, swagger_1.ApiProperty)({ type: student_schema_1.StudentProfileResponse }),
     __metadata("design:type", student_schema_1.StudentProfileResponse)
 ], EnrollmentResponse.prototype, "student", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: DepartmentName }),
+    __metadata("design:type", DepartmentName)
+], EnrollmentResponse.prototype, "department", void 0);
 //# sourceMappingURL=courses.schema.js.map

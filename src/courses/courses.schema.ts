@@ -131,6 +131,11 @@ export class CourseResponse implements Course {
 
 type Enrollment = typeof enrollment.$inferSelect;
 
+class DepartmentName {
+  @ApiProperty()
+  name: string;
+}
+
 export class EnrollmentResponse implements Enrollment {
   @ApiProperty()
   id: string;
@@ -155,4 +160,7 @@ export class EnrollmentResponse implements Enrollment {
 
   @ApiProperty({ type: StudentProfileResponse })
   student: StudentProfileResponse;
+
+  @ApiProperty({ type: DepartmentName })
+  department: DepartmentName;
 }

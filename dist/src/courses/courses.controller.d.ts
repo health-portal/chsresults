@@ -4,37 +4,37 @@ export declare class CoursesController {
     private readonly coursesService;
     constructor(coursesService: CoursesService);
     createCourse(body: CreateCourseBody): Promise<{
+        code: string;
+        title: string;
+        description: string | null;
+        units: number;
+        semester: number;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
-        description: string | null;
-        code: string;
-        units: number;
-        semester: number;
         lecturerId: string;
     }>;
     createCourses(file: Express.Multer.File): Promise<CreateCoursesResponse>;
     getCourses(): Promise<{
+        code: string;
+        title: string;
+        description: string | null;
+        units: number;
+        semester: number;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
-        description: string | null;
-        code: string;
-        units: number;
-        semester: number;
         lecturerId: string;
         lecturer: {
+            title: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             email: string;
-            phone: string | null;
             firstName: string;
             lastName: string;
             otherName: string | null;
-            title: string;
+            phone: string | null;
             departmentId: string;
         };
     }[]>;
@@ -50,14 +50,14 @@ export declare class CoursesController {
         lecturerId: string;
     }>;
     deleteCourse(courseId: string): Promise<{
+        code: string;
+        title: string;
+        description: string | null;
+        units: number;
+        semester: number;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
-        description: string | null;
-        code: string;
-        units: number;
-        semester: number;
         lecturerId: string;
     }>;
 }

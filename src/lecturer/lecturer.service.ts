@@ -206,26 +206,29 @@ export class LecturerService {
 
     const foundEnrollments = await this.db.client.query.enrollment.findMany({
       where: eq(enrollment.courseId, courseId),
-      with: { student: { columns: { password: false } } },
+      with: {
+        student: {
+          columns: { password: false },
+          with: { department: { columns: { name: true } } },
+        },
+      },
     });
 
     return foundEnrollments;
   }
 
   async listCourseStudents(lecturerId: string, courseId: string) {
-    const foundCourse = await this.db.client.query.course.findFirst({
-      where: and(eq(course.id, courseId), eq(course.lecturerId, lecturerId)),
-    });
-
-    if (!foundCourse) {
-      throw new ForbiddenException(
-        'You are not authorized to view this course',
-      );
-    }
+    await this.validateCourseAccess(lecturerId, courseId);
 
     const foundEnrollments = await this.db.client.query.enrollment.findMany({
       where: eq(enrollment.courseId, courseId),
-      with: { student: { columns: { password: false } } },
+      columns: { scores: false },
+      with: {
+        student: {
+          columns: { password: false },
+          with: { department: { columns: { name: true } } },
+        },
+      },
     });
 
     return foundEnrollments;

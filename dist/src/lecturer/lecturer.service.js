@@ -145,20 +145,26 @@ let LecturerService = class LecturerService {
         }
         const foundEnrollments = await this.db.client.query.enrollment.findMany({
             where: (0, drizzle_orm_1.eq)(schema_1.enrollment.courseId, courseId),
-            with: { student: { columns: { password: false } } },
+            with: {
+                student: {
+                    columns: { password: false },
+                    with: { department: { columns: { name: true } } },
+                },
+            },
         });
         return foundEnrollments;
     }
     async listCourseStudents(lecturerId, courseId) {
-        const foundCourse = await this.db.client.query.course.findFirst({
-            where: (0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.course.id, courseId), (0, drizzle_orm_1.eq)(schema_1.course.lecturerId, lecturerId)),
-        });
-        if (!foundCourse) {
-            throw new common_1.ForbiddenException('You are not authorized to view this course');
-        }
+        await this.validateCourseAccess(lecturerId, courseId);
         const foundEnrollments = await this.db.client.query.enrollment.findMany({
             where: (0, drizzle_orm_1.eq)(schema_1.enrollment.courseId, courseId),
-            with: { student: { columns: { password: false } } },
+            columns: { scores: false },
+            with: {
+                student: {
+                    columns: { password: false },
+                    with: { department: { columns: { name: true } } },
+                },
+            },
         });
         return foundEnrollments;
     }

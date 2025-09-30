@@ -56,6 +56,9 @@ export declare class LecturerService {
             level: number;
             gender: string;
             degree: string;
+            department: {
+                name: string;
+            };
         };
     }[]>;
     listCourseStudents(lecturerId: string, courseId: string): Promise<{
@@ -63,7 +66,6 @@ export declare class LecturerService {
         createdAt: Date;
         updatedAt: Date;
         session: string;
-        scores: unknown;
         courseId: string;
         studentId: string;
         student: {
@@ -79,6 +81,9 @@ export declare class LecturerService {
             level: number;
             gender: string;
             degree: string;
+            department: {
+                name: string;
+            };
         };
     }[]>;
     getProfile(lecturerId: string): Promise<{
