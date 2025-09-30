@@ -1,5 +1,6 @@
 import { course, enrollment } from 'drizzle/schema';
 import { LecturerProfileResponse } from 'src/lecturer/lecturer.schema';
+import { StudentProfileResponse } from 'src/student/student.schema';
 import { ParseCsvData } from 'src/utils/csv';
 export declare class CreateCourseBody {
     code: string;
@@ -45,5 +46,6 @@ export declare class EnrollmentResponse implements Enrollment {
     scores: unknown;
     courseId: string;
     studentId: string;
+    student: StudentProfileResponse;
 }
 export {};

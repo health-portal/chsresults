@@ -5,9 +5,11 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { env } from 'src/environment';
 import { JwtStrategy } from './jwt.strategy';
+import { EmailQueueModule } from 'src/email-queue/email-queue.module';
 
 @Module({
   imports: [
+    EmailQueueModule,
     PassportModule,
     JwtModule.register({
       secret: env.JWT_SECRET,

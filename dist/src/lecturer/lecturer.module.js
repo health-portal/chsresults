@@ -10,11 +10,13 @@ exports.LecturerModule = void 0;
 const common_1 = require("@nestjs/common");
 const lecturer_service_1 = require("./lecturer.service");
 const lecturer_controller_1 = require("./lecturer.controller");
+const email_queue_module_1 = require("../email-queue/email-queue.module");
 let LecturerModule = class LecturerModule {
 };
 exports.LecturerModule = LecturerModule;
 exports.LecturerModule = LecturerModule = __decorate([
     (0, common_1.Module)({
+        imports: [email_queue_module_1.EmailQueueModule],
         controllers: [lecturer_controller_1.LecturerController],
         providers: [lecturer_service_1.LecturerService],
     })

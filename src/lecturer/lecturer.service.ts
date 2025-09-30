@@ -224,6 +224,7 @@ export class LecturerService {
 
     const foundEnrollments = await this.db.client.query.enrollment.findMany({
       where: eq(enrollment.courseId, courseId),
+      with: { student: { columns: { password: false } } },
     });
 
     return foundEnrollments;
@@ -232,11 +233,10 @@ export class LecturerService {
   async getProfile(lecturerId: string) {
     const foundLecturer = await this.db.client.query.lecturer.findFirst({
       where: eq(lecturer.id, lecturerId),
+      columns: { password: false },
     });
-
     if (!foundLecturer) throw new UnauthorizedException('Lecturer not found');
 
-    const { password: _, ...lecturerProfile } = foundLecturer;
-    return lecturerProfile;
+    return foundLecturer;
   }
 }

@@ -9,6 +9,7 @@ import {
 } from 'class-validator';
 import { course, enrollment } from 'drizzle/schema';
 import { LecturerProfileResponse } from 'src/lecturer/lecturer.schema';
+import { StudentProfileResponse } from 'src/student/student.schema';
 import { ParseCsvData } from 'src/utils/csv';
 
 export class CreateCourseBody {
@@ -151,4 +152,7 @@ export class EnrollmentResponse implements Enrollment {
 
   @ApiProperty()
   studentId: string;
+
+  @ApiProperty({ type: StudentProfileResponse })
+  student: StudentProfileResponse;
 }

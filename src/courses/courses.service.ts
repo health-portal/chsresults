@@ -82,23 +82,7 @@ export class CoursesService {
 
   async getCourses() {
     return await this.db.client.query.course.findMany({
-      with: {
-        lecturer: {
-          columns: {
-            title: true,
-            id: true,
-            createdAt: true,
-            updatedAt: true,
-            email: true,
-            phone: true,
-            password: false,
-            firstName: true,
-            lastName: true,
-            otherName: true,
-            departmentId: true,
-          },
-        },
-      },
+      with: { lecturer: { columns: { password: false } } },
     });
   }
 

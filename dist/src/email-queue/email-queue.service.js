@@ -16,23 +16,40 @@ const client_1 = require("@prisma/client");
 const prisma_pgmq_1 = require("prisma-pgmq");
 const smtpexpress_1 = require("smtpexpress");
 const environment_1 = require("../environment");
-let EmailQueueService = class EmailQueueService extends client_1.PrismaClient {
+let EmailQueueService = class EmailQueueService {
     queueName = 'email';
+    prisma;
     emailClient = (0, smtpexpress_1.createClient)({
         projectId: environment_1.env.SMTPEXPRESS_PROJECT_ID,
         projectSecret: environment_1.env.SMTPEXPRESS_PROJECT_SECRET,
     });
     async onModuleInit() {
-        await prisma_pgmq_1.pgmq.createQueue(this, this.queueName);
-        console.log('Message queue initialised');
+        this.prisma = new client_1.PrismaClient();
+        await this.prisma.$connect();
+        await prisma_pgmq_1.pgmq.createQueue(this.prisma, this.queueName);
+    }
+    async onModuleDestroy() {
+        await this.prisma.$disconnect();
     }
     async createTask(data) {
-        await prisma_pgmq_1.pgmq.send(this, this.queueName, { data });
-        console.log('Created task:', JSON.stringify(data));
+        await prisma_pgmq_1.pgmq.send(this.prisma, this.queueName, { data });
+        console.log('Created task:', data);
     }
     async processTask() {
-        const [message] = await prisma_pgmq_1.pgmq.pop(this, this.queueName);
-        console.log('Popped task:', JSON.stringify(message));
+        const [message] = await prisma_pgmq_1.pgmq.pop(this.prisma, this.queueName);
+        if (message) {
+            const { subject, toEmail, htmlContent } = message.message;
+            await this.emailClient.sendApi.sendMail({
+                subject,
+                message: htmlContent,
+                sender: {
+                    name: 'Obafemi Awolowo University - College of Health Sciences',
+                    email: environment_1.env.SMTPEXPRESS_SENDER_EMAIL,
+                },
+                recipients: toEmail,
+            });
+            console.log(`Popped task:`, message.message);
+        }
     }
 };
 exports.EmailQueueService = EmailQueueService;

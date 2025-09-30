@@ -157,17 +157,18 @@ let LecturerService = class LecturerService {
         }
         const foundEnrollments = await this.db.client.query.enrollment.findMany({
             where: (0, drizzle_orm_1.eq)(schema_1.enrollment.courseId, courseId),
+            with: { student: { columns: { password: false } } },
         });
         return foundEnrollments;
     }
     async getProfile(lecturerId) {
         const foundLecturer = await this.db.client.query.lecturer.findFirst({
             where: (0, drizzle_orm_1.eq)(schema_1.lecturer.id, lecturerId),
+            columns: { password: false },
         });
         if (!foundLecturer)
             throw new common_1.UnauthorizedException('Lecturer not found');
-        const { password: _, ...lecturerProfile } = foundLecturer;
-        return lecturerProfile;
+        return foundLecturer;
     }
 };
 exports.LecturerService = LecturerService;

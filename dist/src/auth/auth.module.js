@@ -14,12 +14,14 @@ const passport_1 = require("@nestjs/passport");
 const jwt_1 = require("@nestjs/jwt");
 const environment_1 = require("../environment");
 const jwt_strategy_1 = require("./jwt.strategy");
+const email_queue_module_1 = require("../email-queue/email-queue.module");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            email_queue_module_1.EmailQueueModule,
             passport_1.PassportModule,
             jwt_1.JwtModule.register({
                 secret: environment_1.env.JWT_SECRET,
