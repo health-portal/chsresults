@@ -4,18 +4,27 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
-import { admin } from 'drizzle/schema';
+import { admin, token } from 'drizzle/schema';
 import { DatabaseService } from 'src/database/database.service';
 import { AddAdminBody, UpdateAdminBody } from './admin.schema';
 import { EmailQueueService } from 'src/email-queue/email-queue.service';
 import { InvitationTemplate } from 'src/email-queue/email-queue.schema';
+import { env } from 'src/environment';
+import { JwtPayload, TokenType, UserRole } from 'src/auth/auth.schema';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AdminService {
   constructor(
     private readonly db: DatabaseService,
+    private readonly jwtService: JwtService,
     private readonly emailQueueService: EmailQueueService,
   ) {}
+
+  private async generateToken(payload: JwtPayload, expiresIn: string = '1d') {
+    const token = await this.jwtService.signAsync(payload, { expiresIn });
+    return token;
+  }
 
   async addAdmin({ email, name }: AddAdminBody) {
     const foundAdmin = await this.db.client.query.admin.findFirst({
@@ -28,17 +37,41 @@ export class AdminService {
       .values({ email, name })
       .returning();
 
+    const tokenString = await this.generateToken(
+      { id: insertedAdmin.id, role: UserRole.ADMIN },
+      '7d',
+    );
+
+    await this.db.client
+      .insert(token)
+      .values({
+        userId: insertedAdmin.id,
+        userRole: UserRole.ADMIN,
+        tokenString,
+        tokenType: TokenType.ACTIVATE_ACCOUNT,
+      })
+      .onConflictDoUpdate({
+        target: [token.userId, token.userRole],
+        set: { tokenString, tokenType: TokenType.ACTIVATE_ACCOUNT },
+      });
+
     await this.emailQueueService.createTask({
-      subject: 'Invitation to Activate Admin',
+      subject: 'Invitation to Verify Admin',
       toEmail: insertedAdmin.email,
       htmlContent: InvitationTemplate({
         name: insertedAdmin.name,
-        registrationLink: '',
+        registrationLink: `${env.FRONTEND_BASE_URL}/admin/activate/?token=${tokenString}`,
       }),
     });
 
     const { password: _, ...adminProfile } = insertedAdmin;
     return adminProfile;
+  }
+
+  async getAdmins() {
+    return await this.db.client.query.admin.findMany({
+      columns: { password: false },
+    });
   }
 
   async getProfile(adminId: string) {

@@ -9,13 +9,56 @@ import {
   CreateStudentsResponse,
   UpdateStudentBody,
 } from './students.schema';
-import { department, student } from 'drizzle/schema';
+import { department, student, token } from 'drizzle/schema';
 import { eq, or } from 'drizzle-orm';
 import { parseCsvFile } from 'src/utils/csv';
+import { EmailQueueService } from 'src/email-queue/email-queue.service';
+import { JwtPayload, TokenType, UserRole } from 'src/auth/auth.schema';
+import { JwtService } from '@nestjs/jwt';
+import { InvitationTemplate } from 'src/email-queue/email-queue.schema';
+import { env } from 'src/environment';
 
 @Injectable()
 export class StudentsService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(
+    private readonly db: DatabaseService,
+    private readonly jwtService: JwtService,
+    private readonly emailQueueService: EmailQueueService,
+  ) {}
+
+  private async generateToken(payload: JwtPayload, expiresIn: string = '1d') {
+    const token = await this.jwtService.signAsync(payload, { expiresIn });
+    return token;
+  }
+
+  async inviteStudent(id: string, email: string, name: string) {
+    const tokenString = await this.generateToken(
+      { id, role: UserRole.STUDENT },
+      '7d',
+    );
+
+    await this.db.client
+      .insert(token)
+      .values({
+        userId: id,
+        userRole: UserRole.ADMIN,
+        tokenString,
+        tokenType: TokenType.ACTIVATE_ACCOUNT,
+      })
+      .onConflictDoUpdate({
+        target: [token.userId, token.userRole],
+        set: { tokenString, tokenType: TokenType.ACTIVATE_ACCOUNT },
+      });
+
+    await this.emailQueueService.createTask({
+      subject: 'Invitation to Activate Account',
+      toEmail: email,
+      htmlContent: InvitationTemplate({
+        name,
+        registrationLink: `${env.FRONTEND_BASE_URL}/student/activate/?token=${tokenString}`,
+      }),
+    });
+  }
 
   async createStudent(body: CreateStudentBody) {
     const foundStudent = await this.db.client.query.student.findFirst({
@@ -36,6 +79,12 @@ export class StudentsService {
       .insert(student)
       .values({ ...body, departmentId: foundDepartment.id })
       .returning();
+
+    await this.inviteStudent(
+      insertedStudent.id,
+      insertedStudent.email,
+      `${insertedStudent.firstName} ${insertedStudent.lastName}`,
+    );
 
     const { password: _, ...studentProfile } = insertedStudent;
     return studentProfile;
@@ -59,9 +108,15 @@ export class StudentsService {
             .returning()
             .onConflictDoNothing();
 
-          if (insertedStudent)
+          if (insertedStudent) {
+            await this.inviteStudent(
+              insertedStudent.id,
+              insertedStudent.email,
+              `${insertedStudent.firstName} ${insertedStudent.lastName}`,
+            );
+
             result.students.push({ ...row, isCreated: true });
-          else result.students.push({ ...row, isCreated: false });
+          } else result.students.push({ ...row, isCreated: false });
         }
       }
     });

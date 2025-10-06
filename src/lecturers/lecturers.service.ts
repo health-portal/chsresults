@@ -9,13 +9,56 @@ import {
   CreateLecturersResponse,
   UpdateLecturerBody,
 } from './lecturers.schema';
-import { department, lecturer } from 'drizzle/schema';
+import { department, lecturer, token } from 'drizzle/schema';
 import { eq } from 'drizzle-orm';
 import { parseCsvFile } from 'src/utils/csv';
+import { JwtService } from '@nestjs/jwt';
+import { EmailQueueService } from 'src/email-queue/email-queue.service';
+import { JwtPayload, TokenType, UserRole } from 'src/auth/auth.schema';
+import { InvitationTemplate } from 'src/email-queue/email-queue.schema';
+import { env } from 'src/environment';
 
 @Injectable()
 export class LecturersService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(
+    private readonly db: DatabaseService,
+    private readonly jwtService: JwtService,
+    private readonly emailQueueService: EmailQueueService,
+  ) {}
+
+  private async generateToken(payload: JwtPayload, expiresIn: string = '1d') {
+    const token = await this.jwtService.signAsync(payload, { expiresIn });
+    return token;
+  }
+
+  async inviteLecturer(id: string, email: string, name: string) {
+    const tokenString = await this.generateToken(
+      { id, role: UserRole.LECTURER },
+      '7d',
+    );
+
+    await this.db.client
+      .insert(token)
+      .values({
+        userId: id,
+        userRole: UserRole.LECTURER,
+        tokenString,
+        tokenType: TokenType.ACTIVATE_ACCOUNT,
+      })
+      .onConflictDoUpdate({
+        target: [token.userId, token.userRole],
+        set: { tokenString, tokenType: TokenType.ACTIVATE_ACCOUNT },
+      });
+
+    await this.emailQueueService.createTask({
+      subject: 'Invitation to Activate Account',
+      toEmail: email,
+      htmlContent: InvitationTemplate({
+        name,
+        registrationLink: `${env.FRONTEND_BASE_URL}/lecturer/activate/?token=${tokenString}`,
+      }),
+    });
+  }
 
   async createLecturer(body: CreateLecturerBody) {
     const foundLecturer = await this.db.client.query.lecturer.findFirst({
@@ -33,6 +76,12 @@ export class LecturersService {
       .insert(lecturer)
       .values({ ...body, departmentId: foundDepartment.id })
       .returning();
+
+    await this.inviteLecturer(
+      insertedLecturer.id,
+      insertedLecturer.email,
+      `${insertedLecturer.title} ${insertedLecturer.firstName} ${insertedLecturer.lastName}`,
+    );
 
     const { password: _, ...lecturerProfile } = insertedLecturer;
     return lecturerProfile;

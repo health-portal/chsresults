@@ -18,5 +18,6 @@ import { EmailQueueModule } from 'src/email-queue/email-queue.module';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

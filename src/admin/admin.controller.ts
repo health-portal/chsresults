@@ -42,6 +42,18 @@ export class AdminController {
     return await this.adminService.addAdmin(body);
   }
 
+  @Get()
+  @ApiOperation({ summary: 'Get admins' })
+  @ApiOkResponse({
+    description: 'Admins retrieved successfully',
+    type: [AdminProfileResponse],
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  async getAdmins() {
+    return await this.adminService.getAdmins();
+  }
+
   @Get('profile')
   @ApiOperation({ summary: 'Get admin profile' })
   @ApiOkResponse({

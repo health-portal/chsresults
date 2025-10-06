@@ -4,8 +4,7 @@ import {
   timestamp,
   uuid,
   text,
-  bigserial,
-  inet,
+  primaryKey,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { integer } from 'drizzle-orm/pg-core';
@@ -73,19 +72,23 @@ export const student = pgTable('student', {
     .notNull(),
 });
 
-export const log = pgTable('log', {
-  id: bigserial('id', { mode: 'bigint' }).primaryKey(),
-  createdAt: timestamp('created_at', { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  userId: text('user_id').notNull(),
-  userRole: text('user_role').notNull(),
-  action: text('action').notNull(),
-  description: text('description'),
-  metadata: json('metadata'),
-  ipAddress: inet('ip_address'),
-  userAgent: text(),
-});
+export const token = pgTable(
+  'token',
+  {
+    userId: text('user_id').notNull(),
+    userRole: text('user_role').notNull(),
+
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+
+    tokenString: text('token_string').notNull(),
+    tokenType: text('token_type').notNull(),
+  },
+  (table) => ({
+    userIdAndRole: primaryKey({ columns: [table.userId, table.userRole] }),
+  }),
+);
 
 export const faculty = pgTable('faculty', {
   id: uuid('id').defaultRandom().primaryKey(),

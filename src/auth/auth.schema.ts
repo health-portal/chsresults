@@ -13,12 +13,33 @@ export enum UserRole {
   STUDENT = 'Student',
 }
 
+export enum TokenType {
+  ACTIVATE_ACCOUNT = 'activate_account',
+  RESET_PASSWORD = 'reset_password',
+}
+
 export interface JwtPayload {
   id: string;
   role: UserRole;
 }
 
-export class AuthUserBody {
+export class VerifyUserBody {
+  @ApiProperty()
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty()
+  @IsStrongPassword()
+  password: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  tokenString: string;
+}
+
+export class SigninUserBody {
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
@@ -45,11 +66,18 @@ export class StudentIdentifierBody {
   identifierType: StudentIdentifierType;
 }
 
-export class AuthStudentBody extends StudentIdentifierBody {
+export class SigninStudentBody extends StudentIdentifierBody {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   password: string;
+}
+
+export class VerifyStudentBody extends SigninStudentBody {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  tokenString: string;
 }
 
 export class SigninResponse {
