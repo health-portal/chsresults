@@ -18,10 +18,16 @@ import {
 } from './lecturer.schema';
 import { StudentIdentifierType } from 'src/auth/auth.schema';
 import { parseCsvFile } from 'src/utils/csv';
+import { EmailQueueService } from 'src/email-queue/email-queue.service';
+import { NotificationTemplate } from 'src/email-queue/email-queue.schema';
+import { env } from 'src/environment';
 
 @Injectable()
 export class LecturerService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(
+    private readonly db: DatabaseService,
+    private readonly emailQueueService: EmailQueueService,
+  ) {}
 
   private async validateCourseAccess(lecturerId: string, courseId: string) {
     const foundCourse = await this.db.client.query.course.findFirst({
@@ -68,8 +74,20 @@ export class LecturerService {
             .returning()
             .onConflictDoNothing();
 
-          if (insertedEnrollment) result.registeredStudents.push(matricNumber);
-          else result.unregisteredStudents.push(matricNumber);
+          if (insertedEnrollment) {
+            await this.emailQueueService.createTask({
+              subject: 'Notification of Enrollment',
+              toEmail: foundStudent.email,
+              htmlContent: NotificationTemplate({
+                title: `Notification of Enrollment`,
+                name: `${foundStudent.firstName} ${foundStudent.lastName}`,
+                message: `You have been enrolled to ${courseId}`,
+                portalLink: `${env.FRONTEND_BASE_URL}/student/signin`,
+              }),
+            });
+
+            result.registeredStudents.push(matricNumber);
+          } else result.unregisteredStudents.push(matricNumber);
         } else {
           result.unregisteredStudents.push(matricNumber);
         }
@@ -121,6 +139,17 @@ export class LecturerService {
       })
       .returning();
 
+    await this.emailQueueService.createTask({
+      subject: 'Notification of Enrollment',
+      toEmail: foundStudent.email,
+      htmlContent: NotificationTemplate({
+        title: `Notification of Enrollment`,
+        name: `${foundStudent.firstName} ${foundStudent.lastName}`,
+        message: `You have been enrolled to ${courseId}`,
+        portalLink: `${env.FRONTEND_BASE_URL}/student/signin`,
+      }),
+    });
+
     return insertedEnrollment;
   }
 
@@ -154,6 +183,17 @@ export class LecturerService {
             .set({ scores: { continuousAssessment, examination } })
             .where(eq(enrollment.studentId, foundStudent.id))
             .returning();
+
+          await this.emailQueueService.createTask({
+            subject: 'Notification for Uploaded Score',
+            toEmail: foundStudent.email,
+            htmlContent: NotificationTemplate({
+              title: `Notification for Uploaded Score`,
+              name: `${foundStudent.firstName} ${foundStudent.lastName}`,
+              message: `Your score for ${courseId} has been uploaded`,
+              portalLink: `${env.FRONTEND_BASE_URL}/student/signin`,
+            }),
+          });
 
           result.studentsUploadedFor.push(matricNumber);
         } else {
