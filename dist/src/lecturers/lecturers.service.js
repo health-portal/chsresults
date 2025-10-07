@@ -53,7 +53,7 @@ let LecturersService = class LecturersService {
             toEmail: email,
             htmlContent: (0, email_queue_schema_1.InvitationTemplate)({
                 name,
-                registrationLink: `${environment_1.env.FRONTEND_BASE_URL}/lecturer/activate/?token=${tokenString}`,
+                registrationLink: `${environment_1.env.FRONTEND_BASE_URL}/activate/?token=${tokenString}&type=lecturer`,
             }),
         });
     }
@@ -92,8 +92,10 @@ let LecturersService = class LecturersService {
                         .values({ ...row, departmentId: foundDepartment.id })
                         .returning()
                         .onConflictDoNothing();
-                    if (insertedLecturer)
+                    if (insertedLecturer) {
                         result.lecturers.push({ ...row, isCreated: true });
+                        await this.inviteLecturer(insertedLecturer.id, insertedLecturer.email, `${insertedLecturer.title} ${insertedLecturer.firstName} ${insertedLecturer.lastName}`);
+                    }
                     else
                         result.lecturers.push({ ...row, isCreated: false });
                 }

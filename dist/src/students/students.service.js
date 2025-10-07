@@ -40,7 +40,7 @@ let StudentsService = class StudentsService {
             .insert(schema_1.token)
             .values({
             userId: id,
-            userRole: auth_schema_1.UserRole.ADMIN,
+            userRole: auth_schema_1.UserRole.STUDENT,
             tokenString,
             tokenType: auth_schema_1.TokenType.ACTIVATE_ACCOUNT,
         })

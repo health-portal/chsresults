@@ -337,7 +337,7 @@ let AuthService = class AuthService {
             .insert(schema_1.token)
             .values({
             userId: foundStudent.id,
-            userRole: auth_schema_1.UserRole.LECTURER,
+            userRole: auth_schema_1.UserRole.STUDENT,
             tokenString: otp,
             tokenType: auth_schema_1.TokenType.RESET_PASSWORD,
         })

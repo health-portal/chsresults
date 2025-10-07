@@ -26,7 +26,10 @@ export class LecturersService {
     private readonly emailQueueService: EmailQueueService,
   ) {}
 
-  private async generateToken(payload: JwtPayload, expiresIn: string | number | undefined = '1d') {
+  private async generateToken(
+    payload: JwtPayload,
+    expiresIn: string | number | undefined = '1d',
+  ) {
     const token = await this.jwtService.signAsync(payload, { expiresIn });
     return token;
   }
@@ -55,7 +58,7 @@ export class LecturersService {
       toEmail: email,
       htmlContent: InvitationTemplate({
         name,
-        registrationLink: `${env.FRONTEND_BASE_URL}/lecturer/activate/?token=${tokenString}`,
+        registrationLink: `${env.FRONTEND_BASE_URL}/activate/?token=${tokenString}&type=lecturer`,
       }),
     });
   }
@@ -105,9 +108,14 @@ export class LecturersService {
             .returning()
             .onConflictDoNothing();
 
-          if (insertedLecturer)
+          if (insertedLecturer) {
             result.lecturers.push({ ...row, isCreated: true });
-          else result.lecturers.push({ ...row, isCreated: false });
+            await this.inviteLecturer(
+              insertedLecturer.id,
+              insertedLecturer.email,
+              `${insertedLecturer.title} ${insertedLecturer.firstName} ${insertedLecturer.lastName}`,
+            );
+          } else result.lecturers.push({ ...row, isCreated: false });
         }
       }
     });

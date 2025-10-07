@@ -26,7 +26,10 @@ export class StudentsService {
     private readonly emailQueueService: EmailQueueService,
   ) {}
 
-  private async generateToken(payload: JwtPayload, expiresIn: string | number | undefined = '1d') {
+  private async generateToken(
+    payload: JwtPayload,
+    expiresIn: string | number | undefined = '1d',
+  ) {
     const token = await this.jwtService.signAsync(payload, { expiresIn });
     return token;
   }
@@ -41,7 +44,7 @@ export class StudentsService {
       .insert(token)
       .values({
         userId: id,
-        userRole: UserRole.ADMIN,
+        userRole: UserRole.STUDENT,
         tokenString,
         tokenType: TokenType.ACTIVATE_ACCOUNT,
       })

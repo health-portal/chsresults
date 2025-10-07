@@ -394,7 +394,7 @@ export class AuthService {
       .insert(token)
       .values({
         userId: foundStudent.id,
-        userRole: UserRole.LECTURER,
+        userRole: UserRole.STUDENT,
         tokenString: otp,
         tokenType: TokenType.RESET_PASSWORD,
       })
