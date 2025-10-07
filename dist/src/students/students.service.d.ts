@@ -10,10 +10,10 @@ export declare class StudentsService {
     private generateToken;
     inviteStudent(id: string, email: string, name: string): Promise<void>;
     createStudent(body: CreateStudentBody): Promise<{
-        email: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         firstName: string;
         lastName: string;
         otherName: string | null;
@@ -25,10 +25,10 @@ export declare class StudentsService {
     }>;
     createStudents(file: Express.Multer.File): Promise<CreateStudentsResponse>;
     getStudents(): Promise<{
-        email: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         firstName: string;
         lastName: string;
         otherName: string | null;
@@ -53,10 +53,10 @@ export declare class StudentsService {
         departmentId: string;
     }>;
     deleteStudent(studentId: string): Promise<{
-        email: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         firstName: string;
         lastName: string;
         otherName: string | null;

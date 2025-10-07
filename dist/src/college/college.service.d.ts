@@ -4,21 +4,21 @@ export declare class CollegeService {
     private readonly db;
     constructor(db: DatabaseService);
     getDepartments(): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         departments: {
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             facultyId: string;
         }[];
     }[]>;
     createFaculty(body: UpsertFacultyAndDepartmentBody): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -29,14 +29,14 @@ export declare class CollegeService {
         name: string;
     }>;
     deleteFaculty(facultyId: string): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
     }>;
     createDepartment({ facultyId, name }: CreateDepartmentBody): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         facultyId: string;
@@ -49,8 +49,8 @@ export declare class CollegeService {
         facultyId: string;
     }>;
     deleteDepartment(deptId: string): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         facultyId: string;

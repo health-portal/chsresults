@@ -9,27 +9,27 @@ export declare class AdminService {
     constructor(db: DatabaseService, jwtService: JwtService, emailQueueService: EmailQueueService);
     private generateToken;
     addAdmin({ email, name }: AddAdminBody): Promise<{
-        name: string;
-        email: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         phone: string | null;
     }>;
     getAdmins(): Promise<{
-        name: string;
-        email: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         phone: string | null;
     }[]>;
     getProfile(adminId: string): Promise<{
-        name: string;
-        email: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         phone: string | null;
     }>;
     updateProfile(adminId: string, { name, phone }: UpdateAdminBody): Promise<{

@@ -43,10 +43,10 @@ export declare class LecturerController {
         courseId: string;
         studentId: string;
         student: {
-            email: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            email: string;
             firstName: string;
             lastName: string;
             otherName: string | null;
@@ -68,10 +68,10 @@ export declare class LecturerController {
         courseId: string;
         studentId: string;
         student: {
-            email: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            email: string;
             firstName: string;
             lastName: string;
             otherName: string | null;
@@ -86,10 +86,10 @@ export declare class LecturerController {
         };
     }[]>;
     getProfile(lecturerId: string): Promise<{
-        email: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         phone: string | null;
         firstName: string;
         lastName: string;

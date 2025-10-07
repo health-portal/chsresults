@@ -26,10 +26,10 @@ export declare class CoursesController {
         semester: number;
         lecturerId: string;
         lecturer: {
-            email: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            email: string;
             phone: string | null;
             firstName: string;
             lastName: string;

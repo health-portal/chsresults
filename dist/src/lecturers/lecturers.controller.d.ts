@@ -4,10 +4,10 @@ export declare class LecturersController {
     private readonly lecturersService;
     constructor(lecturersService: LecturersService);
     createLecturer(body: CreateLecturerBody): Promise<{
-        email: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         phone: string | null;
         firstName: string;
         lastName: string;
@@ -17,10 +17,10 @@ export declare class LecturersController {
     }>;
     createLecturers(file: Express.Multer.File): Promise<CreateLecturersResponse>;
     getLecturers(): Promise<{
-        email: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         phone: string | null;
         firstName: string;
         lastName: string;
@@ -41,10 +41,10 @@ export declare class LecturersController {
         departmentId: string;
     }>;
     deleteLecturer(lecturerId: string): Promise<{
-        email: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         phone: string | null;
         firstName: string;
         lastName: string;

@@ -4,27 +4,27 @@ export declare class AdminController {
     private readonly adminService;
     constructor(adminService: AdminService);
     addAdmin(body: AddAdminBody): Promise<{
-        name: string;
-        email: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         phone: string | null;
     }>;
     getAdmins(): Promise<{
-        name: string;
-        email: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         phone: string | null;
     }[]>;
     getProfile(adminId: string): Promise<{
-        name: string;
-        email: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string;
         phone: string | null;
     }>;
     updateProfile(adminId: string, body: UpdateAdminBody): Promise<{
