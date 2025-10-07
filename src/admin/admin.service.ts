@@ -23,7 +23,7 @@ export class AdminService {
 
   private async generateToken(
     payload: JwtPayload,
-    expiresIn: string | number | undefined = '1d',
+    expiresIn: string | number | undefined,
   ) {
     const token = await this.jwtService.signAsync(payload, { expiresIn });
     return token;

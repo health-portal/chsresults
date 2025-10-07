@@ -33,7 +33,10 @@ export class AuthService {
     private readonly emailQueueService: EmailQueueService,
   ) {}
 
-  private async generateToken(payload: JwtPayload, expiresIn: string | number | undefined = '1d') {
+  private async generateToken(
+    payload: JwtPayload,
+    expiresIn: string | number | undefined = '1d',
+  ) {
     const token = await this.jwtService.signAsync(payload, { expiresIn });
     return token;
   }
@@ -76,7 +79,7 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired token');
 
     this.jwtService
-      .verifyAsync(tokenString, { secret: env.JWT_SECRET })
+      .verifyAsync(tokenString)
       .then(() => {})
       .catch(() => {
         throw new BadRequestException('Invalid or expired token');
@@ -155,7 +158,7 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired token');
 
     this.jwtService
-      .verifyAsync(tokenString, { secret: env.JWT_SECRET })
+      .verifyAsync(tokenString)
       .then(() => {})
       .catch(() => {
         throw new BadRequestException('Invalid or expired token');
@@ -203,7 +206,7 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired token');
 
     this.jwtService
-      .verifyAsync(tokenString, { secret: env.JWT_SECRET })
+      .verifyAsync(tokenString)
       .then(() => {})
       .catch(() => {
         throw new BadRequestException('Invalid or expired token');
@@ -286,7 +289,7 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired token');
 
     this.jwtService
-      .verifyAsync(tokenString, { secret: env.JWT_SECRET })
+      .verifyAsync(tokenString)
       .then(() => {})
       .catch(() => {
         throw new BadRequestException('Invalid or expired token');
@@ -350,7 +353,7 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired token');
 
     this.jwtService
-      .verifyAsync(tokenString, { secret: env.JWT_SECRET })
+      .verifyAsync(tokenString)
       .then(() => {})
       .catch(() => {
         throw new BadRequestException('Invalid or expired token');
@@ -450,7 +453,7 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired token');
 
     this.jwtService
-      .verifyAsync(tokenString, { secret: env.JWT_SECRET })
+      .verifyAsync(tokenString)
       .then(() => {})
       .catch(() => {
         throw new BadRequestException('Invalid or expired token');

@@ -32,7 +32,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     await this.pool.end();
   }
 
-  private async generateToken(payload: JwtPayload, expiresIn: string | number | undefined = '7d') {
+  private async generateToken(
+    payload: JwtPayload,
+    expiresIn: string | number | undefined = '7d',
+  ) {
     const token = await this.jwtService.signAsync(payload, { expiresIn });
     return token;
   }
@@ -56,10 +59,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       .returning();
 
     for (const admin of insertedAdmins) {
-      const tokenString = await this.generateToken(
-        { id: admin.id, role: UserRole.ADMIN },
-        '7d',
-      );
+      const tokenString = await this.generateToken({
+        id: admin.id,
+        role: UserRole.ADMIN,
+      });
 
       await this.client
         .insert(schema.token)
