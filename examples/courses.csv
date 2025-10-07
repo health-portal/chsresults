@@ -1,11 +1,7 @@
 code,title,lecturerEmail,units,semester
-ANA101,Introduction to Anatomy,adeola.ajayi@oauife.edu.ng,3,1
-BIO102,Cell Biology,tunde.balogun@oauife.edu.ng,2,1
-CHM103,General Chemistry,bisi.ogunleye@oauife.edu.ng,3,1
-MED201,Pathophysiology,james.udo@oauife.edu.ng,4,2
-NUR202,Fundamentals of Nursing,segun.adebayo@oauife.edu.ng,3,1
-PHA203,Pharmacology I,amina.yusuf@oauife.edu.ng,3,2
-PSY204,Medical Psychology,daniel.eko@oauife.edu.ng,2,1
-RAD205,Introduction to Radiology,emeka.okafor@oauife.edu.ng,2,2
-SUR301,Principles of Surgery,bola.adenirn@oauife.edu.ng,6,2
-PED302,Child Health and Paediatrics,fatima.lawl@oauife.edu.ng,4,2
+MRH301,Kinesiology in Medical Rehabiltation,helxie3@gmail.com,3,1
+MRH201,Introduction to Medical Rehabiltation,helxie3@gmail.com,2,1
+CLI330,Pharmacology,jejeniyi7@gmail.com,3,1
+CLI230,Physiology,victoramomodu@gmal.com,3,2
+CHD508,Oral Pathology,victoramomodu@gmal.com,3,2
+CLI330,Human Anatomy,jejeniyi7@gmail.com,5,2

@@ -21,7 +21,10 @@ export class AdminService {
     private readonly emailQueueService: EmailQueueService,
   ) {}
 
-  private async generateToken(payload: JwtPayload, expiresIn: string = '1d') {
+  private async generateToken(
+    payload: JwtPayload,
+    expiresIn: string | number | undefined = '1d',
+  ) {
     const token = await this.jwtService.signAsync(payload, { expiresIn });
     return token;
   }

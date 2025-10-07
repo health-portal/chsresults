@@ -32,7 +32,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     await this.pool.end();
   }
 
-  private async generateToken(payload: JwtPayload, expiresIn: string = '7d') {
+  private async generateToken(payload: JwtPayload, expiresIn: string | number | undefined = '7d') {
     const token = await this.jwtService.signAsync(payload, { expiresIn });
     return token;
   }
