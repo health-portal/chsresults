@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.facultyRelations = exports.enrollmentRelations = exports.courseRelations = exports.departmentRelations = exports.studentRelations = exports.lecturerRelations = exports.enrollment = exports.course = exports.department = exports.faculty = exports.log = exports.student = exports.lecturer = exports.admin = void 0;
+exports.facultyRelations = exports.enrollmentRelations = exports.courseRelations = exports.departmentRelations = exports.studentRelations = exports.lecturerRelations = exports.enrollment = exports.course = exports.department = exports.faculty = exports.token = exports.student = exports.lecturer = exports.admin = void 0;
 const pg_core_1 = require("drizzle-orm/pg-core");
 const drizzle_orm_1 = require("drizzle-orm");
 const pg_core_2 = require("drizzle-orm/pg-core");
@@ -57,19 +57,17 @@ exports.student = (0, pg_core_1.pgTable)('student', {
         .references(() => exports.department.id)
         .notNull(),
 });
-exports.log = (0, pg_core_1.pgTable)('log', {
-    id: (0, pg_core_1.bigserial)('id', { mode: 'bigint' }).primaryKey(),
+exports.token = (0, pg_core_1.pgTable)('token', {
+    userId: (0, pg_core_1.text)('user_id').notNull(),
+    userRole: (0, pg_core_1.text)('user_role').notNull(),
     createdAt: (0, pg_core_1.timestamp)('created_at', { withTimezone: true })
         .defaultNow()
         .notNull(),
-    userId: (0, pg_core_1.text)('user_id').notNull(),
-    userRole: (0, pg_core_1.text)('user_role').notNull(),
-    action: (0, pg_core_1.text)('action').notNull(),
-    description: (0, pg_core_1.text)('description'),
-    metadata: (0, pg_core_1.json)('metadata'),
-    ipAddress: (0, pg_core_1.inet)('ip_address'),
-    userAgent: (0, pg_core_1.text)(),
-});
+    tokenString: (0, pg_core_1.text)('token_string').notNull(),
+    tokenType: (0, pg_core_1.text)('token_type').notNull(),
+}, (table) => ({
+    userIdAndRole: (0, pg_core_1.primaryKey)({ columns: [table.userId, table.userRole] }),
+}));
 exports.faculty = (0, pg_core_1.pgTable)('faculty', {
     id: (0, pg_core_1.uuid)('id').defaultRandom().primaryKey(),
     createdAt: (0, pg_core_1.timestamp)('created_at', { withTimezone: true })

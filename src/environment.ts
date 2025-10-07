@@ -1,10 +1,11 @@
-import { cleanEnv, json, str, num } from 'envalid';
+import { cleanEnv, json, str, num, bool } from 'envalid';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
 export const env = cleanEnv(process.env, {
-  BCRYPT_SECRET: str(),
+  AUTO_SEED: bool(),
+  BCRYPT_SALT: str(),
   DATABASE_URL: str(),
   DEFAULT_ADMINS: json<{ name: string; email: string }[]>(),
   JWT_SECRET: str(),

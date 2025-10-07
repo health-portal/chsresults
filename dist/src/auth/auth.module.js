@@ -11,8 +11,6 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const auth_controller_1 = require("./auth.controller");
 const passport_1 = require("@nestjs/passport");
-const jwt_1 = require("@nestjs/jwt");
-const environment_1 = require("../environment");
 const jwt_strategy_1 = require("./jwt.strategy");
 const email_queue_module_1 = require("../email-queue/email-queue.module");
 let AuthModule = class AuthModule {
@@ -20,14 +18,7 @@ let AuthModule = class AuthModule {
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            email_queue_module_1.EmailQueueModule,
-            passport_1.PassportModule,
-            jwt_1.JwtModule.register({
-                secret: environment_1.env.JWT_SECRET,
-                signOptions: { expiresIn: '1d' },
-            }),
-        ],
+        imports: [email_queue_module_1.EmailQueueModule, passport_1.PassportModule],
         controllers: [auth_controller_1.AuthController],
         providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
     })

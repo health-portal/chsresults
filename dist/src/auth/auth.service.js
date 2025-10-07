@@ -52,6 +52,7 @@ const drizzle_orm_1 = require("drizzle-orm");
 const bcrypt = __importStar(require("bcrypt"));
 const email_queue_service_1 = require("../email-queue/email-queue.service");
 const email_queue_schema_1 = require("../email-queue/email-queue.schema");
+const environment_1 = require("../environment");
 let AuthService = class AuthService {
     db;
     jwtService;
@@ -61,8 +62,9 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
         this.emailQueueService = emailQueueService;
     }
-    generateToken(payload, expiresIn = '1d') {
-        return { accessToken: this.jwtService.sign(payload, { expiresIn }) };
+    async generateToken(payload, expiresIn = '1d') {
+        const token = await this.jwtService.signAsync(payload, { expiresIn });
+        return token;
     }
     async findAdmin(email) {
         return await this.db.client.query.admin.findFirst({
@@ -78,13 +80,27 @@ let AuthService = class AuthService {
         const { password: _, ...adminProfile } = updatedAdmin;
         return adminProfile;
     }
-    async activateAdmin({ email, password }) {
+    async activateAdmin({ email, password, tokenString }) {
         const foundAdmin = await this.findAdmin(email);
         if (!foundAdmin)
             throw new common_1.UnauthorizedException(`Admin not found`);
         if (foundAdmin.password)
             throw new common_1.BadRequestException(`Admin already activated`);
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const foundToken = await this.db.client.query.token.findFirst({
+            where: (0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.token.userId, foundAdmin.id), (0, drizzle_orm_1.eq)(schema_1.token.userRole, auth_schema_1.UserRole.ADMIN)),
+        });
+        if (!foundToken)
+            throw new common_1.NotFoundException('Token not found');
+        if (foundToken.tokenString !== tokenString ||
+            foundToken.tokenType !== auth_schema_1.TokenType.ACTIVATE_ACCOUNT)
+            throw new common_1.BadRequestException('Invalid or expired token');
+        this.jwtService
+            .verifyAsync(tokenString, { secret: environment_1.env.JWT_SECRET })
+            .then(() => { })
+            .catch(() => {
+            throw new common_1.BadRequestException('Invalid or expired token');
+        });
+        const hashedPassword = await bcrypt.hash(password, Number(environment_1.env.BCRYPT_SALT));
         return this.updateAdminPassword(foundAdmin.id, hashedPassword);
     }
     async signinAdmin({ email, password }) {
@@ -96,30 +112,58 @@ let AuthService = class AuthService {
         const isMatched = await bcrypt.compare(password, foundAdmin.password);
         if (!isMatched)
             throw new common_1.UnauthorizedException('Invalid credentials');
-        return this.generateToken({
+        const accessToken = await this.generateToken({
             id: foundAdmin.id,
             role: auth_schema_1.UserRole.ADMIN,
         });
+        return { accessToken };
     }
     async adminResetPasswordRequest(email) {
         const foundAdmin = await this.findAdmin(email);
         if (!foundAdmin)
             throw new common_1.NotFoundException(`Admin not found`);
-        await this.emailQueueService.createTask({
+        const tokenString = await this.generateToken({ id: foundAdmin.id, role: auth_schema_1.UserRole.ADMIN }, '15m');
+        await this.db.client
+            .insert(schema_1.token)
+            .values({
+            userId: foundAdmin.id,
+            userRole: auth_schema_1.UserRole.ADMIN,
+            tokenString,
+            tokenType: auth_schema_1.TokenType.RESET_PASSWORD,
+        })
+            .onConflictDoUpdate({
+            target: [schema_1.token.userId, schema_1.token.userRole],
+            set: { tokenString, tokenType: auth_schema_1.TokenType.RESET_PASSWORD },
+        });
+        await this.emailQueueService.send({
             subject: 'Reset Password',
             toEmail: foundAdmin.email,
             htmlContent: (0, email_queue_schema_1.ResetPasswordTemplate)({
                 name: foundAdmin.name,
-                resetLink: '',
+                resetLink: `${environment_1.env.FRONTEND_BASE_URL}/admin/reset-password/?token=${tokenString}`,
             }),
         });
         return { success: true, message: `Reset link sent to ${email}` };
     }
-    async adminResetPassword({ email, password }) {
+    async adminResetPassword({ email, password, tokenString }) {
         const foundAdmin = await this.findAdmin(email);
         if (!foundAdmin)
             throw new common_1.NotFoundException(`Admin not found`);
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const foundToken = await this.db.client.query.token.findFirst({
+            where: (0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.token.userId, foundAdmin.id), (0, drizzle_orm_1.eq)(schema_1.token.userRole, auth_schema_1.UserRole.ADMIN)),
+        });
+        if (!foundToken)
+            throw new common_1.NotFoundException('Token not found');
+        if (foundToken.tokenString !== tokenString ||
+            foundToken.tokenType !== auth_schema_1.TokenType.RESET_PASSWORD)
+            throw new common_1.BadRequestException('Invalid or expired token');
+        this.jwtService
+            .verifyAsync(tokenString, { secret: environment_1.env.JWT_SECRET })
+            .then(() => { })
+            .catch(() => {
+            throw new common_1.BadRequestException('Invalid or expired token');
+        });
+        const hashedPassword = await bcrypt.hash(password, Number(environment_1.env.BCRYPT_SALT));
         return this.updateAdminPassword(foundAdmin.id, hashedPassword);
     }
     async findLecturer(email) {
@@ -136,13 +180,27 @@ let AuthService = class AuthService {
         const { password: _, ...lecturerProfile } = updatedLecturer;
         return lecturerProfile;
     }
-    async activateLecturer({ email, password }) {
+    async activateLecturer({ email, password, tokenString }) {
         const foundLecturer = await this.findLecturer(email);
         if (!foundLecturer)
             throw new common_1.UnauthorizedException(`Lecturer not found`);
         if (foundLecturer.password)
             throw new common_1.BadRequestException(`Lecturer already activated`);
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const foundToken = await this.db.client.query.token.findFirst({
+            where: (0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.token.userId, foundLecturer.id), (0, drizzle_orm_1.eq)(schema_1.token.userRole, auth_schema_1.UserRole.LECTURER)),
+        });
+        if (!foundToken)
+            throw new common_1.NotFoundException('Token not found');
+        if (foundToken.tokenString !== tokenString ||
+            foundToken.tokenType !== auth_schema_1.TokenType.ACTIVATE_ACCOUNT)
+            throw new common_1.BadRequestException('Invalid or expired token');
+        this.jwtService
+            .verifyAsync(tokenString, { secret: environment_1.env.JWT_SECRET })
+            .then(() => { })
+            .catch(() => {
+            throw new common_1.BadRequestException('Invalid or expired token');
+        });
+        const hashedPassword = await bcrypt.hash(password, Number(environment_1.env.BCRYPT_SALT));
         return this.updateLecturerPassword(foundLecturer.id, hashedPassword);
     }
     async signinLecturer({ email, password }) {
@@ -154,30 +212,58 @@ let AuthService = class AuthService {
         const isMatched = await bcrypt.compare(password, foundLecturer.password);
         if (!isMatched)
             throw new common_1.UnauthorizedException('Invalid credentials');
-        return this.generateToken({
+        const accessToken = await this.generateToken({
             id: foundLecturer.id,
             role: auth_schema_1.UserRole.LECTURER,
         });
+        return { accessToken };
     }
     async lecturerResetPasswordRequest(email) {
         const foundLecturer = await this.findLecturer(email);
         if (!foundLecturer)
             throw new common_1.NotFoundException(`Lecturer not found`);
-        await this.emailQueueService.createTask({
+        const tokenString = await this.generateToken({ id: foundLecturer.id, role: auth_schema_1.UserRole.ADMIN }, '15m');
+        await this.db.client
+            .insert(schema_1.token)
+            .values({
+            userId: foundLecturer.id,
+            userRole: auth_schema_1.UserRole.LECTURER,
+            tokenString,
+            tokenType: auth_schema_1.TokenType.RESET_PASSWORD,
+        })
+            .onConflictDoUpdate({
+            target: [schema_1.token.userId, schema_1.token.userRole],
+            set: { tokenString, tokenType: auth_schema_1.TokenType.RESET_PASSWORD },
+        });
+        await this.emailQueueService.send({
             subject: 'Reset Password',
             toEmail: foundLecturer.email,
             htmlContent: (0, email_queue_schema_1.ResetPasswordTemplate)({
                 name: `${foundLecturer.firstName} ${foundLecturer.lastName}`,
-                resetLink: '',
+                resetLink: `${environment_1.env.FRONTEND_BASE_URL}/lecturer/reset-password/?token=${tokenString}`,
             }),
         });
         return { success: true, message: `Reset link sent to ${email}` };
     }
-    async lecturerResetPassword({ email, password }) {
+    async lecturerResetPassword({ email, password, tokenString, }) {
         const foundLecturer = await this.findLecturer(email);
         if (!foundLecturer)
             throw new common_1.NotFoundException(`Lecturer not found`);
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const foundToken = await this.db.client.query.token.findFirst({
+            where: (0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.token.userId, foundLecturer.id), (0, drizzle_orm_1.eq)(schema_1.token.userRole, auth_schema_1.UserRole.LECTURER)),
+        });
+        if (!foundToken)
+            throw new common_1.NotFoundException('Token not found');
+        if (foundToken.tokenString !== tokenString ||
+            foundToken.tokenType !== auth_schema_1.TokenType.RESET_PASSWORD)
+            throw new common_1.BadRequestException('Invalid or expired token');
+        this.jwtService
+            .verifyAsync(tokenString, { secret: environment_1.env.JWT_SECRET })
+            .then(() => { })
+            .catch(() => {
+            throw new common_1.BadRequestException('Invalid or expired token');
+        });
+        const hashedPassword = await bcrypt.hash(password, Number(environment_1.env.BCRYPT_SALT));
         return this.updateLecturerPassword(foundLecturer.id, hashedPassword);
     }
     async findStudent({ studentIdentifier, identifierType, }) {
@@ -199,14 +285,28 @@ let AuthService = class AuthService {
         const { password: _, ...studentProfile } = updatedStudent;
         return studentProfile;
     }
-    async activateStudent({ studentIdentifier, identifierType, password, }) {
+    async activateStudent({ studentIdentifier, identifierType, password, tokenString, }) {
         const foundStudent = await this.findStudent({
             studentIdentifier,
             identifierType,
         });
         if (foundStudent.password)
             throw new common_1.UnauthorizedException(`Student already activated`);
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const foundToken = await this.db.client.query.token.findFirst({
+            where: (0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.token.userId, foundStudent.id), (0, drizzle_orm_1.eq)(schema_1.token.userRole, auth_schema_1.UserRole.STUDENT)),
+        });
+        if (!foundToken)
+            throw new common_1.NotFoundException('Token not found');
+        if (foundToken.tokenString !== tokenString ||
+            foundToken.tokenType !== auth_schema_1.TokenType.ACTIVATE_ACCOUNT)
+            throw new common_1.BadRequestException('Invalid or expired token');
+        this.jwtService
+            .verifyAsync(tokenString, { secret: environment_1.env.JWT_SECRET })
+            .then(() => { })
+            .catch(() => {
+            throw new common_1.BadRequestException('Invalid or expired token');
+        });
+        const hashedPassword = await bcrypt.hash(password, Number(environment_1.env.BCRYPT_SALT));
         return this.updateStudentPassword(foundStudent.id, hashedPassword);
     }
     async signinStudent({ studentIdentifier, identifierType, password, }) {
@@ -219,22 +319,36 @@ let AuthService = class AuthService {
         const isMatched = await bcrypt.compare(password, foundStudent.password);
         if (!isMatched)
             throw new common_1.UnauthorizedException('Invalid credentials');
-        return this.generateToken({
+        const accessToken = await this.generateToken({
             id: foundStudent.id,
             role: auth_schema_1.UserRole.STUDENT,
         });
+        return { accessToken };
     }
     async studentResetPasswordRequest({ studentIdentifier, identifierType, }) {
         const foundStudent = await this.findStudent({
             studentIdentifier,
             identifierType,
         });
-        await this.emailQueueService.createTask({
+        const tokenString = await this.generateToken({ id: foundStudent.id, role: auth_schema_1.UserRole.ADMIN }, '15m');
+        await this.db.client
+            .insert(schema_1.token)
+            .values({
+            userId: foundStudent.id,
+            userRole: auth_schema_1.UserRole.LECTURER,
+            tokenString,
+            tokenType: auth_schema_1.TokenType.RESET_PASSWORD,
+        })
+            .onConflictDoUpdate({
+            target: [schema_1.token.userId, schema_1.token.userRole],
+            set: { tokenString, tokenType: auth_schema_1.TokenType.RESET_PASSWORD },
+        });
+        await this.emailQueueService.send({
             subject: 'Reset Password',
             toEmail: foundStudent.email,
             htmlContent: (0, email_queue_schema_1.ResetPasswordTemplate)({
                 name: `${foundStudent.firstName} ${foundStudent.lastName}`,
-                resetLink: '',
+                resetLink: `${environment_1.env.FRONTEND_BASE_URL}/student/reset-password/?token=${tokenString}`,
             }),
         });
         return {
@@ -242,12 +356,26 @@ let AuthService = class AuthService {
             message: `Reset link sent to ${foundStudent.email}`,
         };
     }
-    async studentResetPassword({ studentIdentifier, identifierType, password, }) {
+    async studentResetPassword({ studentIdentifier, identifierType, password, tokenString, }) {
         const foundStudent = await this.findStudent({
             studentIdentifier,
             identifierType,
         });
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const foundToken = await this.db.client.query.token.findFirst({
+            where: (0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.token.userId, foundStudent.id), (0, drizzle_orm_1.eq)(schema_1.token.userRole, auth_schema_1.UserRole.STUDENT)),
+        });
+        if (!foundToken)
+            throw new common_1.NotFoundException('Token not found');
+        if (foundToken.tokenString !== tokenString ||
+            foundToken.tokenType !== auth_schema_1.TokenType.RESET_PASSWORD)
+            throw new common_1.BadRequestException('Invalid or expired token');
+        this.jwtService
+            .verifyAsync(tokenString, { secret: environment_1.env.JWT_SECRET })
+            .then(() => { })
+            .catch(() => {
+            throw new common_1.BadRequestException('Invalid or expired token');
+        });
+        const hashedPassword = await bcrypt.hash(password, Number(environment_1.env.BCRYPT_SALT));
         return this.updateStudentPassword(foundStudent.id, hashedPassword);
     }
 };

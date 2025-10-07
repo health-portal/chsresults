@@ -16,10 +16,46 @@ const students_schema_1 = require("./students.schema");
 const schema_1 = require("../../drizzle/schema");
 const drizzle_orm_1 = require("drizzle-orm");
 const csv_1 = require("../utils/csv");
+const email_queue_service_1 = require("../email-queue/email-queue.service");
+const auth_schema_1 = require("../auth/auth.schema");
+const jwt_1 = require("@nestjs/jwt");
+const email_queue_schema_1 = require("../email-queue/email-queue.schema");
+const environment_1 = require("../environment");
 let StudentsService = class StudentsService {
     db;
-    constructor(db) {
+    jwtService;
+    emailQueueService;
+    constructor(db, jwtService, emailQueueService) {
         this.db = db;
+        this.jwtService = jwtService;
+        this.emailQueueService = emailQueueService;
+    }
+    async generateToken(payload, expiresIn = '1d') {
+        const token = await this.jwtService.signAsync(payload, { expiresIn });
+        return token;
+    }
+    async inviteStudent(id, email, name) {
+        const tokenString = await this.generateToken({ id, role: auth_schema_1.UserRole.STUDENT }, '7d');
+        await this.db.client
+            .insert(schema_1.token)
+            .values({
+            userId: id,
+            userRole: auth_schema_1.UserRole.ADMIN,
+            tokenString,
+            tokenType: auth_schema_1.TokenType.ACTIVATE_ACCOUNT,
+        })
+            .onConflictDoUpdate({
+            target: [schema_1.token.userId, schema_1.token.userRole],
+            set: { tokenString, tokenType: auth_schema_1.TokenType.ACTIVATE_ACCOUNT },
+        });
+        await this.emailQueueService.send({
+            subject: 'Invitation to Activate Account',
+            toEmail: email,
+            htmlContent: (0, email_queue_schema_1.InvitationTemplate)({
+                name,
+                registrationLink: `${environment_1.env.FRONTEND_BASE_URL}/student/activate/?token=${tokenString}`,
+            }),
+        });
     }
     async createStudent(body) {
         const foundStudent = await this.db.client.query.student.findFirst({
@@ -36,6 +72,7 @@ let StudentsService = class StudentsService {
             .insert(schema_1.student)
             .values({ ...body, departmentId: foundDepartment.id })
             .returning();
+        await this.inviteStudent(insertedStudent.id, insertedStudent.email, `${insertedStudent.firstName} ${insertedStudent.lastName}`);
         const { password: _, ...studentProfile } = insertedStudent;
         return studentProfile;
     }
@@ -55,8 +92,10 @@ let StudentsService = class StudentsService {
                         .values({ ...row, departmentId: foundDepartment.id })
                         .returning()
                         .onConflictDoNothing();
-                    if (insertedStudent)
+                    if (insertedStudent) {
+                        await this.inviteStudent(insertedStudent.id, insertedStudent.email, `${insertedStudent.firstName} ${insertedStudent.lastName}`);
                         result.students.push({ ...row, isCreated: true });
+                    }
                     else
                         result.students.push({ ...row, isCreated: false });
                 }
@@ -111,6 +150,8 @@ let StudentsService = class StudentsService {
 exports.StudentsService = StudentsService;
 exports.StudentsService = StudentsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [database_service_1.DatabaseService])
+    __metadata("design:paramtypes", [database_service_1.DatabaseService,
+        jwt_1.JwtService,
+        email_queue_service_1.EmailQueueService])
 ], StudentsService);
 //# sourceMappingURL=students.service.js.map

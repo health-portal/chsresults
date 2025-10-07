@@ -8,8 +8,8 @@ export declare class LecturerController {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        description: string | null;
         code: string;
+        description: string | null;
         units: number;
         semester: number;
         lecturerId: string;

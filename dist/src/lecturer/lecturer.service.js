@@ -17,10 +17,15 @@ const database_service_1 = require("../database/database.service");
 const lecturer_schema_1 = require("./lecturer.schema");
 const auth_schema_1 = require("../auth/auth.schema");
 const csv_1 = require("../utils/csv");
+const email_queue_service_1 = require("../email-queue/email-queue.service");
+const email_queue_schema_1 = require("../email-queue/email-queue.schema");
+const environment_1 = require("../environment");
 let LecturerService = class LecturerService {
     db;
-    constructor(db) {
+    emailQueueService;
+    constructor(db, emailQueueService) {
         this.db = db;
+        this.emailQueueService = emailQueueService;
     }
     async validateCourseAccess(lecturerId, courseId) {
         const foundCourse = await this.db.client.query.course.findFirst({
@@ -54,8 +59,19 @@ let LecturerService = class LecturerService {
                         .values({ courseId, studentId: foundStudent.id, session })
                         .returning()
                         .onConflictDoNothing();
-                    if (insertedEnrollment)
+                    if (insertedEnrollment) {
+                        await this.emailQueueService.send({
+                            subject: 'Notification of Enrollment',
+                            toEmail: foundStudent.email,
+                            htmlContent: (0, email_queue_schema_1.NotificationTemplate)({
+                                title: `Notification of Enrollment`,
+                                name: `${foundStudent.firstName} ${foundStudent.lastName}`,
+                                message: `You have been enrolled to ${courseId}`,
+                                portalLink: `${environment_1.env.FRONTEND_BASE_URL}/student/signin`,
+                            }),
+                        });
                         result.registeredStudents.push(matricNumber);
+                    }
                     else
                         result.unregisteredStudents.push(matricNumber);
                 }
@@ -91,6 +107,16 @@ let LecturerService = class LecturerService {
             session,
         })
             .returning();
+        await this.emailQueueService.send({
+            subject: 'Notification of Enrollment',
+            toEmail: foundStudent.email,
+            htmlContent: (0, email_queue_schema_1.NotificationTemplate)({
+                title: `Notification of Enrollment`,
+                name: `${foundStudent.firstName} ${foundStudent.lastName}`,
+                message: `You have been enrolled to ${courseId}`,
+                portalLink: `${environment_1.env.FRONTEND_BASE_URL}/student/signin`,
+            }),
+        });
         return insertedEnrollment;
     }
     async uploadScores(lecturerId, courseId, file) {
@@ -112,6 +138,16 @@ let LecturerService = class LecturerService {
                         .set({ scores: { continuousAssessment, examination } })
                         .where((0, drizzle_orm_1.eq)(schema_1.enrollment.studentId, foundStudent.id))
                         .returning();
+                    await this.emailQueueService.send({
+                        subject: 'Notification for Uploaded Score',
+                        toEmail: foundStudent.email,
+                        htmlContent: (0, email_queue_schema_1.NotificationTemplate)({
+                            title: `Notification for Uploaded Score`,
+                            name: `${foundStudent.firstName} ${foundStudent.lastName}`,
+                            message: `Your score for ${courseId} has been uploaded`,
+                            portalLink: `${environment_1.env.FRONTEND_BASE_URL}/student/signin`,
+                        }),
+                    });
                     result.studentsUploadedFor.push(matricNumber);
                 }
                 else {
@@ -181,6 +217,7 @@ let LecturerService = class LecturerService {
 exports.LecturerService = LecturerService;
 exports.LecturerService = LecturerService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [database_service_1.DatabaseService])
+    __metadata("design:paramtypes", [database_service_1.DatabaseService,
+        email_queue_service_1.EmailQueueService])
 ], LecturerService);
 //# sourceMappingURL=lecturer.service.js.map

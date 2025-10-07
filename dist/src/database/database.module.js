@@ -9,11 +9,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DatabaseModule = void 0;
 const common_1 = require("@nestjs/common");
 const database_service_1 = require("./database.service");
+const email_queue_module_1 = require("../email-queue/email-queue.module");
 let DatabaseModule = class DatabaseModule {
 };
 exports.DatabaseModule = DatabaseModule;
 exports.DatabaseModule = DatabaseModule = __decorate([
     (0, common_1.Global)(),
-    (0, common_1.Module)({ providers: [database_service_1.DatabaseService], exports: [database_service_1.DatabaseService] })
+    (0, common_1.Module)({
+        imports: [email_queue_module_1.EmailQueueModule],
+        providers: [database_service_1.DatabaseService],
+        exports: [database_service_1.DatabaseService],
+    })
 ], DatabaseModule);
 //# sourceMappingURL=database.module.js.map

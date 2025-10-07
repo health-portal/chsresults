@@ -2,10 +2,9 @@ import { Module } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
 import { EmailQueueModule } from 'src/email-queue/email-queue.module';
-import { AuthService } from 'src/auth/auth.service';
 
 @Module({
-  imports: [EmailQueueModule, AuthService],
+  imports: [EmailQueueModule],
   controllers: [AdminController],
   providers: [AdminService],
 })

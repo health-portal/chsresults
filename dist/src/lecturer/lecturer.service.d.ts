@@ -1,16 +1,18 @@
 import { DatabaseService } from 'src/database/database.service';
 import { BatchStudentRegistrationResponse, EditScoreBody, RegisterStudentBody, UploadScoresResponse } from './lecturer.schema';
+import { EmailQueueService } from 'src/email-queue/email-queue.service';
 export declare class LecturerService {
     private readonly db;
-    constructor(db: DatabaseService);
+    private readonly emailQueueService;
+    constructor(db: DatabaseService, emailQueueService: EmailQueueService);
     private validateCourseAccess;
     listCourses(lecturerId: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        description: string | null;
         code: string;
+        description: string | null;
         units: number;
         semester: number;
         lecturerId: string;

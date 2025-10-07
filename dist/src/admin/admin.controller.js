@@ -29,6 +29,9 @@ let AdminController = class AdminController {
     async addAdmin(body) {
         return await this.adminService.addAdmin(body);
     }
+    async getAdmins() {
+        return await this.adminService.getAdmins();
+    }
     async getProfile(adminId) {
         return await this.adminService.getProfile(adminId);
     }
@@ -52,6 +55,19 @@ __decorate([
     __metadata("design:paramtypes", [admin_schema_1.AddAdminBody]),
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "addAdmin", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get admins' }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Admins retrieved successfully',
+        type: [admin_schema_1.AdminProfileResponse],
+    }),
+    (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
+    (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "getAdmins", null);
 __decorate([
     (0, common_1.Get)('profile'),
     (0, swagger_1.ApiOperation)({ summary: 'Get admin profile' }),

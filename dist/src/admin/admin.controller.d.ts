@@ -11,6 +11,14 @@ export declare class AdminController {
         updatedAt: Date;
         phone: string | null;
     }>;
+    getAdmins(): Promise<{
+        name: string;
+        email: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        phone: string | null;
+    }[]>;
     getProfile(adminId: string): Promise<{
         name: string;
         email: string;

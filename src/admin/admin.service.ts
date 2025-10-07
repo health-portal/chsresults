@@ -55,7 +55,7 @@ export class AdminService {
         set: { tokenString, tokenType: TokenType.ACTIVATE_ACCOUNT },
       });
 
-    await this.emailQueueService.createTask({
+    await this.emailQueueService.send({
       subject: 'Invitation to Verify Admin',
       toEmail: insertedAdmin.email,
       htmlContent: InvitationTemplate({

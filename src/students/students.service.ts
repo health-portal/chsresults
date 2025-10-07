@@ -50,7 +50,7 @@ export class StudentsService {
         set: { tokenString, tokenType: TokenType.ACTIVATE_ACCOUNT },
       });
 
-    await this.emailQueueService.createTask({
+    await this.emailQueueService.send({
       subject: 'Invitation to Activate Account',
       toEmail: email,
       htmlContent: InvitationTemplate({

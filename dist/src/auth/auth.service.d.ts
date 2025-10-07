@@ -1,6 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from 'src/database/database.service';
-import { AuthUserBody, AuthStudentBody, StudentIdentifierBody } from './auth.schema';
+import { SigninUserBody, SigninStudentBody, StudentIdentifierBody, VerifyUserBody, VerifyStudentBody } from './auth.schema';
 import { EmailQueueService } from 'src/email-queue/email-queue.service';
 export declare class AuthService {
     private readonly db;
@@ -10,7 +10,7 @@ export declare class AuthService {
     private generateToken;
     private findAdmin;
     private updateAdminPassword;
-    activateAdmin({ email, password }: AuthUserBody): Promise<{
+    activateAdmin({ email, password, tokenString }: VerifyUserBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -18,14 +18,14 @@ export declare class AuthService {
         phone: string | null;
         name: string;
     }>;
-    signinAdmin({ email, password }: AuthUserBody): Promise<{
+    signinAdmin({ email, password }: SigninUserBody): Promise<{
         accessToken: string;
     }>;
     adminResetPasswordRequest(email: string): Promise<{
         success: boolean;
         message: string;
     }>;
-    adminResetPassword({ email, password }: AuthUserBody): Promise<{
+    adminResetPassword({ email, password, tokenString }: VerifyUserBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -35,7 +35,7 @@ export declare class AuthService {
     }>;
     private findLecturer;
     private updateLecturerPassword;
-    activateLecturer({ email, password }: AuthUserBody): Promise<{
+    activateLecturer({ email, password, tokenString }: VerifyUserBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -47,14 +47,14 @@ export declare class AuthService {
         title: string;
         departmentId: string;
     }>;
-    signinLecturer({ email, password }: AuthUserBody): Promise<{
+    signinLecturer({ email, password }: SigninUserBody): Promise<{
         accessToken: string;
     }>;
     lecturerResetPasswordRequest(email: string): Promise<{
         success: boolean;
         message: string;
     }>;
-    lecturerResetPassword({ email, password }: AuthUserBody): Promise<{
+    lecturerResetPassword({ email, password, tokenString, }: VerifyUserBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -68,7 +68,7 @@ export declare class AuthService {
     }>;
     private findStudent;
     private updateStudentPassword;
-    activateStudent({ studentIdentifier, identifierType, password, }: AuthStudentBody): Promise<{
+    activateStudent({ studentIdentifier, identifierType, password, tokenString, }: VerifyStudentBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -82,14 +82,14 @@ export declare class AuthService {
         degree: string;
         departmentId: string;
     }>;
-    signinStudent({ studentIdentifier, identifierType, password, }: AuthStudentBody): Promise<{
+    signinStudent({ studentIdentifier, identifierType, password, }: SigninStudentBody): Promise<{
         accessToken: string;
     }>;
     studentResetPasswordRequest({ studentIdentifier, identifierType, }: StudentIdentifierBody): Promise<{
         success: boolean;
         message: string;
     }>;
-    studentResetPassword({ studentIdentifier, identifierType, password, }: AuthStudentBody): Promise<{
+    studentResetPassword({ studentIdentifier, identifierType, password, tokenString, }: VerifyStudentBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;

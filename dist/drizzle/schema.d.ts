@@ -546,47 +546,13 @@ export declare const student: import("drizzle-orm/pg-core").PgTableWithColumns<{
     };
     dialect: "pg";
 }>;
-export declare const log: import("drizzle-orm/pg-core").PgTableWithColumns<{
-    name: "log";
+export declare const token: import("drizzle-orm/pg-core").PgTableWithColumns<{
+    name: "token";
     schema: undefined;
     columns: {
-        id: import("drizzle-orm/pg-core").PgColumn<{
-            name: "id";
-            tableName: "log";
-            dataType: "bigint";
-            columnType: "PgBigSerial64";
-            data: bigint;
-            driverParam: string;
-            notNull: true;
-            hasDefault: true;
-            isPrimaryKey: true;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: undefined;
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
-        createdAt: import("drizzle-orm/pg-core").PgColumn<{
-            name: "created_at";
-            tableName: "log";
-            dataType: "date";
-            columnType: "PgTimestamp";
-            data: Date;
-            driverParam: string;
-            notNull: true;
-            hasDefault: true;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: undefined;
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
         userId: import("drizzle-orm/pg-core").PgColumn<{
             name: "user_id";
-            tableName: "log";
+            tableName: "token";
             dataType: "string";
             columnType: "PgText";
             data: string;
@@ -603,7 +569,7 @@ export declare const log: import("drizzle-orm/pg-core").PgTableWithColumns<{
         }, {}, {}>;
         userRole: import("drizzle-orm/pg-core").PgColumn<{
             name: "user_role";
-            tableName: "log";
+            tableName: "token";
             dataType: "string";
             columnType: "PgText";
             data: string;
@@ -618,9 +584,26 @@ export declare const log: import("drizzle-orm/pg-core").PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        action: import("drizzle-orm/pg-core").PgColumn<{
-            name: "action";
-            tableName: "log";
+        createdAt: import("drizzle-orm/pg-core").PgColumn<{
+            name: "created_at";
+            tableName: "token";
+            dataType: "date";
+            columnType: "PgTimestamp";
+            data: Date;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        tokenString: import("drizzle-orm/pg-core").PgColumn<{
+            name: "token_string";
+            tableName: "token";
             dataType: "string";
             columnType: "PgText";
             data: string;
@@ -635,65 +618,14 @@ export declare const log: import("drizzle-orm/pg-core").PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
-        description: import("drizzle-orm/pg-core").PgColumn<{
-            name: "description";
-            tableName: "log";
+        tokenType: import("drizzle-orm/pg-core").PgColumn<{
+            name: "token_type";
+            tableName: "token";
             dataType: "string";
             columnType: "PgText";
             data: string;
             driverParam: string;
-            notNull: false;
-            hasDefault: false;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: [string, ...string[]];
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
-        metadata: import("drizzle-orm/pg-core").PgColumn<{
-            name: "metadata";
-            tableName: "log";
-            dataType: "json";
-            columnType: "PgJson";
-            data: unknown;
-            driverParam: unknown;
-            notNull: false;
-            hasDefault: false;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: undefined;
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
-        ipAddress: import("drizzle-orm/pg-core").PgColumn<{
-            name: "ip_address";
-            tableName: "log";
-            dataType: "string";
-            columnType: "PgInet";
-            data: string;
-            driverParam: string;
-            notNull: false;
-            hasDefault: false;
-            isPrimaryKey: false;
-            isAutoincrement: false;
-            hasRuntimeDefault: false;
-            enumValues: undefined;
-            baseColumn: never;
-            identity: undefined;
-            generated: undefined;
-        }, {}, {}>;
-        userAgent: import("drizzle-orm/pg-core").PgColumn<{
-            name: "userAgent";
-            tableName: "log";
-            dataType: "string";
-            columnType: "PgText";
-            data: string;
-            driverParam: string;
-            notNull: false;
+            notNull: true;
             hasDefault: false;
             isPrimaryKey: false;
             isAutoincrement: false;

@@ -66,8 +66,8 @@ exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)('admin/activate-account'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({ summary: 'Activate admin account' }),
-    (0, swagger_1.ApiBody)({ type: auth_schema_1.AuthUserBody }),
+    (0, swagger_1.ApiOperation)({ summary: 'Verify admin account' }),
+    (0, swagger_1.ApiBody)({ type: auth_schema_1.VerifyUserBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Admin account activated successfully',
         type: admin_schema_1.AdminProfileResponse,
@@ -76,14 +76,14 @@ __decorate([
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Admin not found' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_schema_1.AuthUserBody]),
+    __metadata("design:paramtypes", [auth_schema_1.VerifyUserBody]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "activateAdmin", null);
 __decorate([
     (0, common_1.Post)('admin/signin'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({ summary: 'Sign in admin' }),
-    (0, swagger_1.ApiBody)({ type: auth_schema_1.AuthUserBody }),
+    (0, swagger_1.ApiBody)({ type: auth_schema_1.SigninUserBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Admin signed in successfully',
         type: auth_schema_1.SigninResponse,
@@ -95,7 +95,7 @@ __decorate([
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_schema_1.AuthUserBody]),
+    __metadata("design:paramtypes", [auth_schema_1.SigninUserBody]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signinAdmin", null);
 __decorate([
@@ -115,7 +115,7 @@ __decorate([
     (0, common_1.Post)('admin/reset-password'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({ summary: 'Reset admin password' }),
-    (0, swagger_1.ApiBody)({ type: auth_schema_1.AuthUserBody }),
+    (0, swagger_1.ApiBody)({ type: auth_schema_1.VerifyUserBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Admin password reset successfully',
         type: admin_schema_1.AdminProfileResponse,
@@ -124,14 +124,14 @@ __decorate([
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_schema_1.AuthUserBody]),
+    __metadata("design:paramtypes", [auth_schema_1.VerifyUserBody]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "adminResetPassword", null);
 __decorate([
     (0, common_1.Post)('lecturer/activate-account'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({ summary: 'Activate lecturer account' }),
-    (0, swagger_1.ApiBody)({ type: auth_schema_1.AuthUserBody }),
+    (0, swagger_1.ApiOperation)({ summary: 'Verify lecturer account' }),
+    (0, swagger_1.ApiBody)({ type: auth_schema_1.VerifyUserBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Lecturer account activated successfully',
         type: lecturer_schema_1.LecturerProfileResponse,
@@ -140,14 +140,14 @@ __decorate([
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Lecturer not found' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_schema_1.AuthUserBody]),
+    __metadata("design:paramtypes", [auth_schema_1.VerifyUserBody]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "activateLecturer", null);
 __decorate([
     (0, common_1.Post)('lecturer/signin'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({ summary: 'Sign in lecturer' }),
-    (0, swagger_1.ApiBody)({ type: auth_schema_1.AuthUserBody }),
+    (0, swagger_1.ApiBody)({ type: auth_schema_1.SigninUserBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Lecturer signed in successfully',
         type: auth_schema_1.SigninResponse,
@@ -159,7 +159,7 @@ __decorate([
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_schema_1.AuthUserBody]),
+    __metadata("design:paramtypes", [auth_schema_1.SigninUserBody]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signinLecturer", null);
 __decorate([
@@ -179,7 +179,7 @@ __decorate([
     (0, common_1.Post)('lecturer/reset-password'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({ summary: 'Reset lecturer password' }),
-    (0, swagger_1.ApiBody)({ type: auth_schema_1.AuthUserBody }),
+    (0, swagger_1.ApiBody)({ type: auth_schema_1.VerifyUserBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Lecturer password reset successfully',
         type: lecturer_schema_1.LecturerProfileResponse,
@@ -188,14 +188,14 @@ __decorate([
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_schema_1.AuthUserBody]),
+    __metadata("design:paramtypes", [auth_schema_1.VerifyUserBody]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "lecturerResetPassword", null);
 __decorate([
     (0, common_1.Post)('student/activate-account'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({ summary: 'Activate student account' }),
-    (0, swagger_1.ApiBody)({ type: auth_schema_1.AuthStudentBody }),
+    (0, swagger_1.ApiOperation)({ summary: 'Verify student account' }),
+    (0, swagger_1.ApiBody)({ type: auth_schema_1.VerifyStudentBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Student account activated successfully',
         type: student_schema_1.StudentProfileResponse,
@@ -205,14 +205,14 @@ __decorate([
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_schema_1.AuthStudentBody]),
+    __metadata("design:paramtypes", [auth_schema_1.VerifyStudentBody]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "activateStudent", null);
 __decorate([
     (0, common_1.Post)('student/signin'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({ summary: 'Sign in student' }),
-    (0, swagger_1.ApiBody)({ type: auth_schema_1.AuthStudentBody }),
+    (0, swagger_1.ApiBody)({ type: auth_schema_1.SigninStudentBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Student signed in successfully',
         type: auth_schema_1.SigninResponse,
@@ -224,7 +224,7 @@ __decorate([
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_schema_1.AuthStudentBody]),
+    __metadata("design:paramtypes", [auth_schema_1.SigninStudentBody]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signinStudent", null);
 __decorate([
@@ -244,7 +244,7 @@ __decorate([
     (0, common_1.Post)('student/reset-password'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({ summary: 'Reset student password' }),
-    (0, swagger_1.ApiBody)({ type: auth_schema_1.AuthStudentBody }),
+    (0, swagger_1.ApiBody)({ type: auth_schema_1.VerifyStudentBody }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Student password reset successfully',
         type: student_schema_1.StudentProfileResponse,
@@ -253,7 +253,7 @@ __decorate([
     (0, swagger_1.ApiBadRequestResponse)({ description: 'Bad Request' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_schema_1.AuthStudentBody]),
+    __metadata("design:paramtypes", [auth_schema_1.VerifyStudentBody]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "studentResetPassword", null);
 exports.AuthController = AuthController = __decorate([

@@ -16,12 +16,21 @@ const schema_1 = require("../../drizzle/schema");
 const database_service_1 = require("../database/database.service");
 const email_queue_service_1 = require("../email-queue/email-queue.service");
 const email_queue_schema_1 = require("../email-queue/email-queue.schema");
+const environment_1 = require("../environment");
+const auth_schema_1 = require("../auth/auth.schema");
+const jwt_1 = require("@nestjs/jwt");
 let AdminService = class AdminService {
     db;
+    jwtService;
     emailQueueService;
-    constructor(db, emailQueueService) {
+    constructor(db, jwtService, emailQueueService) {
         this.db = db;
+        this.jwtService = jwtService;
         this.emailQueueService = emailQueueService;
+    }
+    async generateToken(payload, expiresIn = '1d') {
+        const token = await this.jwtService.signAsync(payload, { expiresIn });
+        return token;
     }
     async addAdmin({ email, name }) {
         const foundAdmin = await this.db.client.query.admin.findFirst({
@@ -33,16 +42,34 @@ let AdminService = class AdminService {
             .insert(schema_1.admin)
             .values({ email, name })
             .returning();
-        await this.emailQueueService.createTask({
-            subject: 'Invitation to Activate Admin',
+        const tokenString = await this.generateToken({ id: insertedAdmin.id, role: auth_schema_1.UserRole.ADMIN }, '7d');
+        await this.db.client
+            .insert(schema_1.token)
+            .values({
+            userId: insertedAdmin.id,
+            userRole: auth_schema_1.UserRole.ADMIN,
+            tokenString,
+            tokenType: auth_schema_1.TokenType.ACTIVATE_ACCOUNT,
+        })
+            .onConflictDoUpdate({
+            target: [schema_1.token.userId, schema_1.token.userRole],
+            set: { tokenString, tokenType: auth_schema_1.TokenType.ACTIVATE_ACCOUNT },
+        });
+        await this.emailQueueService.send({
+            subject: 'Invitation to Verify Admin',
             toEmail: insertedAdmin.email,
             htmlContent: (0, email_queue_schema_1.InvitationTemplate)({
                 name: insertedAdmin.name,
-                registrationLink: '',
+                registrationLink: `${environment_1.env.FRONTEND_BASE_URL}/admin/activate/?token=${tokenString}`,
             }),
         });
         const { password: _, ...adminProfile } = insertedAdmin;
         return adminProfile;
+    }
+    async getAdmins() {
+        return await this.db.client.query.admin.findMany({
+            columns: { password: false },
+        });
     }
     async getProfile(adminId) {
         const foundAdmin = await this.db.client.query.admin.findFirst({
@@ -72,6 +99,7 @@ exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [database_service_1.DatabaseService,
+        jwt_1.JwtService,
         email_queue_service_1.EmailQueueService])
 ], AdminService);
 //# sourceMappingURL=admin.service.js.map

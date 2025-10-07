@@ -82,10 +82,7 @@ export class AuthService {
         throw new BadRequestException('Invalid or expired token');
       });
 
-    const hashedPassword = await bcrypt.hash(
-      password,
-      Number(env.BCRYPT_SECRET),
-    );
+    const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
     return this.updateAdminPassword(foundAdmin.id, hashedPassword);
   }
 
@@ -127,7 +124,7 @@ export class AuthService {
         set: { tokenString, tokenType: TokenType.RESET_PASSWORD },
       });
 
-    await this.emailQueueService.createTask({
+    await this.emailQueueService.send({
       subject: 'Reset Password',
       toEmail: foundAdmin.email,
       htmlContent: ResetPasswordTemplate({
@@ -164,10 +161,7 @@ export class AuthService {
         throw new BadRequestException('Invalid or expired token');
       });
 
-    const hashedPassword = await bcrypt.hash(
-      password,
-      Number(env.BCRYPT_SECRET),
-    );
+    const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
     return this.updateAdminPassword(foundAdmin.id, hashedPassword);
   }
 
@@ -215,10 +209,7 @@ export class AuthService {
         throw new BadRequestException('Invalid or expired token');
       });
 
-    const hashedPassword = await bcrypt.hash(
-      password,
-      Number(env.BCRYPT_SECRET),
-    );
+    const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
     return this.updateLecturerPassword(foundLecturer.id, hashedPassword);
   }
 
@@ -260,7 +251,7 @@ export class AuthService {
         set: { tokenString, tokenType: TokenType.RESET_PASSWORD },
       });
 
-    await this.emailQueueService.createTask({
+    await this.emailQueueService.send({
       subject: 'Reset Password',
       toEmail: foundLecturer.email,
       htmlContent: ResetPasswordTemplate({
@@ -301,10 +292,7 @@ export class AuthService {
         throw new BadRequestException('Invalid or expired token');
       });
 
-    const hashedPassword = await bcrypt.hash(
-      password,
-      Number(env.BCRYPT_SECRET),
-    );
+    const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
     return this.updateLecturerPassword(foundLecturer.id, hashedPassword);
   }
 
@@ -368,10 +356,7 @@ export class AuthService {
         throw new BadRequestException('Invalid or expired token');
       });
 
-    const hashedPassword = await bcrypt.hash(
-      password,
-      Number(env.BCRYPT_SECRET),
-    );
+    const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
     return this.updateStudentPassword(foundStudent.id, hashedPassword);
   }
 
@@ -424,7 +409,7 @@ export class AuthService {
         set: { tokenString, tokenType: TokenType.RESET_PASSWORD },
       });
 
-    await this.emailQueueService.createTask({
+    await this.emailQueueService.send({
       subject: 'Reset Password',
       toEmail: foundStudent.email,
       htmlContent: ResetPasswordTemplate({
@@ -471,10 +456,7 @@ export class AuthService {
         throw new BadRequestException('Invalid or expired token');
       });
 
-    const hashedPassword = await bcrypt.hash(
-      password,
-      Number(env.BCRYPT_SECRET),
-    );
+    const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
     return this.updateStudentPassword(foundStudent.id, hashedPassword);
   }
 }

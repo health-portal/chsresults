@@ -1,10 +1,13 @@
 import { DatabaseService } from 'src/database/database.service';
 import { AddAdminBody, UpdateAdminBody } from './admin.schema';
 import { EmailQueueService } from 'src/email-queue/email-queue.service';
+import { JwtService } from '@nestjs/jwt';
 export declare class AdminService {
     private readonly db;
+    private readonly jwtService;
     private readonly emailQueueService;
-    constructor(db: DatabaseService, emailQueueService: EmailQueueService);
+    constructor(db: DatabaseService, jwtService: JwtService, emailQueueService: EmailQueueService);
+    private generateToken;
     addAdmin({ email, name }: AddAdminBody): Promise<{
         name: string;
         email: string;
@@ -13,6 +16,14 @@ export declare class AdminService {
         updatedAt: Date;
         phone: string | null;
     }>;
+    getAdmins(): Promise<{
+        name: string;
+        email: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        phone: string | null;
+    }[]>;
     getProfile(adminId: string): Promise<{
         name: string;
         email: string;

@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SigninResponse = exports.AuthStudentBody = exports.StudentIdentifierBody = exports.StudentIdentifierType = exports.AuthUserBody = exports.UserRole = void 0;
+exports.SigninResponse = exports.VerifyStudentBody = exports.SigninStudentBody = exports.StudentIdentifierBody = exports.StudentIdentifierType = exports.SigninUserBody = exports.VerifyUserBody = exports.TokenType = exports.UserRole = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 var UserRole;
@@ -18,22 +18,50 @@ var UserRole;
     UserRole["LECTURER"] = "Lecturer";
     UserRole["STUDENT"] = "Student";
 })(UserRole || (exports.UserRole = UserRole = {}));
-class AuthUserBody {
+var TokenType;
+(function (TokenType) {
+    TokenType["ACTIVATE_ACCOUNT"] = "activate_account";
+    TokenType["RESET_PASSWORD"] = "reset_password";
+})(TokenType || (exports.TokenType = TokenType = {}));
+class VerifyUserBody {
     email;
     password;
+    tokenString;
 }
-exports.AuthUserBody = AuthUserBody;
+exports.VerifyUserBody = VerifyUserBody;
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsEmail)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], AuthUserBody.prototype, "email", void 0);
+], VerifyUserBody.prototype, "email", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsStrongPassword)(),
     __metadata("design:type", String)
-], AuthUserBody.prototype, "password", void 0);
+], VerifyUserBody.prototype, "password", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], VerifyUserBody.prototype, "tokenString", void 0);
+class SigninUserBody {
+    email;
+    password;
+}
+exports.SigninUserBody = SigninUserBody;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], SigninUserBody.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsStrongPassword)(),
+    __metadata("design:type", String)
+], SigninUserBody.prototype, "password", void 0);
 var StudentIdentifierType;
 (function (StudentIdentifierType) {
     StudentIdentifierType["EMAIL"] = "email";
@@ -55,16 +83,26 @@ __decorate([
     (0, class_validator_1.IsEnum)(StudentIdentifierType),
     __metadata("design:type", String)
 ], StudentIdentifierBody.prototype, "identifierType", void 0);
-class AuthStudentBody extends StudentIdentifierBody {
+class SigninStudentBody extends StudentIdentifierBody {
     password;
 }
-exports.AuthStudentBody = AuthStudentBody;
+exports.SigninStudentBody = SigninStudentBody;
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], AuthStudentBody.prototype, "password", void 0);
+], SigninStudentBody.prototype, "password", void 0);
+class VerifyStudentBody extends SigninStudentBody {
+    tokenString;
+}
+exports.VerifyStudentBody = VerifyStudentBody;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], VerifyStudentBody.prototype, "tokenString", void 0);
 class SigninResponse {
     accessToken;
 }

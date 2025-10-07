@@ -19,6 +19,8 @@ const courses_module_1 = require("./courses/courses.module");
 const college_module_1 = require("./college/college.module");
 const email_queue_module_1 = require("./email-queue/email-queue.module");
 const schedule_1 = require("@nestjs/schedule");
+const jwt_1 = require("@nestjs/jwt");
+const environment_1 = require("./environment");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -36,6 +38,7 @@ exports.AppModule = AppModule = __decorate([
             college_module_1.CollegeModule,
             email_queue_module_1.EmailQueueModule,
             schedule_1.ScheduleModule.forRoot(),
+            jwt_1.JwtModule.register({ global: true, secret: environment_1.env.JWT_SECRET }),
         ],
     })
 ], AppModule);

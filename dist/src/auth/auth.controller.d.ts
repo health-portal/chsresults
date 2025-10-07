@@ -1,9 +1,9 @@
 import { AuthService } from './auth.service';
-import { AuthUserBody, AuthStudentBody, StudentIdentifierBody } from './auth.schema';
+import { SigninUserBody, SigninStudentBody, StudentIdentifierBody, VerifyUserBody, VerifyStudentBody } from './auth.schema';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
-    activateAdmin(body: AuthUserBody): Promise<{
+    activateAdmin(body: VerifyUserBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -11,14 +11,14 @@ export declare class AuthController {
         phone: string | null;
         name: string;
     }>;
-    signinAdmin(body: AuthUserBody): Promise<{
+    signinAdmin(body: SigninUserBody): Promise<{
         accessToken: string;
     }>;
     adminResetPasswordRequest(email: string): Promise<{
         success: boolean;
         message: string;
     }>;
-    adminResetPassword(body: AuthUserBody): Promise<{
+    adminResetPassword(body: VerifyUserBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -26,7 +26,7 @@ export declare class AuthController {
         phone: string | null;
         name: string;
     }>;
-    activateLecturer(body: AuthUserBody): Promise<{
+    activateLecturer(body: VerifyUserBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -38,14 +38,14 @@ export declare class AuthController {
         title: string;
         departmentId: string;
     }>;
-    signinLecturer(body: AuthUserBody): Promise<{
+    signinLecturer(body: SigninUserBody): Promise<{
         accessToken: string;
     }>;
     lecturerResetPasswordRequest(email: string): Promise<{
         success: boolean;
         message: string;
     }>;
-    lecturerResetPassword(body: AuthUserBody): Promise<{
+    lecturerResetPassword(body: VerifyUserBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -57,7 +57,7 @@ export declare class AuthController {
         title: string;
         departmentId: string;
     }>;
-    activateStudent(body: AuthStudentBody): Promise<{
+    activateStudent(body: VerifyStudentBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -71,14 +71,14 @@ export declare class AuthController {
         degree: string;
         departmentId: string;
     }>;
-    signinStudent(body: AuthStudentBody): Promise<{
+    signinStudent(body: SigninStudentBody): Promise<{
         accessToken: string;
     }>;
     studentResetPasswordRequest(body: StudentIdentifierBody): Promise<{
         success: boolean;
         message: string;
     }>;
-    studentResetPassword(body: AuthStudentBody): Promise<{
+    studentResetPassword(body: VerifyStudentBody): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;

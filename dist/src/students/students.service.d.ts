@@ -1,8 +1,14 @@
 import { DatabaseService } from 'src/database/database.service';
 import { CreateStudentBody, CreateStudentsResponse, UpdateStudentBody } from './students.schema';
+import { EmailQueueService } from 'src/email-queue/email-queue.service';
+import { JwtService } from '@nestjs/jwt';
 export declare class StudentsService {
     private readonly db;
-    constructor(db: DatabaseService);
+    private readonly jwtService;
+    private readonly emailQueueService;
+    constructor(db: DatabaseService, jwtService: JwtService, emailQueueService: EmailQueueService);
+    private generateToken;
+    inviteStudent(id: string, email: string, name: string): Promise<void>;
     createStudent(body: CreateStudentBody): Promise<{
         email: string;
         id: string;

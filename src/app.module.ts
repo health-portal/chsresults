@@ -10,6 +10,8 @@ import { CoursesModule } from './courses/courses.module';
 import { CollegeModule } from './college/college.module';
 import { EmailQueueModule } from './email-queue/email-queue.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { JwtModule } from '@nestjs/jwt';
+import { env } from './environment';
 
 @Module({
   imports: [
@@ -24,6 +26,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     CollegeModule,
     EmailQueueModule,
     ScheduleModule.forRoot(),
+    JwtModule.register({ global: true, secret: env.JWT_SECRET }),
   ],
 })
 export class AppModule {}

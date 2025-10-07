@@ -16,10 +16,46 @@ const lecturers_schema_1 = require("./lecturers.schema");
 const schema_1 = require("../../drizzle/schema");
 const drizzle_orm_1 = require("drizzle-orm");
 const csv_1 = require("../utils/csv");
+const jwt_1 = require("@nestjs/jwt");
+const email_queue_service_1 = require("../email-queue/email-queue.service");
+const auth_schema_1 = require("../auth/auth.schema");
+const email_queue_schema_1 = require("../email-queue/email-queue.schema");
+const environment_1 = require("../environment");
 let LecturersService = class LecturersService {
     db;
-    constructor(db) {
+    jwtService;
+    emailQueueService;
+    constructor(db, jwtService, emailQueueService) {
         this.db = db;
+        this.jwtService = jwtService;
+        this.emailQueueService = emailQueueService;
+    }
+    async generateToken(payload, expiresIn = '1d') {
+        const token = await this.jwtService.signAsync(payload, { expiresIn });
+        return token;
+    }
+    async inviteLecturer(id, email, name) {
+        const tokenString = await this.generateToken({ id, role: auth_schema_1.UserRole.LECTURER }, '7d');
+        await this.db.client
+            .insert(schema_1.token)
+            .values({
+            userId: id,
+            userRole: auth_schema_1.UserRole.LECTURER,
+            tokenString,
+            tokenType: auth_schema_1.TokenType.ACTIVATE_ACCOUNT,
+        })
+            .onConflictDoUpdate({
+            target: [schema_1.token.userId, schema_1.token.userRole],
+            set: { tokenString, tokenType: auth_schema_1.TokenType.ACTIVATE_ACCOUNT },
+        });
+        await this.emailQueueService.send({
+            subject: 'Invitation to Activate Account',
+            toEmail: email,
+            htmlContent: (0, email_queue_schema_1.InvitationTemplate)({
+                name,
+                registrationLink: `${environment_1.env.FRONTEND_BASE_URL}/lecturer/activate/?token=${tokenString}`,
+            }),
+        });
     }
     async createLecturer(body) {
         const foundLecturer = await this.db.client.query.lecturer.findFirst({
@@ -36,6 +72,7 @@ let LecturersService = class LecturersService {
             .insert(schema_1.lecturer)
             .values({ ...body, departmentId: foundDepartment.id })
             .returning();
+        await this.inviteLecturer(insertedLecturer.id, insertedLecturer.email, `${insertedLecturer.title} ${insertedLecturer.firstName} ${insertedLecturer.lastName}`);
         const { password: _, ...lecturerProfile } = insertedLecturer;
         return lecturerProfile;
     }
@@ -99,6 +136,8 @@ let LecturersService = class LecturersService {
 exports.LecturersService = LecturersService;
 exports.LecturersService = LecturersService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [database_service_1.DatabaseService])
+    __metadata("design:paramtypes", [database_service_1.DatabaseService,
+        jwt_1.JwtService,
+        email_queue_service_1.EmailQueueService])
 ], LecturersService);
 //# sourceMappingURL=lecturers.service.js.map

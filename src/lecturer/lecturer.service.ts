@@ -75,7 +75,7 @@ export class LecturerService {
             .onConflictDoNothing();
 
           if (insertedEnrollment) {
-            await this.emailQueueService.createTask({
+            await this.emailQueueService.send({
               subject: 'Notification of Enrollment',
               toEmail: foundStudent.email,
               htmlContent: NotificationTemplate({
@@ -139,7 +139,7 @@ export class LecturerService {
       })
       .returning();
 
-    await this.emailQueueService.createTask({
+    await this.emailQueueService.send({
       subject: 'Notification of Enrollment',
       toEmail: foundStudent.email,
       htmlContent: NotificationTemplate({
@@ -184,7 +184,7 @@ export class LecturerService {
             .where(eq(enrollment.studentId, foundStudent.id))
             .returning();
 
-          await this.emailQueueService.createTask({
+          await this.emailQueueService.send({
             subject: 'Notification for Uploaded Score',
             toEmail: foundStudent.email,
             htmlContent: NotificationTemplate({
