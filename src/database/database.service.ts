@@ -82,7 +82,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
         toEmail: admin.email,
         htmlContent: InvitationTemplate({
           name: admin.name,
-          registrationLink: `${env.FRONTEND_BASE_URL}/admin/activate/?token=${tokenString}`,
+          registrationLink: `${env.FRONTEND_BASE_URL}/activate/?token=${tokenString}&type=admin`,
         }),
       });
     }

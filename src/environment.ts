@@ -9,6 +9,7 @@ export const env = cleanEnv(process.env, {
   DATABASE_URL: str(),
   DEFAULT_ADMINS: json<{ name: string; email: string }[]>(),
   JWT_SECRET: str(),
+  OTP_SECRET: str(),
   PORT: num(),
   FRONTEND_BASE_URL: str(),
   SMTPEXPRESS_PROJECT_ID: str(),

@@ -112,7 +112,7 @@ let DatabaseService = class DatabaseService {
                 toEmail: admin.email,
                 htmlContent: (0, email_queue_schema_1.InvitationTemplate)({
                     name: admin.name,
-                    registrationLink: `${environment_1.env.FRONTEND_BASE_URL}/admin/activate/?token=${tokenString}`,
+                    registrationLink: `${environment_1.env.FRONTEND_BASE_URL}/activate/?token=${tokenString}&type=admin`,
                 }),
             });
         }

@@ -63,7 +63,7 @@ export class AdminService {
       toEmail: insertedAdmin.email,
       htmlContent: InvitationTemplate({
         name: insertedAdmin.name,
-        registrationLink: `${env.FRONTEND_BASE_URL}/admin/activate/?token=${tokenString}`,
+        registrationLink: `${env.FRONTEND_BASE_URL}/activate/?token=${tokenString}&type=admin`,
       }),
     });
 

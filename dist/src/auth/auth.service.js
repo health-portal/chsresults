@@ -53,6 +53,8 @@ const bcrypt = __importStar(require("bcrypt"));
 const email_queue_service_1 = require("../email-queue/email-queue.service");
 const email_queue_schema_1 = require("../email-queue/email-queue.schema");
 const environment_1 = require("../environment");
+const otplib_1 = require("otplib");
+otplib_1.totp.options = { step: 60, window: 15 };
 let AuthService = class AuthService {
     db;
     jwtService;
@@ -122,26 +124,23 @@ let AuthService = class AuthService {
         const foundAdmin = await this.findAdmin(email);
         if (!foundAdmin)
             throw new common_1.NotFoundException(`Admin not found`);
-        const tokenString = await this.generateToken({ id: foundAdmin.id, role: auth_schema_1.UserRole.ADMIN }, '15m');
+        const otp = otplib_1.totp.generate(environment_1.env.OTP_SECRET);
         await this.db.client
             .insert(schema_1.token)
             .values({
             userId: foundAdmin.id,
             userRole: auth_schema_1.UserRole.ADMIN,
-            tokenString,
+            tokenString: otp,
             tokenType: auth_schema_1.TokenType.RESET_PASSWORD,
         })
             .onConflictDoUpdate({
             target: [schema_1.token.userId, schema_1.token.userRole],
-            set: { tokenString, tokenType: auth_schema_1.TokenType.RESET_PASSWORD },
+            set: { tokenString: otp, tokenType: auth_schema_1.TokenType.RESET_PASSWORD },
         });
         await this.emailQueueService.send({
             subject: 'Reset Password',
             toEmail: foundAdmin.email,
-            htmlContent: (0, email_queue_schema_1.ResetPasswordTemplate)({
-                name: foundAdmin.name,
-                resetLink: `${environment_1.env.FRONTEND_BASE_URL}/admin/reset-password/?token=${tokenString}`,
-            }),
+            htmlContent: (0, email_queue_schema_1.ResetPasswordTemplate)({ name: foundAdmin.name, otp }),
         });
         return { success: true, message: `Reset link sent to ${email}` };
     }
@@ -157,12 +156,9 @@ let AuthService = class AuthService {
         if (foundToken.tokenString !== tokenString ||
             foundToken.tokenType !== auth_schema_1.TokenType.RESET_PASSWORD)
             throw new common_1.BadRequestException('Invalid or expired token');
-        this.jwtService
-            .verifyAsync(tokenString)
-            .then(() => { })
-            .catch(() => {
+        const isValid = otplib_1.totp.check(tokenString, environment_1.env.OTP_SECRET);
+        if (!isValid)
             throw new common_1.BadRequestException('Invalid or expired token');
-        });
         const hashedPassword = await bcrypt.hash(password, Number(environment_1.env.BCRYPT_SALT));
         return this.updateAdminPassword(foundAdmin.id, hashedPassword);
     }
@@ -222,25 +218,25 @@ let AuthService = class AuthService {
         const foundLecturer = await this.findLecturer(email);
         if (!foundLecturer)
             throw new common_1.NotFoundException(`Lecturer not found`);
-        const tokenString = await this.generateToken({ id: foundLecturer.id, role: auth_schema_1.UserRole.ADMIN }, '15m');
+        const otp = otplib_1.totp.generate(environment_1.env.OTP_SECRET);
         await this.db.client
             .insert(schema_1.token)
             .values({
             userId: foundLecturer.id,
             userRole: auth_schema_1.UserRole.LECTURER,
-            tokenString,
+            tokenString: otp,
             tokenType: auth_schema_1.TokenType.RESET_PASSWORD,
         })
             .onConflictDoUpdate({
             target: [schema_1.token.userId, schema_1.token.userRole],
-            set: { tokenString, tokenType: auth_schema_1.TokenType.RESET_PASSWORD },
+            set: { tokenString: otp, tokenType: auth_schema_1.TokenType.RESET_PASSWORD },
         });
         await this.emailQueueService.send({
             subject: 'Reset Password',
             toEmail: foundLecturer.email,
             htmlContent: (0, email_queue_schema_1.ResetPasswordTemplate)({
                 name: `${foundLecturer.firstName} ${foundLecturer.lastName}`,
-                resetLink: `${environment_1.env.FRONTEND_BASE_URL}/lecturer/reset-password/?token=${tokenString}`,
+                otp,
             }),
         });
         return { success: true, message: `Reset link sent to ${email}` };
@@ -257,12 +253,9 @@ let AuthService = class AuthService {
         if (foundToken.tokenString !== tokenString ||
             foundToken.tokenType !== auth_schema_1.TokenType.RESET_PASSWORD)
             throw new common_1.BadRequestException('Invalid or expired token');
-        this.jwtService
-            .verifyAsync(tokenString)
-            .then(() => { })
-            .catch(() => {
+        const isValid = otplib_1.totp.check(tokenString, environment_1.env.OTP_SECRET);
+        if (!isValid)
             throw new common_1.BadRequestException('Invalid or expired token');
-        });
         const hashedPassword = await bcrypt.hash(password, Number(environment_1.env.BCRYPT_SALT));
         return this.updateLecturerPassword(foundLecturer.id, hashedPassword);
     }
@@ -330,25 +323,25 @@ let AuthService = class AuthService {
             studentIdentifier,
             identifierType,
         });
-        const tokenString = await this.generateToken({ id: foundStudent.id, role: auth_schema_1.UserRole.ADMIN }, '15m');
+        const otp = otplib_1.totp.generate(environment_1.env.OTP_SECRET);
         await this.db.client
             .insert(schema_1.token)
             .values({
             userId: foundStudent.id,
             userRole: auth_schema_1.UserRole.LECTURER,
-            tokenString,
+            tokenString: otp,
             tokenType: auth_schema_1.TokenType.RESET_PASSWORD,
         })
             .onConflictDoUpdate({
             target: [schema_1.token.userId, schema_1.token.userRole],
-            set: { tokenString, tokenType: auth_schema_1.TokenType.RESET_PASSWORD },
+            set: { tokenString: otp, tokenType: auth_schema_1.TokenType.RESET_PASSWORD },
         });
         await this.emailQueueService.send({
             subject: 'Reset Password',
             toEmail: foundStudent.email,
             htmlContent: (0, email_queue_schema_1.ResetPasswordTemplate)({
                 name: `${foundStudent.firstName} ${foundStudent.lastName}`,
-                resetLink: `${environment_1.env.FRONTEND_BASE_URL}/student/reset-password/?token=${tokenString}`,
+                otp,
             }),
         });
         return {
@@ -369,12 +362,9 @@ let AuthService = class AuthService {
         if (foundToken.tokenString !== tokenString ||
             foundToken.tokenType !== auth_schema_1.TokenType.RESET_PASSWORD)
             throw new common_1.BadRequestException('Invalid or expired token');
-        this.jwtService
-            .verifyAsync(tokenString)
-            .then(() => { })
-            .catch(() => {
+        const isValid = otplib_1.totp.check(tokenString, environment_1.env.OTP_SECRET);
+        if (!isValid)
             throw new common_1.BadRequestException('Invalid or expired token');
-        });
         const hashedPassword = await bcrypt.hash(password, Number(environment_1.env.BCRYPT_SALT));
         return this.updateStudentPassword(foundStudent.id, hashedPassword);
     }

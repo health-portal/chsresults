@@ -43,6 +43,7 @@ exports.env = (0, envalid_1.cleanEnv)(process.env, {
     DATABASE_URL: (0, envalid_1.str)(),
     DEFAULT_ADMINS: (0, envalid_1.json)(),
     JWT_SECRET: (0, envalid_1.str)(),
+    OTP_SECRET: (0, envalid_1.str)(),
     PORT: (0, envalid_1.num)(),
     FRONTEND_BASE_URL: (0, envalid_1.str)(),
     SMTPEXPRESS_PROJECT_ID: (0, envalid_1.str)(),

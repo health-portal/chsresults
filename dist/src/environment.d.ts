@@ -7,6 +7,7 @@ export declare const env: Readonly<{
         email: string;
     }[];
     JWT_SECRET: string;
+    OTP_SECRET: string;
     PORT: number;
     FRONTEND_BASE_URL: string;
     SMTPEXPRESS_PROJECT_ID: string;

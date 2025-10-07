@@ -5,7 +5,7 @@ export declare class SendEmailSchema {
 }
 export declare class ResetPasswordSchema {
     name: string;
-    resetLink: string;
+    otp: string;
 }
 export declare class InvitationSchema {
     name: string;
@@ -17,6 +17,6 @@ export declare class NotificationSchema {
     message: string;
     portalLink: string;
 }
-export declare const ResetPasswordTemplate: ({ name, resetLink, }: ResetPasswordSchema) => string;
+export declare const ResetPasswordTemplate: ({ name, otp }: ResetPasswordSchema) => string;
 export declare const InvitationTemplate: ({ name, registrationLink, }: InvitationSchema) => string;
 export declare const NotificationTemplate: ({ name, title, message, portalLink, }: NotificationSchema) => string;
