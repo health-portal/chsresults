@@ -8,6 +8,7 @@ import {
   IsString,
 } from 'class-validator';
 import { course, enrollment } from 'drizzle/schema';
+import { DepartmentResponse } from 'src/college/college.schema';
 import { LecturerProfileResponse } from 'src/lecturer/lecturer.schema';
 import { StudentProfileResponse } from 'src/student/student.schema';
 import { ParseCsvData } from 'src/utils/csv';
@@ -131,11 +132,6 @@ export class CourseResponse implements Course {
 
 type Enrollment = typeof enrollment.$inferSelect;
 
-class DepartmentName {
-  @ApiProperty()
-  name: string;
-}
-
 export class EnrollmentResponse implements Enrollment {
   @ApiProperty()
   id: string;
@@ -161,6 +157,6 @@ export class EnrollmentResponse implements Enrollment {
   @ApiProperty({ type: StudentProfileResponse })
   student: StudentProfileResponse;
 
-  @ApiProperty({ type: DepartmentName })
-  department: DepartmentName;
+  @ApiProperty({ type: DepartmentResponse })
+  department: DepartmentResponse;
 }

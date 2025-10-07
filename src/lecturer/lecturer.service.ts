@@ -249,7 +249,7 @@ export class LecturerService {
       with: {
         student: {
           columns: { password: false },
-          with: { department: { columns: { name: true } } },
+          with: { department: true },
         },
       },
     });
@@ -266,7 +266,7 @@ export class LecturerService {
       with: {
         student: {
           columns: { password: false },
-          with: { department: { columns: { name: true } } },
+          with: { department: true },
         },
       },
     });

@@ -13,6 +13,7 @@ exports.EnrollmentResponse = exports.CourseResponse = exports.CreateCoursesRespo
 const swagger_1 = require("@nestjs/swagger");
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
+const college_schema_1 = require("../college/college.schema");
 const lecturer_schema_1 = require("../lecturer/lecturer.schema");
 const student_schema_1 = require("../student/student.schema");
 const csv_1 = require("../utils/csv");
@@ -184,13 +185,6 @@ __decorate([
     (0, swagger_1.ApiProperty)({ type: lecturer_schema_1.LecturerProfileResponse }),
     __metadata("design:type", lecturer_schema_1.LecturerProfileResponse)
 ], CourseResponse.prototype, "lecturer", void 0);
-class DepartmentName {
-    name;
-}
-__decorate([
-    (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", String)
-], DepartmentName.prototype, "name", void 0);
 class EnrollmentResponse {
     id;
     createdAt;
@@ -236,7 +230,7 @@ __decorate([
     __metadata("design:type", student_schema_1.StudentProfileResponse)
 ], EnrollmentResponse.prototype, "student", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ type: DepartmentName }),
-    __metadata("design:type", DepartmentName)
+    (0, swagger_1.ApiProperty)({ type: college_schema_1.DepartmentResponse }),
+    __metadata("design:type", college_schema_1.DepartmentResponse)
 ], EnrollmentResponse.prototype, "department", void 0);
 //# sourceMappingURL=courses.schema.js.map

@@ -56,7 +56,11 @@ export declare class LecturerController {
             gender: string;
             degree: string;
             department: {
+                id: string;
                 name: string;
+                createdAt: Date;
+                updatedAt: Date;
+                facultyId: string;
             };
         };
     }[]>;
@@ -81,7 +85,11 @@ export declare class LecturerController {
             gender: string;
             degree: string;
             department: {
+                id: string;
                 name: string;
+                createdAt: Date;
+                updatedAt: Date;
+                facultyId: string;
             };
         };
     }[]>;

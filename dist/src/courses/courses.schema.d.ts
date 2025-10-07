@@ -1,4 +1,5 @@
 import { course, enrollment } from 'drizzle/schema';
+import { DepartmentResponse } from 'src/college/college.schema';
 import { LecturerProfileResponse } from 'src/lecturer/lecturer.schema';
 import { StudentProfileResponse } from 'src/student/student.schema';
 import { ParseCsvData } from 'src/utils/csv';
@@ -38,9 +39,6 @@ export declare class CourseResponse implements Course {
     lecturer: LecturerProfileResponse;
 }
 type Enrollment = typeof enrollment.$inferSelect;
-declare class DepartmentName {
-    name: string;
-}
 export declare class EnrollmentResponse implements Enrollment {
     id: string;
     createdAt: Date;
@@ -50,6 +48,6 @@ export declare class EnrollmentResponse implements Enrollment {
     courseId: string;
     studentId: string;
     student: StudentProfileResponse;
-    department: DepartmentName;
+    department: DepartmentResponse;
 }
 export {};

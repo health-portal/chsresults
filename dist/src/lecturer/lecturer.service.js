@@ -184,7 +184,7 @@ let LecturerService = class LecturerService {
             with: {
                 student: {
                     columns: { password: false },
-                    with: { department: { columns: { name: true } } },
+                    with: { department: true },
                 },
             },
         });
@@ -198,7 +198,7 @@ let LecturerService = class LecturerService {
             with: {
                 student: {
                     columns: { password: false },
-                    with: { department: { columns: { name: true } } },
+                    with: { department: true },
                 },
             },
         });
