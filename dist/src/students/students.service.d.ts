@@ -37,6 +37,13 @@ export declare class StudentsService {
         level: number;
         gender: string;
         degree: string;
+        department: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            facultyId: string;
+        };
     }[]>;
     updateStudent(studentId: string, body: UpdateStudentBody): Promise<{
         id: string;

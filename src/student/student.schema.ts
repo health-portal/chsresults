@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { student } from 'drizzle/schema';
+import { DepartmentResponse } from 'src/college/college.schema';
 
 export enum Gender {
   MALE = 'male',
@@ -44,4 +45,7 @@ export class StudentProfileResponse implements Student {
 
   @ApiProperty()
   departmentId: string;
+
+  @ApiProperty({ type: DepartmentResponse, required: false })
+  department?: DepartmentResponse;
 }

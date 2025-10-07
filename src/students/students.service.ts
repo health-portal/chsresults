@@ -125,7 +125,9 @@ export class StudentsService {
   }
 
   async getStudents() {
-    const foundStudents = await this.db.client.query.student.findMany();
+    const foundStudents = await this.db.client.query.student.findMany({
+      with: { department: true },
+    });
     return foundStudents.map((s) => {
       const { password: _, ...studentProfile } = s;
       return studentProfile;

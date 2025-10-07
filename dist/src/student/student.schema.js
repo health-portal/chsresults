@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StudentProfileResponse = exports.Gender = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const college_schema_1 = require("../college/college.schema");
 var Gender;
 (function (Gender) {
     Gender["MALE"] = "male";
@@ -29,6 +30,7 @@ class StudentProfileResponse {
     gender;
     degree;
     departmentId;
+    department;
 }
 exports.StudentProfileResponse = StudentProfileResponse;
 __decorate([
@@ -79,4 +81,8 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], StudentProfileResponse.prototype, "departmentId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: college_schema_1.DepartmentResponse, required: false }),
+    __metadata("design:type", college_schema_1.DepartmentResponse)
+], StudentProfileResponse.prototype, "department", void 0);
 //# sourceMappingURL=student.schema.js.map

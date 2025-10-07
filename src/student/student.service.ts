@@ -32,6 +32,7 @@ export class StudentService {
   async getProfile(studentId: string) {
     const foundStudent = await this.db.client.query.student.findFirst({
       where: eq(student.id, studentId),
+      with: { department: true },
     });
     if (!foundStudent) throw new UnauthorizedException('Student not found');
 

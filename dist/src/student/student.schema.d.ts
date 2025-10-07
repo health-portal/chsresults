@@ -1,4 +1,5 @@
 import { student } from 'drizzle/schema';
+import { DepartmentResponse } from 'src/college/college.schema';
 export declare enum Gender {
     MALE = "male",
     FEMALE = "female"
@@ -17,5 +18,6 @@ export declare class StudentProfileResponse implements Student {
     gender: string;
     degree: string;
     departmentId: string;
+    department?: DepartmentResponse;
 }
 export {};

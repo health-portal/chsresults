@@ -35,6 +35,7 @@ let StudentService = class StudentService {
     async getProfile(studentId) {
         const foundStudent = await this.db.client.query.student.findFirst({
             where: (0, drizzle_orm_1.eq)(schema_1.student.id, studentId),
+            with: { department: true },
         });
         if (!foundStudent)
             throw new common_1.UnauthorizedException('Student not found');
