@@ -58,7 +58,7 @@ export class LecturersService {
       toEmail: email,
       htmlContent: InvitationTemplate({
         name,
-        registrationLink: `${env.FRONTEND_BASE_URL}/activate/?token=${tokenString}&type=lecturer`,
+        registrationLink: `${env.FRONTEND_BASE_URL}/activate/?token=${tokenString}&type=lecturer&email=${email}`,
       }),
     });
   }

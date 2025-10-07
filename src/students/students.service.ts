@@ -58,7 +58,7 @@ export class StudentsService {
       toEmail: email,
       htmlContent: InvitationTemplate({
         name,
-        registrationLink: `${env.FRONTEND_BASE_URL}/student/activate/?token=${tokenString}`,
+        registrationLink: `${env.FRONTEND_BASE_URL}/activate/?token=${tokenString}&type=student&email=${email}`,
       }),
     });
   }

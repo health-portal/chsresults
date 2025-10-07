@@ -53,7 +53,7 @@ let StudentsService = class StudentsService {
             toEmail: email,
             htmlContent: (0, email_queue_schema_1.InvitationTemplate)({
                 name,
-                registrationLink: `${environment_1.env.FRONTEND_BASE_URL}/student/activate/?token=${tokenString}`,
+                registrationLink: `${environment_1.env.FRONTEND_BASE_URL}/activate/?token=${tokenString}&type=student&email=${email}`,
             }),
         });
     }

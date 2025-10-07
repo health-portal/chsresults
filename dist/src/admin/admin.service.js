@@ -60,7 +60,7 @@ let AdminService = class AdminService {
             toEmail: insertedAdmin.email,
             htmlContent: (0, email_queue_schema_1.InvitationTemplate)({
                 name: insertedAdmin.name,
-                registrationLink: `${environment_1.env.FRONTEND_BASE_URL}/activate/?token=${tokenString}&type=admin`,
+                registrationLink: `${environment_1.env.FRONTEND_BASE_URL}/activate/?token=${tokenString}&type=admin&email=${insertedAdmin.email}`,
             }),
         });
         const { password: _, ...adminProfile } = insertedAdmin;
