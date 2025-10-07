@@ -28,7 +28,7 @@ let AdminService = class AdminService {
         this.jwtService = jwtService;
         this.emailQueueService = emailQueueService;
     }
-    async generateToken(payload, expiresIn = '1d') {
+    async generateToken(payload, expiresIn) {
         const token = await this.jwtService.signAsync(payload, { expiresIn });
         return token;
     }

@@ -91,7 +91,10 @@ let DatabaseService = class DatabaseService {
             .onConflictDoNothing({ target: schema.admin.email })
             .returning();
         for (const admin of insertedAdmins) {
-            const tokenString = await this.generateToken({ id: admin.id, role: auth_schema_1.UserRole.ADMIN }, '7d');
+            const tokenString = await this.generateToken({
+                id: admin.id,
+                role: auth_schema_1.UserRole.ADMIN,
+            });
             await this.client
                 .insert(schema.token)
                 .values({

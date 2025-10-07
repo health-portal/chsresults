@@ -95,7 +95,7 @@ let AuthService = class AuthService {
             foundToken.tokenType !== auth_schema_1.TokenType.ACTIVATE_ACCOUNT)
             throw new common_1.BadRequestException('Invalid or expired token');
         this.jwtService
-            .verifyAsync(tokenString, { secret: environment_1.env.JWT_SECRET })
+            .verifyAsync(tokenString)
             .then(() => { })
             .catch(() => {
             throw new common_1.BadRequestException('Invalid or expired token');
@@ -158,7 +158,7 @@ let AuthService = class AuthService {
             foundToken.tokenType !== auth_schema_1.TokenType.RESET_PASSWORD)
             throw new common_1.BadRequestException('Invalid or expired token');
         this.jwtService
-            .verifyAsync(tokenString, { secret: environment_1.env.JWT_SECRET })
+            .verifyAsync(tokenString)
             .then(() => { })
             .catch(() => {
             throw new common_1.BadRequestException('Invalid or expired token');
@@ -195,7 +195,7 @@ let AuthService = class AuthService {
             foundToken.tokenType !== auth_schema_1.TokenType.ACTIVATE_ACCOUNT)
             throw new common_1.BadRequestException('Invalid or expired token');
         this.jwtService
-            .verifyAsync(tokenString, { secret: environment_1.env.JWT_SECRET })
+            .verifyAsync(tokenString)
             .then(() => { })
             .catch(() => {
             throw new common_1.BadRequestException('Invalid or expired token');
@@ -258,7 +258,7 @@ let AuthService = class AuthService {
             foundToken.tokenType !== auth_schema_1.TokenType.RESET_PASSWORD)
             throw new common_1.BadRequestException('Invalid or expired token');
         this.jwtService
-            .verifyAsync(tokenString, { secret: environment_1.env.JWT_SECRET })
+            .verifyAsync(tokenString)
             .then(() => { })
             .catch(() => {
             throw new common_1.BadRequestException('Invalid or expired token');
@@ -301,7 +301,7 @@ let AuthService = class AuthService {
             foundToken.tokenType !== auth_schema_1.TokenType.ACTIVATE_ACCOUNT)
             throw new common_1.BadRequestException('Invalid or expired token');
         this.jwtService
-            .verifyAsync(tokenString, { secret: environment_1.env.JWT_SECRET })
+            .verifyAsync(tokenString)
             .then(() => { })
             .catch(() => {
             throw new common_1.BadRequestException('Invalid or expired token');
@@ -370,7 +370,7 @@ let AuthService = class AuthService {
             foundToken.tokenType !== auth_schema_1.TokenType.RESET_PASSWORD)
             throw new common_1.BadRequestException('Invalid or expired token');
         this.jwtService
-            .verifyAsync(tokenString, { secret: environment_1.env.JWT_SECRET })
+            .verifyAsync(tokenString)
             .then(() => { })
             .catch(() => {
             throw new common_1.BadRequestException('Invalid or expired token');
