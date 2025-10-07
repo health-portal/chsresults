@@ -53,8 +53,7 @@ const bcrypt = __importStar(require("bcrypt"));
 const email_queue_service_1 = require("../email-queue/email-queue.service");
 const email_queue_schema_1 = require("../email-queue/email-queue.schema");
 const environment_1 = require("../environment");
-const otplib_1 = require("otplib");
-otplib_1.totp.options = { step: 60, window: 15 };
+const speakeasy = __importStar(require("speakeasy"));
 let AuthService = class AuthService {
     db;
     jwtService;
@@ -124,7 +123,7 @@ let AuthService = class AuthService {
         const foundAdmin = await this.findAdmin(email);
         if (!foundAdmin)
             throw new common_1.NotFoundException(`Admin not found`);
-        const otp = otplib_1.totp.generate(environment_1.env.OTP_SECRET);
+        const otp = speakeasy.totp({ secret: environment_1.env.OTP_SECRET, encoding: 'base32' });
         await this.db.client
             .insert(schema_1.token)
             .values({
@@ -156,7 +155,12 @@ let AuthService = class AuthService {
         if (foundToken.tokenString !== tokenString ||
             foundToken.tokenType !== auth_schema_1.TokenType.RESET_PASSWORD)
             throw new common_1.BadRequestException('Invalid or expired token');
-        const isValid = otplib_1.totp.check(tokenString, environment_1.env.OTP_SECRET);
+        const isValid = speakeasy.totp.verify({
+            secret: environment_1.env.OTP_SECRET,
+            encoding: 'base32',
+            token: tokenString,
+            window: 30,
+        });
         if (!isValid)
             throw new common_1.BadRequestException('Invalid or expired token');
         const hashedPassword = await bcrypt.hash(password, Number(environment_1.env.BCRYPT_SALT));
@@ -218,7 +222,7 @@ let AuthService = class AuthService {
         const foundLecturer = await this.findLecturer(email);
         if (!foundLecturer)
             throw new common_1.NotFoundException(`Lecturer not found`);
-        const otp = otplib_1.totp.generate(environment_1.env.OTP_SECRET);
+        const otp = speakeasy.totp({ secret: environment_1.env.OTP_SECRET, encoding: 'base32' });
         await this.db.client
             .insert(schema_1.token)
             .values({
@@ -253,7 +257,12 @@ let AuthService = class AuthService {
         if (foundToken.tokenString !== tokenString ||
             foundToken.tokenType !== auth_schema_1.TokenType.RESET_PASSWORD)
             throw new common_1.BadRequestException('Invalid or expired token');
-        const isValid = otplib_1.totp.check(tokenString, environment_1.env.OTP_SECRET);
+        const isValid = speakeasy.totp.verify({
+            secret: environment_1.env.OTP_SECRET,
+            encoding: 'base32',
+            token: tokenString,
+            window: 30,
+        });
         if (!isValid)
             throw new common_1.BadRequestException('Invalid or expired token');
         const hashedPassword = await bcrypt.hash(password, Number(environment_1.env.BCRYPT_SALT));
@@ -323,7 +332,7 @@ let AuthService = class AuthService {
             studentIdentifier,
             identifierType,
         });
-        const otp = otplib_1.totp.generate(environment_1.env.OTP_SECRET);
+        const otp = speakeasy.totp({ secret: environment_1.env.OTP_SECRET, encoding: 'base32' });
         await this.db.client
             .insert(schema_1.token)
             .values({
@@ -362,7 +371,12 @@ let AuthService = class AuthService {
         if (foundToken.tokenString !== tokenString ||
             foundToken.tokenType !== auth_schema_1.TokenType.RESET_PASSWORD)
             throw new common_1.BadRequestException('Invalid or expired token');
-        const isValid = otplib_1.totp.check(tokenString, environment_1.env.OTP_SECRET);
+        const isValid = speakeasy.totp.verify({
+            secret: environment_1.env.OTP_SECRET,
+            encoding: 'base32',
+            token: tokenString,
+            window: 30,
+        });
         if (!isValid)
             throw new common_1.BadRequestException('Invalid or expired token');
         const hashedPassword = await bcrypt.hash(password, Number(environment_1.env.BCRYPT_SALT));

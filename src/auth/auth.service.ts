@@ -24,9 +24,7 @@ import * as bcrypt from 'bcrypt';
 import { EmailQueueService } from 'src/email-queue/email-queue.service';
 import { ResetPasswordTemplate } from 'src/email-queue/email-queue.schema';
 import { env } from 'src/environment';
-import { totp } from 'otplib';
-
-totp.options = { step: 60, window: 15 };
+import * as speakeasy from 'speakeasy';
 
 @Injectable()
 export class AuthService {
@@ -112,7 +110,7 @@ export class AuthService {
     const foundAdmin = await this.findAdmin(email);
     if (!foundAdmin) throw new NotFoundException(`Admin not found`);
 
-    const otp = totp.generate(env.OTP_SECRET);
+    const otp = speakeasy.totp({ secret: env.OTP_SECRET, encoding: 'base32' });
 
     await this.db.client
       .insert(token)
@@ -154,7 +152,12 @@ export class AuthService {
     )
       throw new BadRequestException('Invalid or expired token');
 
-    const isValid = totp.check(tokenString, env.OTP_SECRET);
+    const isValid = speakeasy.totp.verify({
+      secret: env.OTP_SECRET,
+      encoding: 'base32',
+      token: tokenString,
+      window: 30,
+    });
     if (!isValid) throw new BadRequestException('Invalid or expired token');
 
     const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
@@ -229,7 +232,7 @@ export class AuthService {
     const foundLecturer = await this.findLecturer(email);
     if (!foundLecturer) throw new NotFoundException(`Lecturer not found`);
 
-    const otp = totp.generate(env.OTP_SECRET);
+    const otp = speakeasy.totp({ secret: env.OTP_SECRET, encoding: 'base32' });
 
     await this.db.client
       .insert(token)
@@ -278,7 +281,12 @@ export class AuthService {
     )
       throw new BadRequestException('Invalid or expired token');
 
-    const isValid = totp.check(tokenString, env.OTP_SECRET);
+    const isValid = speakeasy.totp.verify({
+      secret: env.OTP_SECRET,
+      encoding: 'base32',
+      token: tokenString,
+      window: 30,
+    });
     if (!isValid) throw new BadRequestException('Invalid or expired token');
 
     const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
@@ -380,7 +388,7 @@ export class AuthService {
       identifierType,
     });
 
-    const otp = totp.generate(env.OTP_SECRET);
+    const otp = speakeasy.totp({ secret: env.OTP_SECRET, encoding: 'base32' });
 
     await this.db.client
       .insert(token)
@@ -435,7 +443,12 @@ export class AuthService {
     )
       throw new BadRequestException('Invalid or expired token');
 
-    const isValid = totp.check(tokenString, env.OTP_SECRET);
+    const isValid = speakeasy.totp.verify({
+      secret: env.OTP_SECRET,
+      encoding: 'base32',
+      token: tokenString,
+      window: 30,
+    });
     if (!isValid) throw new BadRequestException('Invalid or expired token');
 
     const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
