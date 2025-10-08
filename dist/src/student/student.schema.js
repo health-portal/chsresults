@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ChangePasswordBody = exports.StudentProfileResponse = exports.Gender = void 0;
+exports.StudentEnrollmentResponse = exports.ChangePasswordBody = exports.StudentProfileResponse = exports.Gender = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const college_schema_1 = require("../college/college.schema");
@@ -103,4 +103,7 @@ __decorate([
     (0, class_validator_1.IsStrongPassword)(),
     __metadata("design:type", String)
 ], ChangePasswordBody.prototype, "newPassword", void 0);
+class StudentEnrollmentResponse {
+}
+exports.StudentEnrollmentResponse = StudentEnrollmentResponse;
 //# sourceMappingURL=student.schema.js.map

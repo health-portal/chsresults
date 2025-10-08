@@ -24,4 +24,6 @@ export declare class ChangePasswordBody {
     currentPassword: string;
     newPassword: string;
 }
+export declare class StudentEnrollmentResponse {
+}
 export {};

@@ -7,9 +7,9 @@ export declare class LecturerController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
         title: string;
         code: string;
-        description: string | null;
         units: number;
         semester: number;
         lecturerId: string;
@@ -47,14 +47,14 @@ export declare class LecturerController {
             createdAt: Date;
             updatedAt: Date;
             email: string;
+            matricNumber: string;
             firstName: string;
             lastName: string;
             otherName: string | null;
-            departmentId: string;
-            matricNumber: string;
             level: number;
             gender: string;
             degree: string;
+            departmentId: string;
             department: {
                 id: string;
                 name: string;
@@ -76,14 +76,14 @@ export declare class LecturerController {
             createdAt: Date;
             updatedAt: Date;
             email: string;
+            matricNumber: string;
             firstName: string;
             lastName: string;
             otherName: string | null;
-            departmentId: string;
-            matricNumber: string;
             level: number;
             gender: string;
             degree: string;
+            departmentId: string;
             department: {
                 id: string;
                 name: string;
@@ -98,11 +98,11 @@ export declare class LecturerController {
         createdAt: Date;
         updatedAt: Date;
         email: string;
-        phone: string | null;
         firstName: string;
         lastName: string;
         otherName: string | null;
-        title: string;
         departmentId: string;
+        title: string;
+        phone: string | null;
     }>;
 }

@@ -14,14 +14,14 @@ export declare class StudentsService {
         createdAt: Date;
         updatedAt: Date;
         email: string;
+        matricNumber: string;
         firstName: string;
         lastName: string;
         otherName: string | null;
-        departmentId: string;
-        matricNumber: string;
         level: number;
         gender: string;
         degree: string;
+        departmentId: string;
     }>;
     createStudents(file: Express.Multer.File): Promise<CreateStudentsResponse>;
     getStudents(): Promise<{
@@ -29,14 +29,14 @@ export declare class StudentsService {
         createdAt: Date;
         updatedAt: Date;
         email: string;
+        matricNumber: string;
         firstName: string;
         lastName: string;
         otherName: string | null;
-        departmentId: string;
-        matricNumber: string;
         level: number;
         gender: string;
         degree: string;
+        departmentId: string;
         department: {
             id: string;
             name: string;
@@ -64,13 +64,13 @@ export declare class StudentsService {
         createdAt: Date;
         updatedAt: Date;
         email: string;
+        matricNumber: string;
         firstName: string;
         lastName: string;
         otherName: string | null;
-        departmentId: string;
-        matricNumber: string;
         level: number;
         gender: string;
         degree: string;
+        departmentId: string;
     }>;
 }

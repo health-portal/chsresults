@@ -47,33 +47,42 @@ export class StudentService {
   }
 
   async listEnrollments(studentId: string) {
-    return await this.db.client
-      .select({
-        session: enrollment.session,
+    return await this.db.client.query.enrollment.findMany({
+      where: eq(enrollment.studentId, studentId),
+      with: {
+        student: {
+          with: {
+            department: {
+              with: {
+                faculty: true,
+              },
+            },
+          },
+        },
         course: {
-          id: course.id,
-          code: course.code,
-          title: course.title,
-          units: course.units,
-          semester: course.semester,
+          columns: {
+            code: true,
+            description,
+            title: true,
+            semester: true,
+            units: true,
+          },
+          with: {
+            lecturer: {
+              with: {
+                department: {
+                  with: {
+                    faculty: true,
+                  },
+                },
+              },
+            },
+          },
         },
-        department: {
-          id: department.id,
-          name: department.name,
-        },
-        faculty: {
-          id: faculty.id,
-          name: faculty.name,
-        },
-        enrollmentId: enrollment.id,
-        scores: enrollment.scores,
-      })
-      .from(enrollment)
-      .innerJoin(student, eq(enrollment.studentId, student.id))
-      .innerJoin(course, eq(enrollment.courseId, course.id))
-      .innerJoin(faculty, eq(department.facultyId, faculty.id))
-      .where(eq(enrollment.studentId, studentId))
-      .orderBy(enrollment.session);
+      },
+
+      orderBy: (enrollment, { asc }) => [asc(enrollment.session)],
+    });
   }
 
   async listEnrollment(studentId: string, enrollmentId: string) {

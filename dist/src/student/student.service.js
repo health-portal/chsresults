@@ -71,33 +71,41 @@ let StudentService = class StudentService {
         return { success: true, message: 'Password updated' };
     }
     async listEnrollments(studentId) {
-        return await this.db.client
-            .select({
-            session: schema_1.enrollment.session,
-            course: {
-                id: schema_1.course.id,
-                code: schema_1.course.code,
-                title: schema_1.course.title,
-                units: schema_1.course.units,
-                semester: schema_1.course.semester,
+        return await this.db.client.query.enrollment.findMany({
+            where: (0, drizzle_orm_1.eq)(schema_1.enrollment.studentId, studentId),
+            with: {
+                student: {
+                    with: {
+                        department: {
+                            with: {
+                                faculty: true,
+                            },
+                        },
+                    },
+                },
+                course: {
+                    columns: {
+                        code: true,
+                        description,
+                        title: true,
+                        semester: true,
+                        units: true,
+                    },
+                    with: {
+                        lecturer: {
+                            with: {
+                                department: {
+                                    with: {
+                                        faculty: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
             },
-            department: {
-                id: schema_1.department.id,
-                name: schema_1.department.name,
-            },
-            faculty: {
-                id: schema_1.faculty.id,
-                name: schema_1.faculty.name,
-            },
-            enrollmentId: schema_1.enrollment.id,
-            scores: schema_1.enrollment.scores,
-        })
-            .from(schema_1.enrollment)
-            .innerJoin(schema_1.student, (0, drizzle_orm_1.eq)(schema_1.enrollment.studentId, schema_1.student.id))
-            .innerJoin(schema_1.course, (0, drizzle_orm_1.eq)(schema_1.enrollment.courseId, schema_1.course.id))
-            .innerJoin(schema_1.faculty, (0, drizzle_orm_1.eq)(schema_1.department.facultyId, schema_1.faculty.id))
-            .where((0, drizzle_orm_1.eq)(schema_1.enrollment.studentId, studentId))
-            .orderBy(schema_1.enrollment.session);
+            orderBy: (enrollment, { asc }) => [asc(enrollment.session)],
+        });
     }
     async listEnrollment(studentId, enrollmentId) {
         const foundEnrollment = await this.db.client.query.enrollment.findFirst({

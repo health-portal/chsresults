@@ -62,3 +62,5 @@ export class ChangePasswordBody {
   @IsStrongPassword()
   newPassword: string;
 }
+
+export class StudentEnrollmentResponse {}
