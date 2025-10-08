@@ -5,13 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { and, eq } from 'drizzle-orm';
-import {
-  course,
-  department,
-  enrollment,
-  faculty,
-  student,
-} from 'drizzle/schema';
+import { enrollment, student } from 'drizzle/schema';
 import { DatabaseService } from 'src/database/database.service';
 import { ChangePasswordBody } from './student.schema';
 import * as bcrypt from 'bcrypt';
@@ -31,8 +25,14 @@ export class StudentService {
     });
     if (!foundStudent) throw new UnauthorizedException('Student not found');
 
-    if (foundStudent.password !== currentPassword)
-      throw new BadRequestException('Current password incorrect');
+    if (!foundStudent.password)
+      throw new UnauthorizedException('Student not activated');
+
+    const isMatched = await bcrypt.compare(
+      currentPassword,
+      foundStudent.password,
+    );
+    if (!isMatched) throw new BadRequestException('Current password incorrect');
 
     const hashedNewPassword = await bcrypt.hash(
       newPassword,
