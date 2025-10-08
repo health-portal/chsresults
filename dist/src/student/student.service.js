@@ -86,7 +86,7 @@ let StudentService = class StudentService {
                 course: {
                     columns: {
                         code: true,
-                        description,
+                        description: true,
                         title: true,
                         semester: true,
                         units: true,

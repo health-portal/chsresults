@@ -16,11 +16,11 @@ export declare class StudentService {
         courseId: string;
         studentId: string;
         student: {
+            password: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             email: string;
-            password: string | null;
             firstName: string;
             lastName: string;
             otherName: string | null;
@@ -44,21 +44,18 @@ export declare class StudentService {
             };
         };
         course: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
             title: string;
             code: string;
+            description: string | null;
             units: number;
             semester: number;
-            lecturerId: string;
             lecturer: {
+                password: string | null;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
                 email: string;
                 phone: string | null;
-                password: string | null;
                 firstName: string;
                 lastName: string;
                 otherName: string | null;
