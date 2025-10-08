@@ -45,4 +45,7 @@ export class AdminProfileResponse implements Admin {
 
   @ApiProperty({ nullable: true })
   phone: string | null;
+
+  @ApiProperty()
+  status: boolean;
 }

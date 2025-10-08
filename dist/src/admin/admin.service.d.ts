@@ -9,6 +9,7 @@ export declare class AdminService {
     constructor(db: DatabaseService, jwtService: JwtService, emailQueueService: EmailQueueService);
     private generateToken;
     addAdmin({ email, name }: AddAdminBody): Promise<{
+        status: boolean;
         id: string;
         name: string;
         createdAt: Date;
@@ -17,6 +18,7 @@ export declare class AdminService {
         phone: string | null;
     }>;
     getAdmins(): Promise<{
+        status: boolean;
         id: string;
         name: string;
         createdAt: Date;
@@ -25,6 +27,7 @@ export declare class AdminService {
         phone: string | null;
     }[]>;
     getProfile(adminId: string): Promise<{
+        status: boolean;
         id: string;
         name: string;
         createdAt: Date;
@@ -33,6 +36,7 @@ export declare class AdminService {
         phone: string | null;
     }>;
     updateProfile(adminId: string, { name, phone }: UpdateAdminBody): Promise<{
+        status: boolean;
         id: string;
         createdAt: Date;
         updatedAt: Date;

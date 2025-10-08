@@ -9,8 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StudentProfileResponse = exports.Gender = void 0;
+exports.ChangePasswordBody = exports.StudentProfileResponse = exports.Gender = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const class_validator_1 = require("class-validator");
 const college_schema_1 = require("../college/college.schema");
 var Gender;
 (function (Gender) {
@@ -85,4 +86,21 @@ __decorate([
     (0, swagger_1.ApiProperty)({ type: college_schema_1.DepartmentResponse, required: false }),
     __metadata("design:type", college_schema_1.DepartmentResponse)
 ], StudentProfileResponse.prototype, "department", void 0);
+class ChangePasswordBody {
+    currentPassword;
+    newPassword;
+}
+exports.ChangePasswordBody = ChangePasswordBody;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], ChangePasswordBody.prototype, "currentPassword", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsStrongPassword)(),
+    __metadata("design:type", String)
+], ChangePasswordBody.prototype, "newPassword", void 0);
 //# sourceMappingURL=student.schema.js.map

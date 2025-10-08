@@ -63,12 +63,13 @@ let AdminService = class AdminService {
                 registrationLink: `${environment_1.env.FRONTEND_BASE_URL}/activate/?token=${tokenString}&type=admin&email=${insertedAdmin.email}`,
             }),
         });
-        const { password: _, ...adminProfile } = insertedAdmin;
-        return adminProfile;
+        const { password, ...adminProfile } = insertedAdmin;
+        return { ...adminProfile, status: Boolean(password) };
     }
     async getAdmins() {
-        return await this.db.client.query.admin.findMany({
-            columns: { password: false },
+        const foundAdmins = await this.db.client.query.admin.findMany();
+        return foundAdmins.map(({ password, ...adminProfile }) => {
+            return { ...adminProfile, status: Boolean(password) };
         });
     }
     async getProfile(adminId) {
@@ -77,8 +78,8 @@ let AdminService = class AdminService {
         });
         if (!foundAdmin)
             throw new common_1.UnauthorizedException('Admin not found');
-        const { password: _, ...adminProfile } = foundAdmin;
-        return adminProfile;
+        const { password, ...adminProfile } = foundAdmin;
+        return { ...adminProfile, status: Boolean(password) };
     }
     async updateProfile(adminId, { name, phone }) {
         const foundAdmin = await this.db.client.query.admin.findFirst({
@@ -91,8 +92,8 @@ let AdminService = class AdminService {
             .set({ name, phone })
             .where((0, drizzle_orm_1.eq)(schema_1.admin.id, foundAdmin.id))
             .returning();
-        const { password: _, ...adminProfile } = updatedAdmin;
-        return adminProfile;
+        const { password, ...adminProfile } = updatedAdmin;
+        return { ...adminProfile, status: Boolean(password) };
     }
 };
 exports.AdminService = AdminService;

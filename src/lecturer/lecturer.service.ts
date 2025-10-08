@@ -191,7 +191,7 @@ export class LecturerService {
               title: `Notification for Uploaded Score`,
               name: `${foundStudent.firstName} ${foundStudent.lastName}`,
               message: `Your score for ${courseId} has been uploaded`,
-              portalLink: `${env.FRONTEND_BASE_URL}/student/signin`,
+              portalLink: `${env.FRONTEND_BASE_URL}/signin`,
             }),
           });
 

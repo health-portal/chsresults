@@ -52,6 +52,7 @@ class AdminProfileResponse {
     name;
     email;
     phone;
+    status;
 }
 exports.AdminProfileResponse = AdminProfileResponse;
 __decorate([
@@ -78,4 +79,8 @@ __decorate([
     (0, swagger_1.ApiProperty)({ nullable: true }),
     __metadata("design:type", Object)
 ], AdminProfileResponse.prototype, "phone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Boolean)
+], AdminProfileResponse.prototype, "status", void 0);
 //# sourceMappingURL=admin.schema.js.map

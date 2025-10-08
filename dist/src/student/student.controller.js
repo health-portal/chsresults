@@ -27,6 +27,9 @@ let StudentController = class StudentController {
     constructor(studentService) {
         this.studentService = studentService;
     }
+    async changePassword(studentId, body) {
+        return await this.studentService.changePassword(studentId, body);
+    }
     async listEnrollments(studentId) {
         return await this.studentService.listEnrollments(studentId);
     }
@@ -38,6 +41,18 @@ let StudentController = class StudentController {
     }
 };
 exports.StudentController = StudentController;
+__decorate([
+    (0, common_1.Post)('change-password'),
+    (0, swagger_1.ApiOperation)({ summary: 'Change student password' }),
+    (0, swagger_1.ApiOkResponse)({ description: 'Password updated successfully' }),
+    (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
+    (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
+    __param(0, (0, user_decorator_1.User)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, student_schema_1.ChangePasswordBody]),
+    __metadata("design:returntype", Promise)
+], StudentController.prototype, "changePassword", null);
 __decorate([
     (0, common_1.Get)('enrollments'),
     (0, swagger_1.ApiOperation)({ summary: 'List all enrollments for the student' }),
@@ -60,10 +75,7 @@ __decorate([
         type: String,
         description: 'Enrollment ID',
     }),
-    (0, swagger_1.ApiOkResponse)({
-        description: 'Enrollment retrieved successfully',
-        type: courses_schema_1.EnrollmentResponse,
-    }),
+    (0, swagger_1.ApiOkResponse)({ description: 'Enrollment retrieved successfully' }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Enrollment not found' }),
     (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),

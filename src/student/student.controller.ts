@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { User } from 'src/auth/user.decorator';
 import { Role, RoleGuard } from 'src/auth/role.guard';
@@ -15,7 +15,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { EnrollmentResponse } from 'src/courses/courses.schema';
-import { StudentProfileResponse } from './student.schema';
+import { ChangePasswordBody, StudentProfileResponse } from './student.schema';
 
 @ApiTags('Student')
 @ApiBearerAuth('accessToken')
@@ -24,6 +24,18 @@ import { StudentProfileResponse } from './student.schema';
 @UseGuards(JwtAuthGuard, RoleGuard)
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
+
+  @Post('change-password')
+  @ApiOperation({ summary: 'Change student password' })
+  @ApiOkResponse({ description: 'Password updated successfully' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  async changePassword(
+    @User('id') studentId: string,
+    @Body() body: ChangePasswordBody,
+  ) {
+    return await this.studentService.changePassword(studentId, body);
+  }
 
   @Get('enrollments')
   @ApiOperation({ summary: 'List all enrollments for the student' })
@@ -44,10 +56,7 @@ export class StudentController {
     type: String,
     description: 'Enrollment ID',
   })
-  @ApiOkResponse({
-    description: 'Enrollment retrieved successfully',
-    type: EnrollmentResponse,
-  })
+  @ApiOkResponse({ description: 'Enrollment retrieved successfully' })
   @ApiNotFoundResponse({ description: 'Enrollment not found' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })

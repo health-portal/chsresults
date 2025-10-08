@@ -143,6 +143,7 @@ class CourseResponse {
     semester;
     lecturerId;
     lecturer;
+    enrollmentCount;
 }
 exports.CourseResponse = CourseResponse;
 __decorate([
@@ -185,6 +186,10 @@ __decorate([
     (0, swagger_1.ApiProperty)({ type: lecturer_schema_1.LecturerProfileResponse }),
     __metadata("design:type", lecturer_schema_1.LecturerProfileResponse)
 ], CourseResponse.prototype, "lecturer", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], CourseResponse.prototype, "enrollmentCount", void 0);
 class EnrollmentResponse {
     id;
     createdAt;

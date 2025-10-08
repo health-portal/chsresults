@@ -145,7 +145,7 @@ let LecturerService = class LecturerService {
                             title: `Notification for Uploaded Score`,
                             name: `${foundStudent.firstName} ${foundStudent.lastName}`,
                             message: `Your score for ${courseId} has been uploaded`,
-                            portalLink: `${environment_1.env.FRONTEND_BASE_URL}/student/signin`,
+                            portalLink: `${environment_1.env.FRONTEND_BASE_URL}/signin`,
                         }),
                     });
                     result.studentsUploadedFor.push(matricNumber);

@@ -37,6 +37,7 @@ export declare class CourseResponse implements Course {
     semester: number;
     lecturerId: string;
     lecturer: LecturerProfileResponse;
+    enrollmentCount: number;
 }
 type Enrollment = typeof enrollment.$inferSelect;
 export declare class EnrollmentResponse implements Enrollment {

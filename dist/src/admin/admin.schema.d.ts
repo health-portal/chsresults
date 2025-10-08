@@ -15,5 +15,6 @@ export declare class AdminProfileResponse implements Admin {
     name: string;
     email: string;
     phone: string | null;
+    status: boolean;
 }
 export {};

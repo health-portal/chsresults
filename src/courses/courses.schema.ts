@@ -128,6 +128,9 @@ export class CourseResponse implements Course {
 
   @ApiProperty({ type: LecturerProfileResponse })
   lecturer: LecturerProfileResponse;
+
+  @ApiProperty()
+  enrollmentCount: number;
 }
 
 type Enrollment = typeof enrollment.$inferSelect;

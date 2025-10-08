@@ -4,6 +4,7 @@ export declare class AdminController {
     private readonly adminService;
     constructor(adminService: AdminService);
     addAdmin(body: AddAdminBody): Promise<{
+        status: boolean;
         id: string;
         name: string;
         createdAt: Date;
@@ -12,6 +13,7 @@ export declare class AdminController {
         phone: string | null;
     }>;
     getAdmins(): Promise<{
+        status: boolean;
         id: string;
         name: string;
         createdAt: Date;
@@ -20,6 +22,7 @@ export declare class AdminController {
         phone: string | null;
     }[]>;
     getProfile(adminId: string): Promise<{
+        status: boolean;
         id: string;
         name: string;
         createdAt: Date;
@@ -28,6 +31,7 @@ export declare class AdminController {
         phone: string | null;
     }>;
     updateProfile(adminId: string, body: UpdateAdminBody): Promise<{
+        status: boolean;
         id: string;
         createdAt: Date;
         updatedAt: Date;

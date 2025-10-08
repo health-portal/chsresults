@@ -10,12 +10,19 @@ import {
   CreateCoursesResponse,
 } from './courses.schema';
 import { eq, or } from 'drizzle-orm';
-import { course, lecturer } from 'drizzle/schema';
+import { course, enrollment, lecturer } from 'drizzle/schema';
 import { parseCsvFile } from 'src/utils/csv';
+import { EmailQueueService } from 'src/email-queue/email-queue.service';
+import { NotificationTemplate } from 'src/email-queue/email-queue.schema';
+import { env } from 'src/environment';
+import { count } from 'drizzle-orm';
 
 @Injectable()
 export class CoursesService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(
+    private readonly db: DatabaseService,
+    private readonly emailQueueService: EmailQueueService,
+  ) {}
 
   async createCourse({
     code,
@@ -41,6 +48,18 @@ export class CoursesService {
       .insert(course)
       .values({ code, title, lecturerId: foundLecturer.id, semester, units })
       .returning();
+
+    await this.emailQueueService.send({
+      subject: 'Notification to Manage Course',
+      toEmail: foundLecturer.email,
+      htmlContent: NotificationTemplate({
+        name: `${foundLecturer.title} ${foundLecturer.firstName} ${foundLecturer.lastName}`,
+        message: `You have been selected to manage this course: ${insertedCourse.code}`,
+        portalLink: `${env.FRONTEND_BASE_URL}/auth`,
+        title: `Notification to Manage Course`,
+      }),
+    });
+
     return insertedCourse;
   }
 
@@ -72,8 +91,20 @@ export class CoursesService {
           .returning()
           .onConflictDoNothing();
 
-        if (insertedCourse) result.courses.push({ ...row, isCreated: true });
-        else result.courses.push({ ...row, isCreated: false });
+        if (insertedCourse) {
+          result.courses.push({ ...row, isCreated: true });
+
+          await this.emailQueueService.send({
+            subject: 'Notification to Manage Course',
+            toEmail: foundLecturer.email,
+            htmlContent: NotificationTemplate({
+              name: `${foundLecturer.title} ${foundLecturer.firstName} ${foundLecturer.lastName}`,
+              message: `You have been selected to manage this course: ${insertedCourse.code}`,
+              portalLink: `${env.FRONTEND_BASE_URL}/auth`,
+              title: `Notification to Manage Course`,
+            }),
+          });
+        } else result.courses.push({ ...row, isCreated: false });
       }
     });
 
@@ -81,9 +112,38 @@ export class CoursesService {
   }
 
   async getCourses() {
-    return await this.db.client.query.course.findMany({
-      with: { lecturer: { columns: { password: false } } },
-    });
+    return await this.db.client
+      .select({
+        id: course.id,
+        code: course.code,
+        title: course.title,
+        description: course.description,
+        units: course.units,
+        semester: course.semester,
+        lecturer: {
+          id: lecturer.id,
+          firstName: lecturer.firstName,
+          lastName: lecturer.lastName,
+          email: lecturer.email,
+        },
+        enrollmentCount: count(enrollment.id),
+      })
+      .from(course)
+      .leftJoin(enrollment, eq(enrollment.courseId, course.id))
+      .leftJoin(lecturer, eq(lecturer.id, course.lecturerId))
+      .groupBy(
+        course.id,
+        course.code,
+        course.title,
+        course.description,
+        course.units,
+        course.semester,
+        course.lecturerId,
+        lecturer.id,
+        lecturer.firstName,
+        lecturer.lastName,
+        lecturer.email,
+      );
   }
 
   async updateCourse(

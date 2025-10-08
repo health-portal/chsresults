@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
 import { student } from 'drizzle/schema';
 import { DepartmentResponse } from 'src/college/college.schema';
 
@@ -48,4 +49,16 @@ export class StudentProfileResponse implements Student {
 
   @ApiProperty({ type: DepartmentResponse, required: false })
   department?: DepartmentResponse;
+}
+
+export class ChangePasswordBody {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  currentPassword: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsStrongPassword()
+  newPassword: string;
 }

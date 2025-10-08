@@ -16,10 +16,16 @@ const courses_schema_1 = require("./courses.schema");
 const drizzle_orm_1 = require("drizzle-orm");
 const schema_1 = require("../../drizzle/schema");
 const csv_1 = require("../utils/csv");
+const email_queue_service_1 = require("../email-queue/email-queue.service");
+const email_queue_schema_1 = require("../email-queue/email-queue.schema");
+const environment_1 = require("../environment");
+const drizzle_orm_2 = require("drizzle-orm");
 let CoursesService = class CoursesService {
     db;
-    constructor(db) {
+    emailQueueService;
+    constructor(db, emailQueueService) {
         this.db = db;
+        this.emailQueueService = emailQueueService;
     }
     async createCourse({ code, title, lecturerEmail, semester, units, }) {
         const foundCourse = await this.db.client.query.course.findFirst({
@@ -36,6 +42,16 @@ let CoursesService = class CoursesService {
             .insert(schema_1.course)
             .values({ code, title, lecturerId: foundLecturer.id, semester, units })
             .returning();
+        await this.emailQueueService.send({
+            subject: 'Notification to Manage Course',
+            toEmail: foundLecturer.email,
+            htmlContent: (0, email_queue_schema_1.NotificationTemplate)({
+                name: `${foundLecturer.title} ${foundLecturer.firstName} ${foundLecturer.lastName}`,
+                message: `You have been selected to manage this course: ${insertedCourse.code}`,
+                portalLink: `${environment_1.env.FRONTEND_BASE_URL}/auth`,
+                title: `Notification to Manage Course`,
+            }),
+        });
         return insertedCourse;
     }
     async createCourses(file) {
@@ -62,8 +78,19 @@ let CoursesService = class CoursesService {
                     .values({ ...row, lecturerId: foundLecturer.id })
                     .returning()
                     .onConflictDoNothing();
-                if (insertedCourse)
+                if (insertedCourse) {
                     result.courses.push({ ...row, isCreated: true });
+                    await this.emailQueueService.send({
+                        subject: 'Notification to Manage Course',
+                        toEmail: foundLecturer.email,
+                        htmlContent: (0, email_queue_schema_1.NotificationTemplate)({
+                            name: `${foundLecturer.title} ${foundLecturer.firstName} ${foundLecturer.lastName}`,
+                            message: `You have been selected to manage this course: ${insertedCourse.code}`,
+                            portalLink: `${environment_1.env.FRONTEND_BASE_URL}/auth`,
+                            title: `Notification to Manage Course`,
+                        }),
+                    });
+                }
                 else
                     result.courses.push({ ...row, isCreated: false });
             }
@@ -71,9 +98,26 @@ let CoursesService = class CoursesService {
         return result;
     }
     async getCourses() {
-        return await this.db.client.query.course.findMany({
-            with: { lecturer: { columns: { password: false } } },
-        });
+        return await this.db.client
+            .select({
+            id: schema_1.course.id,
+            code: schema_1.course.code,
+            title: schema_1.course.title,
+            description: schema_1.course.description,
+            units: schema_1.course.units,
+            semester: schema_1.course.semester,
+            lecturer: {
+                id: schema_1.lecturer.id,
+                firstName: schema_1.lecturer.firstName,
+                lastName: schema_1.lecturer.lastName,
+                email: schema_1.lecturer.email,
+            },
+            enrollmentCount: (0, drizzle_orm_2.count)(schema_1.enrollment.id),
+        })
+            .from(schema_1.course)
+            .leftJoin(schema_1.enrollment, (0, drizzle_orm_1.eq)(schema_1.enrollment.courseId, schema_1.course.id))
+            .leftJoin(schema_1.lecturer, (0, drizzle_orm_1.eq)(schema_1.lecturer.id, schema_1.course.lecturerId))
+            .groupBy(schema_1.course.id, schema_1.course.code, schema_1.course.title, schema_1.course.description, schema_1.course.units, schema_1.course.semester, schema_1.course.lecturerId, schema_1.lecturer.id, schema_1.lecturer.firstName, schema_1.lecturer.lastName, schema_1.lecturer.email);
     }
     async updateCourse(courseId, { code, title, lecturerEmail, description, semester, units, }) {
         const foundCourse = await this.db.client.query.course.findFirst({
@@ -120,6 +164,7 @@ let CoursesService = class CoursesService {
 exports.CoursesService = CoursesService;
 exports.CoursesService = CoursesService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [database_service_1.DatabaseService])
+    __metadata("design:paramtypes", [database_service_1.DatabaseService,
+        email_queue_service_1.EmailQueueService])
 ], CoursesService);
 //# sourceMappingURL=courses.service.js.map

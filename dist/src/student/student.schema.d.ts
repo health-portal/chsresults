@@ -20,4 +20,8 @@ export declare class StudentProfileResponse implements Student {
     departmentId: string;
     department?: DepartmentResponse;
 }
+export declare class ChangePasswordBody {
+    currentPassword: string;
+    newPassword: string;
+}
 export {};

@@ -67,13 +67,14 @@ export class AdminService {
       }),
     });
 
-    const { password: _, ...adminProfile } = insertedAdmin;
-    return adminProfile;
+    const { password, ...adminProfile } = insertedAdmin;
+    return { ...adminProfile, status: Boolean(password) };
   }
 
   async getAdmins() {
-    return await this.db.client.query.admin.findMany({
-      columns: { password: false },
+    const foundAdmins = await this.db.client.query.admin.findMany();
+    return foundAdmins.map(({ password, ...adminProfile }) => {
+      return { ...adminProfile, status: Boolean(password) };
     });
   }
 
@@ -83,8 +84,8 @@ export class AdminService {
     });
     if (!foundAdmin) throw new UnauthorizedException('Admin not found');
 
-    const { password: _, ...adminProfile } = foundAdmin;
-    return adminProfile;
+    const { password, ...adminProfile } = foundAdmin;
+    return { ...adminProfile, status: Boolean(password) };
   }
 
   async updateProfile(adminId: string, { name, phone }: UpdateAdminBody) {
@@ -99,7 +100,7 @@ export class AdminService {
       .where(eq(admin.id, foundAdmin.id))
       .returning();
 
-    const { password: _, ...adminProfile } = updatedAdmin;
-    return adminProfile;
+    const { password, ...adminProfile } = updatedAdmin;
+    return { ...adminProfile, status: Boolean(password) };
   }
 }

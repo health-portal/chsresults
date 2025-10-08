@@ -17,26 +17,18 @@ export declare class CoursesController {
     createCourses(file: Express.Multer.File): Promise<CreateCoursesResponse>;
     getCourses(): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        title: string;
         code: string;
+        title: string;
         description: string | null;
         units: number;
         semester: number;
-        lecturerId: string;
         lecturer: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            email: string;
-            phone: string | null;
             firstName: string;
             lastName: string;
-            otherName: string | null;
-            title: string;
-            departmentId: string;
-        };
+            email: string;
+        } | null;
+        enrollmentCount: number;
     }[]>;
     updateCourse(courseId: string, body: UpdateCourseBody): Promise<{
         id: string;
