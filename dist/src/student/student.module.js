@@ -10,13 +10,14 @@ exports.StudentModule = void 0;
 const common_1 = require("@nestjs/common");
 const student_service_1 = require("./student.service");
 const student_controller_1 = require("./student.controller");
+const email_queue_service_1 = require("../email-queue/email-queue.service");
 let StudentModule = class StudentModule {
 };
 exports.StudentModule = StudentModule;
 exports.StudentModule = StudentModule = __decorate([
     (0, common_1.Module)({
         controllers: [student_controller_1.StudentController],
-        providers: [student_service_1.StudentService],
+        providers: [student_service_1.StudentService, email_queue_service_1.EmailQueueService],
     })
 ], StudentModule);
 //# sourceMappingURL=student.module.js.map

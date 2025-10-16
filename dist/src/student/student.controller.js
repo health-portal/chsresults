@@ -16,16 +16,49 @@ exports.StudentController = void 0;
 const common_1 = require("@nestjs/common");
 const student_service_1 = require("./student.service");
 const user_decorator_1 = require("../auth/user.decorator");
-const role_guard_1 = require("../auth/role.guard");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const auth_schema_1 = require("../auth/auth.schema");
 const swagger_1 = require("@nestjs/swagger");
 const courses_schema_1 = require("../courses/courses.schema");
 const student_schema_1 = require("./student.schema");
+const email_queue_service_1 = require("../email-queue/email-queue.service");
 let StudentController = class StudentController {
     studentService;
-    constructor(studentService) {
+    emailService;
+    constructor(studentService, emailService) {
         this.studentService = studentService;
+        this.emailService = emailService;
+    }
+    async testQueue() {
+        await this.emailService.enqueueEmails([
+            {
+                title: 'Test Email',
+                message: 'This is a test email from the queue system.',
+                portalLink: 'http://example.com/portal',
+                name: 'John Doe',
+                email: 'john.doe@example.com',
+            },
+            {
+                title: 'Test Email',
+                message: 'This is a test email from the queue system.',
+                portalLink: 'http://example.com/portal',
+                name: 'John Doe',
+                email: 'john.dohe@example.com',
+            },
+            {
+                title: 'Test Email',
+                message: 'This is a test email from the queue system.',
+                portalLink: 'http://example.com/portal',
+                name: 'John Doe',
+                email: 'john.de@example.com',
+            },
+            {
+                title: 'Test Email',
+                message: 'This is a test email from the queue system.',
+                portalLink: 'http://example.com/portal',
+                name: 'John Doe',
+                email: 'olugbengamoyinoluwa839@gmail.com',
+            },
+        ]);
+        return await this.emailService.processQueue();
     }
     async changePassword(studentId, body) {
         return await this.studentService.changePassword(studentId, body);
@@ -41,6 +74,14 @@ let StudentController = class StudentController {
     }
 };
 exports.StudentController = StudentController;
+__decorate([
+    (0, common_1.Post)('test'),
+    (0, swagger_1.ApiOperation)({ summary: 'Change student password' }),
+    (0, swagger_1.ApiOkResponse)({ description: 'Password updated successfully' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], StudentController.prototype, "testQueue", null);
 __decorate([
     (0, common_1.Post)('change-password'),
     (0, swagger_1.ApiOperation)({ summary: 'Change student password' }),
@@ -100,11 +141,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], StudentController.prototype, "getProfile", null);
 exports.StudentController = StudentController = __decorate([
-    (0, swagger_1.ApiTags)('Student'),
-    (0, swagger_1.ApiBearerAuth)('accessToken'),
     (0, common_1.Controller)('student'),
-    (0, role_guard_1.Role)(auth_schema_1.UserRole.STUDENT),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, role_guard_1.RoleGuard),
-    __metadata("design:paramtypes", [student_service_1.StudentService])
+    __metadata("design:paramtypes", [student_service_1.StudentService,
+        email_queue_service_1.EmailQueueService])
 ], StudentController);
 //# sourceMappingURL=student.controller.js.map

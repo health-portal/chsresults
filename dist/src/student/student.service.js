@@ -61,7 +61,10 @@ let StudentService = class StudentService {
         });
         if (!foundStudent)
             throw new common_1.UnauthorizedException('Student not found');
-        if (foundStudent.password !== currentPassword)
+        if (!foundStudent.password)
+            throw new common_1.UnauthorizedException('Student not activated');
+        const isMatched = await bcrypt.compare(currentPassword, foundStudent.password);
+        if (!isMatched)
             throw new common_1.BadRequestException('Current password incorrect');
         const hashedNewPassword = await bcrypt.hash(newPassword, Number(environment_1.env.BCRYPT_SALT));
         await this.db.client

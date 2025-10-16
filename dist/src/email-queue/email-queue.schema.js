@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NotificationTemplate = exports.InvitationTemplate = exports.ResetPasswordTemplate = exports.NotificationSchema = exports.InvitationSchema = exports.ResetPasswordSchema = exports.SendEmailSchema = void 0;
+exports.NotificationTemplate = exports.InvitationTemplate = exports.ResetPasswordTemplate = exports.NotificationSchema = exports.QueueEmailSchema = exports.InvitationSchema = exports.ResetPasswordSchema = exports.SendEmailSchema = void 0;
 class SendEmailSchema {
     toEmail;
     subject;
@@ -17,6 +17,14 @@ class InvitationSchema {
     registrationLink;
 }
 exports.InvitationSchema = InvitationSchema;
+class QueueEmailSchema {
+    title;
+    message;
+    portalLink;
+    name;
+    email;
+}
+exports.QueueEmailSchema = QueueEmailSchema;
 class NotificationSchema {
     name;
     title;

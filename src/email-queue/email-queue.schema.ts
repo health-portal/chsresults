@@ -14,6 +14,22 @@ export class InvitationSchema {
   registrationLink: string;
 }
 
+export class QueueEmailSchema {
+  title: string;
+  message: string;
+  portalLink: string;
+  name: string;
+  email: string;
+}
+
+export interface PGMQMessage<T = unknown> {
+  msg_id: number;
+  read_ct: number;
+  vt: string;
+  enqueued_at: string;
+  message: T;
+}
+
 export class NotificationSchema {
   name: string;
   title: string;

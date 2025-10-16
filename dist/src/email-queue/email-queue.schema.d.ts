@@ -11,6 +11,20 @@ export declare class InvitationSchema {
     name: string;
     registrationLink: string;
 }
+export declare class QueueEmailSchema {
+    title: string;
+    message: string;
+    portalLink: string;
+    name: string;
+    email: string;
+}
+export interface PGMQMessage<T = unknown> {
+    msg_id: number;
+    read_ct: number;
+    vt: string;
+    enqueued_at: string;
+    message: T;
+}
 export declare class NotificationSchema {
     name: string;
     title: string;

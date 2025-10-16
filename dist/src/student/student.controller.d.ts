@@ -1,8 +1,11 @@
 import { StudentService } from './student.service';
 import { ChangePasswordBody } from './student.schema';
+import { EmailQueueService } from 'src/email-queue/email-queue.service';
 export declare class StudentController {
     private readonly studentService;
-    constructor(studentService: StudentService);
+    private readonly emailService;
+    constructor(studentService: StudentService, emailService: EmailQueueService);
+    testQueue(): Promise<void>;
     changePassword(studentId: string, body: ChangePasswordBody): Promise<{
         success: boolean;
         message: string;
