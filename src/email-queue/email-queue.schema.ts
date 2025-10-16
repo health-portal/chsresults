@@ -14,6 +14,17 @@ export class InvitationSchema {
   registrationLink: string;
 }
 
+class Recipient {
+  name: string;
+  email: string;
+}
+
+export class InitialEmailSchema {
+  title: string;
+  message: string;
+  portalLink: string;
+  recipients: Recipient[];
+}
 export class QueueEmailSchema {
   title: string;
   message: string;

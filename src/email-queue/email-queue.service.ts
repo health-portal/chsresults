@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { createClient } from 'smtpexpress';
 import { env } from 'src/environment';
 import {
+  InitialEmailSchema,
   NotificationTemplate,
   PGMQMessage,
   QueueEmailSchema,
@@ -21,12 +22,25 @@ export class EmailQueueService {
     projectSecret: env.SMTPEXPRESS_PROJECT_SECRET,
   });
 
-  async enqueueEmails(emails: QueueEmailSchema[]) {
-    if (!emails.length) {
-      this.logger.warn('No emails to enqueue.');
+  async enqueueEmails(emails: InitialEmailSchema) {
+    const recipients = emails.recipients;
+    if (!recipients || !recipients.length) {
+      this.logger.warn('No email recipients to enqueue.');
       return;
     }
 
+    const emailQueueItems: QueueEmailSchema[] = recipients.map((recipient) => ({
+      title: emails.title,
+      message: emails.message,
+      portalLink: emails.portalLink,
+      name: recipient.name,
+      email: recipient.email,
+    }));
+    return this.enqueue(emailQueueItems);
+  }
+
+  // Enqueue multiple emails
+  async enqueue(emails: QueueEmailSchema[]) {
     // Convert each email to JSON string and wrap for Postgres array
     const jsonMessages = emails.map((email) => JSON.stringify(email));
     const formattedArray = jsonMessages
