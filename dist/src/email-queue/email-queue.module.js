@@ -9,13 +9,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmailQueueModule = void 0;
 const common_1 = require("@nestjs/common");
 const email_queue_service_1 = require("./email-queue.service");
+const prisma_service_1 = require("./prisma.service");
+const email_queue_controller_1 = require("./email-queue.controller");
 let EmailQueueModule = class EmailQueueModule {
 };
 exports.EmailQueueModule = EmailQueueModule;
 exports.EmailQueueModule = EmailQueueModule = __decorate([
     (0, common_1.Module)({
-        providers: [email_queue_service_1.EmailQueueService],
+        providers: [email_queue_service_1.EmailQueueService, prisma_service_1.PrismaService],
         exports: [email_queue_service_1.EmailQueueService],
+        controllers: [email_queue_controller_1.EmailQueueController],
     })
 ], EmailQueueModule);
 //# sourceMappingURL=email-queue.module.js.map

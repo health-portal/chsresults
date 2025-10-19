@@ -11,6 +11,16 @@ export declare class InvitationSchema {
     name: string;
     registrationLink: string;
 }
+declare class Recipient {
+    name: string;
+    email: string;
+}
+export declare class InitialEmailSchema {
+    title: string;
+    message: string;
+    portalLink: string;
+    recipients: Recipient[];
+}
 export declare class QueueEmailSchema {
     title: string;
     message: string;
@@ -34,3 +44,4 @@ export declare class NotificationSchema {
 export declare const ResetPasswordTemplate: ({ name, otp }: ResetPasswordSchema) => string;
 export declare const InvitationTemplate: ({ name, registrationLink, }: InvitationSchema) => string;
 export declare const NotificationTemplate: ({ name, title, message, portalLink, }: NotificationSchema) => string;
+export {};

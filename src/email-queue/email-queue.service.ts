@@ -8,11 +8,12 @@ import {
   QueueEmailSchema,
   SendEmailSchema,
 } from './email-queue.schema';
-import { supabaseDb } from './email-queue.db';
-import { sql } from 'drizzle-orm';
+import { pgmq, Task } from 'prisma-pgmq';
+import { PrismaService } from './prisma.service';
 
 @Injectable()
 export class EmailQueueService {
+  constructor(private readonly prisma: PrismaService) {}
   private readonly logger = new Logger(EmailQueueService.name);
   private readonly queueName = 'email_queue';
   private readonly failedQueueName = 'failed_queue';
@@ -23,7 +24,15 @@ export class EmailQueueService {
   });
 
   async enqueueEmails(emails: InitialEmailSchema) {
+    this.logger.log(`Checking or creating queue: ${this.queueName}`);
     const recipients = emails.recipients;
+    const queues = await pgmq.listQueues(this.prisma);
+    const foundQueue = queues.find((q) => q.queue_name === this.queueName);
+    if (!foundQueue) {
+      await pgmq.createQueue(this.prisma, this.queueName);
+    }
+
+    this.logger.log(`Queue ${this.queueName} exists:`, foundQueue);
     if (!recipients || !recipients.length) {
       this.logger.warn('No email recipients to enqueue.');
       return;
@@ -41,58 +50,58 @@ export class EmailQueueService {
 
   // Enqueue multiple emails
   async enqueue(emails: QueueEmailSchema[]) {
-    // Convert each email to JSON string and wrap for Postgres array
-    const jsonMessages = emails.map((email) => JSON.stringify(email));
-    const formattedArray = jsonMessages
-      .map((m) => `'${m.replace(/'/g, "''")}'::jsonb`)
-      .join(',');
-
-    const result = await supabaseDb.execute(
-      sql`
-        select * from pgmq.send_batch(
-          ${this.queueName}::text,
-          array[${sql.raw(formattedArray)}]::jsonb[]
-        )
-      `,
+    const result = await pgmq.sendBatch(
+      this.prisma,
+      this.queueName,
+      emails as unknown as Task[],
     );
-
     this.logger.log(`Queued ${emails.length} email(s)`);
-    return result;
+    const safeResult = JSON.parse(
+      JSON.stringify(result, (_, value) =>
+        typeof value === 'bigint' ? value.toString() : value,
+      ),
+    ) as QueueEmailSchema[];
+    return safeResult;
   }
 
   // Read 50 messages from the queue and hide it for the next 30 secs
   async readEmails(
     batchSize: number,
   ): Promise<PGMQMessage<QueueEmailSchema>[]> {
-    const result = await supabaseDb.execute(
-      sql`select * from pgmq.read(${this.queueName}::text, ${batchSize}, 30)`,
+    const result = await pgmq.readWithPoll(
+      this.prisma,
+      this.queueName,
+      30,
+      batchSize,
+      10,
+      500,
     );
-    return result.rows as unknown as PGMQMessage<QueueEmailSchema>[];
+    return result as unknown as PGMQMessage<QueueEmailSchema>[];
   }
 
   // Delete message after successful send
   async deleteMessage(msgId: number) {
-    await supabaseDb.execute(
-      sql`select pgmq.delete(${this.queueName}::text, ${msgId}::bigint)`,
-    );
+    await pgmq.deleteMessage(this.prisma, this.queueName, msgId);
   }
 
   // Move to failed queue after max retries
   async pushToFailedQueue(payload: QueueEmailSchema) {
-    await supabaseDb.execute(
-      sql`select from pgmq.send(${this.failedQueueName}::text, ${JSON.stringify(payload)}::jsonb)`,
+    await pgmq.send(
+      this.prisma,
+      this.failedQueueName,
+      payload as unknown as Task,
     );
   }
 
   async processQueue() {
     const batchSize = 50; // Number of emails to process in one batch
     let totalProcessed = 0;
+    let successCount = 0;
     while (true) {
       const queues = await this.readEmails(batchSize);
 
       if (!queues.length) break; // stop when queue is empty
 
-      let successCount = 0;
       for (const queue of queues) {
         const { title, message, portalLink, email, name } = queue.message;
         totalProcessed++;
@@ -120,8 +129,10 @@ export class EmailQueueService {
               `Retrying (${queue.read_ct}/${this.maxRetries}) for ${email}`,
             );
             // Requeue the message for another attempt
-            await supabaseDb.execute(
-              sql`SELECT pgmq.send(${this.queueName}::text, ${JSON.stringify(queue.message)}::jsonb)`,
+            await pgmq.send(
+              this.prisma,
+              this.queueName,
+              queue.message as unknown as Task,
             );
             await this.deleteMessage(queue.msg_id);
           } else {
@@ -132,11 +143,11 @@ export class EmailQueueService {
           }
           await this.deleteMessage(queue.msg_id);
         }
-        this.logger.log(
-          `Processed ${totalProcessed} emails, ${successCount} sent successfully.`,
-        );
       }
     }
+    this.logger.log(
+      `Processed ${totalProcessed} emails, ${successCount} sent successfully.`,
+    );
   }
 
   async send({ subject, toEmail, htmlContent }: SendEmailSchema) {
