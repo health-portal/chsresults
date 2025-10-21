@@ -1,457 +1,169 @@
 import {
   BadRequestException,
-  ForbiddenException,
+  GoneException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from 'src/database/database.service';
 import {
+  SetPasswordBody,
   JwtPayload,
-  UserRole,
+  RequestPasswordResetBody,
   SigninUserBody,
-  SigninStudentBody,
-  StudentIdentifierType,
-  StudentIdentifierBody,
-  TokenType,
-  VerifyUserBody,
-  VerifyStudentBody,
+  UserRole,
 } from './auth.schema';
-import { admin, lecturer, student, token } from 'drizzle/schema';
-import { and, eq } from 'drizzle-orm';
-import * as bcrypt from 'bcrypt';
-import { EmailQueueService } from 'src/email-queue/email-queue.service';
-import { ResetPasswordTemplate } from 'src/email-queue/email-queue.schema';
-import { env } from 'src/environment';
-import * as speakeasy from 'speakeasy';
+import { desc, eq } from 'drizzle-orm';
+import { student, token, user } from 'drizzle/schema';
+import * as argon2 from 'argon2';
+import { isEmail } from 'class-validator';
+import { nanoid } from 'nanoid';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly db: DatabaseService,
     private readonly jwtService: JwtService,
-    private readonly emailQueueService: EmailQueueService,
   ) {}
 
-  private async generateToken(
-    payload: JwtPayload,
-    expiresIn: string | number | undefined = '1d',
-  ) {
-    const token = await this.jwtService.signAsync(payload, { expiresIn });
-    return token;
-  }
-
-  private async findAdmin(email: string) {
-    return await this.db.client.query.admin.findFirst({
-      where: eq(admin.email, email),
+  private async findUserByEmail(email: string) {
+    const foundUser = await this.db.client.query.user.findFirst({
+      where: eq(user.email, email),
     });
+    if (!foundUser) throw new NotFoundException('User not found');
+    return foundUser;
   }
 
-  private async updateAdminPassword(id: string, hashedPassword: string) {
-    const [updatedAdmin] = await this.db.client
-      .update(admin)
-      .set({ password: hashedPassword })
-      .where(eq(admin.id, id))
-      .returning();
-
-    const { password: _, ...adminProfile } = updatedAdmin;
-    return adminProfile;
-  }
-
-  async activateAdmin({ email, password, tokenString }: VerifyUserBody) {
-    const foundAdmin = await this.findAdmin(email);
-    if (!foundAdmin) throw new UnauthorizedException(`Admin not found`);
-    if (foundAdmin.password)
-      throw new BadRequestException(`Admin already activated`);
-
-    const foundToken = await this.db.client.query.token.findFirst({
-      where: and(
-        eq(token.userId, foundAdmin.id),
-        eq(token.userRole, UserRole.ADMIN),
-      ),
-    });
-
-    if (!foundToken) throw new NotFoundException('Token not found');
-    if (
-      foundToken.tokenString !== tokenString ||
-      foundToken.tokenType !== TokenType.ACTIVATE_ACCOUNT
-    )
-      throw new BadRequestException('Invalid or expired token');
-
-    this.jwtService
-      .verifyAsync(tokenString)
-      .then(() => {})
-      .catch(() => {
-        throw new BadRequestException('Invalid or expired token');
-      });
-
-    const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
-    return this.updateAdminPassword(foundAdmin.id, hashedPassword);
-  }
-
-  async signinAdmin({ email, password }: SigninUserBody) {
-    const foundAdmin = await this.findAdmin(email);
-    if (!foundAdmin) throw new UnauthorizedException(`Admin not found`);
-    if (!foundAdmin.password)
-      throw new ForbiddenException(`Admin not activated`);
-
-    const isMatched = await bcrypt.compare(password, foundAdmin.password);
-    if (!isMatched) throw new UnauthorizedException('Invalid credentials');
-
-    const accessToken = await this.generateToken({
-      id: foundAdmin.id,
-      role: UserRole.ADMIN,
-    });
-    return { accessToken };
-  }
-
-  async adminResetPasswordRequest(email: string) {
-    const foundAdmin = await this.findAdmin(email);
-    if (!foundAdmin) throw new NotFoundException(`Admin not found`);
-
-    const otp = speakeasy.totp({ secret: env.OTP_SECRET, encoding: 'base32' });
-
-    await this.db.client
-      .insert(token)
-      .values({
-        userId: foundAdmin.id,
-        userRole: UserRole.ADMIN,
-        tokenString: otp,
-        tokenType: TokenType.RESET_PASSWORD,
-      })
-      .onConflictDoUpdate({
-        target: [token.userId, token.userRole],
-        set: { tokenString: otp, tokenType: TokenType.RESET_PASSWORD },
-      });
-
-    await this.emailQueueService.send({
-      subject: 'Reset Password',
-      toEmail: foundAdmin.email,
-      htmlContent: ResetPasswordTemplate({ name: foundAdmin.name, otp }),
-    });
-
-    return { success: true, message: `Reset link sent to ${email}` };
-  }
-
-  async adminResetPassword({ email, password, tokenString }: VerifyUserBody) {
-    const foundAdmin = await this.findAdmin(email);
-    if (!foundAdmin) throw new NotFoundException(`Admin not found`);
-
-    const foundToken = await this.db.client.query.token.findFirst({
-      where: and(
-        eq(token.userId, foundAdmin.id),
-        eq(token.userRole, UserRole.ADMIN),
-      ),
-    });
-
-    if (!foundToken) throw new NotFoundException('Token not found');
-    if (
-      foundToken.tokenString !== tokenString ||
-      foundToken.tokenType !== TokenType.RESET_PASSWORD
-    )
-      throw new BadRequestException('Invalid or expired token');
-
-    const isValid = speakeasy.totp.verify({
-      secret: env.OTP_SECRET,
-      encoding: 'base32',
-      token: tokenString,
-      window: 30,
-    });
-    if (!isValid) throw new BadRequestException('Invalid or expired token');
-
-    const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
-    return this.updateAdminPassword(foundAdmin.id, hashedPassword);
-  }
-
-  private async findLecturer(email: string) {
-    return this.db.client.query.lecturer.findFirst({
-      where: eq(lecturer.email, email),
-    });
-  }
-
-  private async updateLecturerPassword(id: string, hashedPassword: string) {
-    const [updatedLecturer] = await this.db.client
-      .update(lecturer)
-      .set({ password: hashedPassword })
-      .where(eq(lecturer.id, id))
-      .returning();
-
-    const { password: _, ...lecturerProfile } = updatedLecturer;
-    return lecturerProfile;
-  }
-
-  async activateLecturer({ email, password, tokenString }: VerifyUserBody) {
-    const foundLecturer = await this.findLecturer(email);
-    if (!foundLecturer) throw new UnauthorizedException(`Lecturer not found`);
-    if (foundLecturer.password)
-      throw new BadRequestException(`Lecturer already activated`);
-
-    const foundToken = await this.db.client.query.token.findFirst({
-      where: and(
-        eq(token.userId, foundLecturer.id),
-        eq(token.userRole, UserRole.LECTURER),
-      ),
-    });
-
-    if (!foundToken) throw new NotFoundException('Token not found');
-    if (
-      foundToken.tokenString !== tokenString ||
-      foundToken.tokenType !== TokenType.ACTIVATE_ACCOUNT
-    )
-      throw new BadRequestException('Invalid or expired token');
-
-    this.jwtService
-      .verifyAsync(tokenString)
-      .then(() => {})
-      .catch(() => {
-        throw new BadRequestException('Invalid or expired token');
-      });
-
-    const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
-    return this.updateLecturerPassword(foundLecturer.id, hashedPassword);
-  }
-
-  async signinLecturer({ email, password }: SigninUserBody) {
-    const foundLecturer = await this.findLecturer(email);
-    if (!foundLecturer) throw new UnauthorizedException(`Lecturer not found`);
-    if (!foundLecturer.password)
-      throw new ForbiddenException(`Lecturer not activated`);
-
-    const isMatched = await bcrypt.compare(password, foundLecturer.password);
-    if (!isMatched) throw new UnauthorizedException('Invalid credentials');
-
-    const accessToken = await this.generateToken({
-      id: foundLecturer.id,
-      role: UserRole.LECTURER,
-    });
-    return { accessToken };
-  }
-
-  async lecturerResetPasswordRequest(email: string) {
-    const foundLecturer = await this.findLecturer(email);
-    if (!foundLecturer) throw new NotFoundException(`Lecturer not found`);
-
-    const otp = speakeasy.totp({ secret: env.OTP_SECRET, encoding: 'base32' });
-
-    await this.db.client
-      .insert(token)
-      .values({
-        userId: foundLecturer.id,
-        userRole: UserRole.LECTURER,
-        tokenString: otp,
-        tokenType: TokenType.RESET_PASSWORD,
-      })
-      .onConflictDoUpdate({
-        target: [token.userId, token.userRole],
-        set: { tokenString: otp, tokenType: TokenType.RESET_PASSWORD },
-      });
-
-    await this.emailQueueService.send({
-      subject: 'Reset Password',
-      toEmail: foundLecturer.email,
-      htmlContent: ResetPasswordTemplate({
-        name: `${foundLecturer.firstName} ${foundLecturer.lastName}`,
-        otp,
-      }),
-    });
-
-    return { success: true, message: `Reset link sent to ${email}` };
-  }
-
-  async lecturerResetPassword({
-    email,
-    password,
-    tokenString,
-  }: VerifyUserBody) {
-    const foundLecturer = await this.findLecturer(email);
-    if (!foundLecturer) throw new NotFoundException(`Lecturer not found`);
-
-    const foundToken = await this.db.client.query.token.findFirst({
-      where: and(
-        eq(token.userId, foundLecturer.id),
-        eq(token.userRole, UserRole.LECTURER),
-      ),
-    });
-
-    if (!foundToken) throw new NotFoundException('Token not found');
-    if (
-      foundToken.tokenString !== tokenString ||
-      foundToken.tokenType !== TokenType.RESET_PASSWORD
-    )
-      throw new BadRequestException('Invalid or expired token');
-
-    const isValid = speakeasy.totp.verify({
-      secret: env.OTP_SECRET,
-      encoding: 'base32',
-      token: tokenString,
-      window: 30,
-    });
-    if (!isValid) throw new BadRequestException('Invalid or expired token');
-
-    const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
-    return this.updateLecturerPassword(foundLecturer.id, hashedPassword);
-  }
-
-  private async findStudent({
-    studentIdentifier,
-    identifierType,
-  }: StudentIdentifierBody) {
+  private async findStudentByMatric(matricNumber: string) {
     const foundStudent = await this.db.client.query.student.findFirst({
-      where:
-        identifierType === StudentIdentifierType.EMAIL
-          ? eq(student.email, studentIdentifier)
-          : eq(student.matricNumber, studentIdentifier),
+      where: eq(student.matricNumber, matricNumber),
+      with: {
+        user: true,
+      },
     });
-    if (!foundStudent) throw new NotFoundException(`Student not found`);
-
+    if (!foundStudent) throw new NotFoundException('Student not found');
     return foundStudent;
   }
 
-  private async updateStudentPassword(id: string, hashedPassword: string) {
-    const [updatedStudent] = await this.db.client
-      .update(student)
-      .set({ password: hashedPassword })
-      .where(eq(student.id, id))
-      .returning();
+  private async findUser(identifier: string, role: UserRole) {
+    let foundUser: typeof user.$inferSelect;
+    if (role === UserRole.STAFF)
+      foundUser = await this.findUserByEmail(identifier);
+    else if (role === UserRole.STUDENT) {
+      if (isEmail(identifier)) {
+        foundUser = await this.findUserByEmail(identifier);
+      } else {
+        const foundStudent = await this.findStudentByMatric(identifier);
+        foundUser = foundStudent.user;
+      }
+    } else {
+      throw new BadRequestException('Invalid role');
+    }
 
-    const { password: _, ...studentProfile } = updatedStudent;
-    return studentProfile;
+    return foundUser;
   }
 
-  async activateStudent({
-    studentIdentifier,
-    identifierType,
-    password,
-    tokenString,
-  }: VerifyStudentBody) {
-    const foundStudent = await this.findStudent({
-      studentIdentifier,
-      identifierType,
-    });
-    if (foundStudent.password)
-      throw new UnauthorizedException(`Student already activated`);
-
-    const foundToken = await this.db.client.query.token.findFirst({
-      where: and(
-        eq(token.userId, foundStudent.id),
-        eq(token.userRole, UserRole.STUDENT),
-      ),
-    });
+  private async verifyToken(userId: string, tokenString: string) {
+    const [foundToken] = await this.db.client
+      .select()
+      .from(token)
+      .where(eq(token.userId, userId))
+      .orderBy(desc(token.createdAt))
+      .limit(1);
 
     if (!foundToken) throw new NotFoundException('Token not found');
-    if (
-      foundToken.tokenString !== tokenString ||
-      foundToken.tokenType !== TokenType.ACTIVATE_ACCOUNT
-    )
-      throw new BadRequestException('Invalid or expired token');
+    if (foundToken.expiresAt < new Date())
+      throw new GoneException('Token has expired');
 
-    this.jwtService
-      .verifyAsync(tokenString)
-      .then(() => {})
-      .catch(() => {
-        throw new BadRequestException('Invalid or expired token');
-      });
+    const isValid = await argon2.verify(foundToken.tokenString, tokenString);
+    if (!isValid) throw new BadRequestException('Invalid token');
 
-    const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
-    return this.updateStudentPassword(foundStudent.id, hashedPassword);
+    return foundToken;
   }
 
-  async signinStudent({
-    studentIdentifier,
-    identifierType,
+  private async createToken(userId: string, expiresInMinutes = 15) {
+    const tokenString = nanoid();
+    const hashedTokenString = await argon2.hash(tokenString);
+    const expiresAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
+
+    await this.db.client.insert(token).values({
+      userId,
+      tokenString: hashedTokenString,
+      expiresAt,
+    });
+  }
+
+  private async invalidateToken(userId: string) {
+    await this.db.client.delete(token).where(eq(token.userId, userId));
+  }
+
+  private async generateAccessToken(payload: JwtPayload) {
+    return await this.jwtService.signAsync(payload, { expiresIn: '1d' });
+  }
+
+  async activateUser({
+    identifier,
+    role,
+    tokenString,
     password,
-  }: SigninStudentBody) {
-    const foundStudent = await this.findStudent({
-      studentIdentifier,
-      identifierType,
-    });
-    if (!foundStudent.password)
-      throw new ForbiddenException(`Student not activated`);
+  }: SetPasswordBody) {
+    const foundUser = await this.findUser(identifier, role);
+    const userId = foundUser.id;
+    await this.verifyToken(userId, tokenString);
 
-    const isMatched = await bcrypt.compare(password, foundStudent.password);
-    if (!isMatched) throw new UnauthorizedException('Invalid credentials');
+    const hashedPassword = await argon2.hash(password);
+    await this.db.client
+      .update(user)
+      .set({ password: hashedPassword })
+      .where(eq(user.id, userId));
+    await this.invalidateToken(userId);
 
-    const accessToken = await this.generateToken({
-      id: foundStudent.id,
-      role: UserRole.STUDENT,
+    return { message: 'Account activated successfully' };
+  }
+
+  async signinUser({ identifier, password, role }: SigninUserBody) {
+    const foundUser = await this.findUser(identifier, role);
+    if (!foundUser.password)
+      throw new BadRequestException('Account not activated');
+
+    const isPasswordValid = await argon2.verify(foundUser.password, password);
+    if (!isPasswordValid)
+      throw new UnauthorizedException('Invalid credentials');
+
+    const accessToken = await this.generateAccessToken({
+      id: foundUser.id,
+      role: foundUser.role as UserRole,
     });
+
     return { accessToken };
   }
 
-  async studentResetPasswordRequest({
-    studentIdentifier,
-    identifierType,
-  }: StudentIdentifierBody) {
-    const foundStudent = await this.findStudent({
-      studentIdentifier,
-      identifierType,
-    });
+  async requestPasswordReset({ identifier, role }: RequestPasswordResetBody) {
+    const foundUser = await this.findUser(identifier, role);
+    await this.invalidateToken(foundUser.id);
+    await this.createToken(foundUser.id);
 
-    const otp = speakeasy.totp({ secret: env.OTP_SECRET, encoding: 'base32' });
-
-    await this.db.client
-      .insert(token)
-      .values({
-        userId: foundStudent.id,
-        userRole: UserRole.STUDENT,
-        tokenString: otp,
-        tokenType: TokenType.RESET_PASSWORD,
-      })
-      .onConflictDoUpdate({
-        target: [token.userId, token.userRole],
-        set: { tokenString: otp, tokenType: TokenType.RESET_PASSWORD },
-      });
-
-    await this.emailQueueService.send({
-      subject: 'Reset Password',
-      toEmail: foundStudent.email,
-      htmlContent: ResetPasswordTemplate({
-        name: `${foundStudent.firstName} ${foundStudent.lastName}`,
-        otp,
-      }),
-    });
-
-    return {
-      success: true,
-      message: `Reset link sent to ${foundStudent.email}`,
-    };
+    return { message: 'Password reset token generated' };
   }
 
-  async studentResetPassword({
-    studentIdentifier,
-    identifierType,
+  async confirmPasswordReset({
+    identifier,
     password,
+    role,
     tokenString,
-  }: VerifyStudentBody) {
-    const foundStudent = await this.findStudent({
-      studentIdentifier,
-      identifierType,
-    });
+  }: SetPasswordBody) {
+    const foundUser = await this.findUser(identifier, role);
+    await this.verifyToken(tokenString, foundUser.id);
 
-    const foundToken = await this.db.client.query.token.findFirst({
-      where: and(
-        eq(token.userId, foundStudent.id),
-        eq(token.userRole, UserRole.STUDENT),
-      ),
-    });
+    const hashedPassword = await argon2.hash(password);
+    await this.db.client
+      .update(user)
+      .set({ password: hashedPassword })
+      .where(eq(user.id, foundUser.id));
 
-    if (!foundToken) throw new NotFoundException('Token not found');
-    if (
-      foundToken.tokenString !== tokenString ||
-      foundToken.tokenType !== TokenType.RESET_PASSWORD
-    )
-      throw new BadRequestException('Invalid or expired token');
+    await this.invalidateToken(foundUser.id);
 
-    const isValid = speakeasy.totp.verify({
-      secret: env.OTP_SECRET,
-      encoding: 'base32',
-      token: tokenString,
-      window: 30,
-    });
-    if (!isValid) throw new BadRequestException('Invalid or expired token');
-
-    const hashedPassword = await bcrypt.hash(password, Number(env.BCRYPT_SALT));
-    return this.updateStudentPassword(foundStudent.id, hashedPassword);
+    return { message: 'Password reset successfully' };
   }
 }

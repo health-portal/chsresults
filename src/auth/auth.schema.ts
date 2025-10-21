@@ -1,21 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsString,
-  IsNotEmpty,
-  IsStrongPassword,
-  IsEnum,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export enum UserRole {
-  ADMIN = 'Admin',
-  LECTURER = 'Lecturer',
-  STUDENT = 'Student',
-}
-
-export enum TokenType {
-  ACTIVATE_ACCOUNT = 'activate_account',
-  RESET_PASSWORD = 'reset_password',
+  STAFF = 'staff',
+  STUDENT = 'student',
 }
 
 export interface JwtPayload {
@@ -23,64 +10,41 @@ export interface JwtPayload {
   role: UserRole;
 }
 
-export class VerifyUserBody {
-  @ApiProperty()
-  @IsEmail()
+export class SetPasswordBody {
+  @IsString()
   @IsNotEmpty()
-  email: string;
+  identifier: string;
 
-  @ApiProperty()
-  @IsStrongPassword()
+  @IsString()
+  @IsNotEmpty()
   password: string;
 
-  @ApiProperty()
+  @IsEnum(UserRole)
+  role: UserRole;
+
   @IsString()
   @IsNotEmpty()
   tokenString: string;
 }
 
 export class SigninUserBody {
-  @ApiProperty()
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
-  @ApiProperty()
-  @IsStrongPassword()
-  password: string;
-}
-
-export enum StudentIdentifierType {
-  EMAIL = 'email',
-  MATRIC_NUMBER = 'matricNumber',
-}
-
-export class StudentIdentifierBody {
-  @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  studentIdentifier: string;
+  identifier: string;
 
-  @ApiProperty({ enum: StudentIdentifierType })
-  @IsEnum(StudentIdentifierType)
-  identifierType: StudentIdentifierType;
-}
-
-export class SigninStudentBody extends StudentIdentifierBody {
-  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @IsEnum(UserRole)
+  role: UserRole;
 }
 
-export class VerifyStudentBody extends SigninStudentBody {
-  @ApiProperty()
+export class RequestPasswordResetBody {
   @IsString()
   @IsNotEmpty()
-  tokenString: string;
-}
+  identifier: string;
 
-export class SigninResponse {
-  @ApiProperty()
-  accessToken: string;
+  @IsEnum(UserRole)
+  role: UserRole;
 }

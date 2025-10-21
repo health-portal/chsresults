@@ -3,10 +3,9 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
-import { EmailQueueModule } from 'src/email-queue/email-queue.module';
 
 @Module({
-  imports: [EmailQueueModule, PassportModule],
+  imports: [PassportModule],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
 })
