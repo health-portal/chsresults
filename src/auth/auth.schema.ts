@@ -1,13 +1,10 @@
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-
-export enum UserRole {
-  STAFF = 'staff',
-  STUDENT = 'student',
-}
+import { UserRole } from '@prisma/client';
 
 export interface JwtPayload {
   id: string;
   role: UserRole;
+  permissions?: string[];
 }
 
 export class SetPasswordBody {
@@ -24,7 +21,7 @@ export class SetPasswordBody {
 
   @IsString()
   @IsNotEmpty()
-  tokenString: string;
+  token: string;
 }
 
 export class SigninUserBody {

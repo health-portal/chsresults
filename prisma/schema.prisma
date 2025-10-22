@@ -1,10 +1,497 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider   = "postgresql"
-  url        = env("MESSAGE_QUEUE_DATABASE_URL")
-  extensions = [pgmq]
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  STUDENT
+  STAFF
+}
+
+enum TokenType {
+  PASSWORD_RESET
+  ACCOUNT_ACTIVATION
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum StudentStatus {
+  ACTIVE
+  SUSPENDED
+  WITHDRAWN
+  GRADUATED
+  DEFERRED
+}
+
+enum Semester {
+  HARMATTAN
+  RAIN
+  FULL
+}
+
+enum StaffPermission {
+  // User Management
+  CREATE_USER
+  VIEW_USER
+  UPDATE_USER
+  DELETE_USER
+
+  // Student Management
+  CREATE_STUDENT
+  VIEW_STUDENT
+  UPDATE_STUDENT
+  DELETE_STUDENT
+
+  // Staff Management
+  CREATE_STAFF
+  VIEW_STAFF
+  UPDATE_STAFF
+  DELETE_STAFF
+
+  // Course Management
+  CREATE_COURSE
+  VIEW_COURSE
+  UPDATE_COURSE
+  DELETE_COURSE
+  PUBLISH_COURSE
+
+  // Result Management
+  ENTER_RESULTS
+  VIEW_RESULTS
+  EDIT_RESULTS
+  APPROVE_RESULTS
+  PUBLISH_RESULTS
+  VIEW_ALL_RESULTS
+
+  // Academic Operations
+  CREATE_SESSION
+  ACTIVATE_SESSION
+  CREATE_ENROLLMENT
+
+  // Administrative
+  MANAGE_ROLES
+  MANAGE_PERMISSIONS
+  MANAGE_DEPARTMENTS
+  MANAGE_FACULTIES
+  MANAGE_AUDIT_LOGS
+}
+
+enum FileCategory {
+  RESULTS
+  USER_DATA
+  OTHER
+}
+
+enum EnrollmentStatus {
+  PASSED
+  FAILED
+  ENROLLED
+  ABSENT
+}
+
+enum AssessmentComponentType {
+  THEORY
+  PRACTICAL
+  EXAM
+  ASSIGNMENT
+  QUIZ
+  PROJECT
+  PRESENTATION
+  ORAL
+  CONTINUOUS_ASSESSMENT
+}
+
+model User {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  email    String   @unique @db.VarChar(255)
+  password String?
+  fullName String   @db.VarChar(255)
+  role     UserRole
+
+  token   Token?
+  staff   Staff?
+  student Student?
+
+  @@index([email])
+  @@index([fullName])
+  @@index([role])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model Token {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  token     String
+  tokenType TokenType
+  expiresAt DateTime
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([token])
+  @@map("tokens")
+}
+
+model Staff {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  phone         String? @unique
+  title         String
+  qualification String
+
+  userId       String            @unique
+  user         User              @relation(fields: [userId], references: [id])
+  departmentId String?
+  department   Department?       @relation(fields: [departmentId], references: [id])
+  roleId       String?
+  role         StaffRole?        @relation(fields: [roleId], references: [id])
+  designation  StaffDesignation?
+  courses      CourseLecturer[]
+  files        File[]
+
+  @@index([departmentId])
+  @@index([roleId])
+  @@map("staff")
+}
+
+model StaffRole {
+  id String @id @default(uuid())
+
+  role String
+
+  staff        Staff[]
+  permissions  StaffRolePermission[]
+  designations StaffDesignation[]
+
+  @@map("staff_roles")
+}
+
+model StaffRolePermission {
+  id String @id @default(uuid())
+
+  permission StaffPermission
+
+  roleId String
+  role   StaffRole @relation(fields: [roleId], references: [id])
+
+  @@unique([roleId, permission], name: "rolePermission")
+  @@index([roleId])
+  @@map("staff_role_permissions")
+}
+
+model StaffDesignation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  position String
+  entity   String
+
+  staffId String?   @unique
+  staff   Staff?    @relation(fields: [staffId], references: [id])
+  roleId  String
+  role    StaffRole @relation(fields: [roleId], references: [id])
+
+  @@unique([position, entity], name: "designation")
+  @@index([roleId])
+  @@map("staff_designations")
+}
+
+model Student {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  admissionYear Int           @db.Year
+  matricNumber  String        @unique
+  level         Int           @db.SmallInt
+  gender        Gender
+  degree        String
+  status        StudentStatus @default(ACTIVE)
+
+  userId       String       @unique
+  user         User         @relation(fields: [userId], references: [id])
+  departmentId String
+  department   Department   @relation(fields: [departmentId], references: [id])
+  enrollments  Enrollment[]
+
+  @@index([departmentId])
+  @@index([level])
+  @@index([status])
+  @@index([matricNumber])
+  @@index([deletedAt])
+  @@index([departmentId, level])
+  @@index([departmentId, status])
+  @@map("students")
+}
+
+model Faculty {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  name String @unique @db.VarChar(255)
+
+  departments Department[]
+
+  @@index([deletedAt])
+  @@map("faculties")
+}
+
+model Department {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  name String @unique
+
+  facultyId String
+  faculty   Faculty   @relation(fields: [facultyId], references: [id])
+  staff     Staff[]
+  students  Student[]
+
+  @@index([facultyId])
+  @@index([deletedAt])
+  @@map("departments")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  name      String   @unique @db.VarChar(50)
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(false)
+
+  enrollments Enrollment[]
+  courses     Course[]
+
+  @@index([isActive])
+  @@map("sessions")
+}
+
+model Course {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  code        String    @unique
+  title       String
+  description String?
+  units       Int       @db.SmallInt
+  level       Int       @db.SmallInt
+  semester    Semester
+  isApproved  Boolean   @default(false)
+  approvedAt  DateTime?
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  isActive    Boolean   @default(true)
+
+  gradingSystemId String
+  gradingSystem   GradingSystem         @relation(fields: [gradingSystemId], references: [id])
+  sessionId       String
+  session         Session               @relation(fields: [sessionId], references: [id])
+  lecturers       CourseLecturer[]
+  enrollments     Enrollment[]
+  components      AssessmentComponent[]
+
+  @@index([sessionId])
+  @@index([isApproved])
+  @@index([isPublished])
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("courses")
+}
+
+model CourseLecturer {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  isCoordinator Boolean @default(false)
+
+  courseId   String
+  course     Course @relation(fields: [courseId], references: [id])
+  lecturerId String
+  lecturer   Staff  @relation(fields: [lecturerId], references: [id])
+
+  @@unique([courseId, lecturerId], name: "courseLecturer")
+  @@index([courseId])
+  @@index([lecturerId])
+  @@map("course_lecturers")
+}
+
+model AssessmentComponent {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  code        String                  @db.VarChar(50)
+  name        String                  @db.VarChar(255)
+  description String?
+  maxScore    Float
+  weight      Float
+  type        AssessmentComponentType
+  orderIndex  Int                     @default(0)
+
+  courseId String
+  course   Course           @relation(fields: [courseId], references: [id])
+  scores   ComponentScore[]
+
+  @@unique([courseId, code], name: "courseComponent")
+  @@index([courseId])
+  @@index([type])
+  @@index([deletedAt])
+  @@map("assessment_components")
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  score  Score?
+  status EnrollmentStatus @default(ENROLLED)
+
+  sessionId String
+  session   Session @relation(fields: [sessionId], references: [id])
+  courseId  String
+  course    Course  @relation(fields: [courseId], references: [id])
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id])
+
+  @@unique([sessionId, courseId, studentId], name: "sessionCourseStudent")
+  @@index([studentId, sessionId])
+  @@index([sessionId])
+  @@index([courseId])
+  @@index([studentId])
+  @@map("enrollments")
+}
+
+model Score {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  totalScore Float
+  grade      String? @db.VarChar(100)
+  remarks    String?
+
+  enrollmentId    String           @unique
+  enrollment      Enrollment       @relation(fields: [enrollmentId], references: [id])
+  componentScores ComponentScore[]
+
+  @@index([enrollmentId])
+  @@index([grade])
+  @@map("scores")
+}
+
+model ComponentScore {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rawScore      Float
+  weightedScore Float
+  remarks       String?
+
+  componentId String
+  component   AssessmentComponent @relation(fields: [componentId], references: [id])
+  scoreId     String
+  score       Score               @relation(fields: [scoreId], references: [id])
+
+  @@unique([scoreId, componentId], name: "scoreComponent")
+  @@index([scoreId])
+  @@index([componentId])
+  @@map("component_scores")
+}
+
+model GradingSystem {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  name        String        @db.VarChar(255)
+  description String?
+  rules       GradingRule[]
+
+  courses Course[]
+
+  @@index([deletedAt])
+  @@map("grading_systems")
+}
+
+model GradingRule {
+  id        String    @id @default(uuid())
+  deletedAt DateTime?
+
+  grade      String  @db.VarChar(100)
+  minScore   Float
+  maxScore   Float
+  gradePoint Float?
+  isFailing  Boolean @default(false)
+
+  systemId String
+  system   GradingSystem @relation(fields: [systemId], references: [id])
+
+  @@index([systemId])
+  @@index([deletedAt])
+  @@map("grading_rules")
+}
+
+model File {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  filename String
+  mimetype String
+  size     Int
+  path     String
+  category FileCategory
+
+  staffId String
+  staff   Staff  @relation(fields: [staffId], references: [id])
+
+  @@index([staffId])
+  @@index([category])
+  @@map("files")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  actorInfo String
+  action    String
+  entity    String
+  entityId  String
+  details   Json?
+
+  @@index([entity, entityId])
+  @@map("audit_logs")
 }

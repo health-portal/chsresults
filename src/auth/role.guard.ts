@@ -1,7 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { JwtPayload, UserRole } from './auth.schema';
+import { JwtPayload } from './auth.schema';
+import { UserRole } from '@prisma/client';
 
 export const Role = Reflector.createDecorator<UserRole>();
 
