@@ -14,7 +14,7 @@ import {
 import * as argon2 from 'argon2';
 import { isEmail } from 'class-validator';
 import { JwtService } from '@nestjs/jwt';
-import { TokenType, User, UserRole } from '@prisma/client';
+import { StaffRole, TokenType, User, UserRole } from '@prisma/client';
 import { TokensService } from 'src/tokens/tokens.service';
 
 @Injectable()
@@ -60,6 +60,35 @@ export class AuthService {
     return foundUser;
   }
 
+  private async getUserDetails(userId: string) {
+    const foundUser = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { student: true, staff: true },
+    });
+
+    if (!foundUser) throw new NotFoundException('User not found');
+
+    let userDetails: { userId: string; staffRole?: StaffRole };
+    if (foundUser.role === UserRole.STAFF) {
+      if (!foundUser.staff)
+        throw new NotFoundException('Staff details not found');
+      userDetails = {
+        userId: foundUser.staff.id,
+        staffRole: foundUser.staff.role,
+      };
+    } else if (foundUser.role === UserRole.STUDENT) {
+      if (!foundUser.student)
+        throw new NotFoundException('Student details not found');
+      userDetails = {
+        userId: foundUser.student.id,
+      };
+    } else {
+      throw new BadRequestException('Invalid user role');
+    }
+
+    return userDetails;
+  }
+
   private async generateAccessToken(payload: JwtPayload) {
     return await this.jwtService.signAsync(payload, { expiresIn: '1d' });
   }
@@ -91,9 +120,13 @@ export class AuthService {
     if (!isPasswordValid)
       throw new UnauthorizedException('Invalid credentials');
 
+    const { userId, staffRole } = await this.getUserDetails(foundUser.id);
+
     const accessToken = await this.generateAccessToken({
-      id: foundUser.id,
-      role: foundUser.role,
+      sub: foundUser.id,
+      userId,
+      userRole: foundUser.role,
+      staffRole,
     });
 
     return { accessToken };

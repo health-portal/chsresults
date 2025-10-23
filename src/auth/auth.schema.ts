@@ -1,10 +1,16 @@
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { UserRole } from '@prisma/client';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  IsStrongPassword,
+} from 'class-validator';
+import { StaffRole, UserRole } from '@prisma/client';
 
 export interface JwtPayload {
-  id: string;
-  role: UserRole;
-  permissions?: string[];
+  sub: string;
+  userId: string;
+  userRole: UserRole;
+  staffRole?: StaffRole;
 }
 
 export class SetPasswordBody {
@@ -29,8 +35,7 @@ export class SigninUserBody {
   @IsNotEmpty()
   identifier: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsStrongPassword()
   password: string;
 
   @IsEnum(UserRole)
@@ -44,4 +49,13 @@ export class RequestPasswordResetBody {
 
   @IsEnum(UserRole)
   role: UserRole;
+}
+
+export class ChangePasswordBody {
+  @IsString()
+  @IsNotEmpty()
+  currentPassword: string;
+
+  @IsStrongPassword()
+  newPassword: string;
 }
