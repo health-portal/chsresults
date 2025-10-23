@@ -1,8 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, StaffRole, UserRole } from '@prisma/client';
+import { env } from 'src/environment';
 
 const prisma = new PrismaClient();
 
 const seedFacultiesAndDepartments = async () => {
+  console.log('Starting faculty and department seeding...');
   const collegeOfHealthSciences = {
     'Basic Medical Sciences': [
       'Anatomy and Cell Biology',
@@ -42,6 +44,7 @@ const seedFacultiesAndDepartments = async () => {
     for (const [facultyName, departmentNames] of Object.entries(
       collegeOfHealthSciences,
     )) {
+      console.log(`Processing faculty: ${facultyName}`);
       await tx.faculty.upsert({
         where: { name: facultyName },
         update: {},
@@ -52,19 +55,53 @@ const seedFacultiesAndDepartments = async () => {
           },
         },
       });
+      console.log(
+        `Upserted faculty: ${facultyName} with ${departmentNames.length} departments`,
+      );
     }
   });
+  console.log('Faculty and department seeding completed.');
+};
+
+const seedAdmin = async () => {
+  console.log('Starting admin seeding...');
+  for (const admin of env.DEFAULT_ADMINS) {
+    console.log(`Checking admin: ${admin.email}`);
+    const existingUser = await prisma.user.findUnique({
+      where: { email: admin.email },
+    });
+
+    if (existingUser) continue;
+
+    await prisma.user.create({
+      data: {
+        email: admin.email,
+        fullName: admin.name,
+        role: UserRole.STAFF,
+        staff: {
+          create: { role: StaffRole.ADMIN },
+        },
+      },
+    });
+
+    console.log(`Created admin: ${admin.email}`);
+  }
+  console.log('Admin seeding completed.');
 };
 
 async function main() {
   try {
+    console.log('Starting database seeding...');
     await seedFacultiesAndDepartments();
+    await seedAdmin();
     console.log('Database seeded successfully.');
   } catch (error) {
     console.error('Error seeding database:', error);
     process.exit(1);
   } finally {
+    console.log('Disconnecting Prisma client...');
     await prisma.$disconnect();
+    console.log('Prisma client disconnected.');
   }
 }
 

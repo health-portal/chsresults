@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  GoneException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -14,15 +13,16 @@ import {
 } from './auth.schema';
 import * as argon2 from 'argon2';
 import { isEmail } from 'class-validator';
-import { nanoid } from 'nanoid';
 import { JwtService } from '@nestjs/jwt';
 import { TokenType, User, UserRole } from '@prisma/client';
+import { TokensService } from 'src/tokens/tokens.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly tokensService: TokensService,
   ) {}
 
   private async findUserByEmail(email: string) {
@@ -60,40 +60,6 @@ export class AuthService {
     return foundUser;
   }
 
-  private async verifyToken(userId: string, token: string) {
-    const foundToken = await this.prisma.token.findUnique({
-      where: { userId },
-    });
-
-    if (!foundToken) throw new NotFoundException('Token not found');
-    if (foundToken.expiresAt < new Date())
-      throw new GoneException('Token has expired');
-
-    const isValid = await argon2.verify(foundToken.token, token);
-    if (!isValid) throw new BadRequestException('Invalid token');
-
-    return foundToken;
-  }
-
-  private async createToken(userId: string, expiresInMinutes = 15) {
-    const token = nanoid();
-    const hashedToken = await argon2.hash(token);
-    const expiresAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
-
-    await this.prisma.token.create({
-      data: {
-        userId,
-        token: hashedToken,
-        tokenType: TokenType.PASSWORD_RESET,
-        expiresAt,
-      },
-    });
-  }
-
-  private async invalidateToken(userId: string) {
-    await this.prisma.token.delete({ where: { userId } });
-  }
-
   private async generateAccessToken(payload: JwtPayload) {
     return await this.jwtService.signAsync(payload, { expiresIn: '1d' });
   }
@@ -101,14 +67,17 @@ export class AuthService {
   async activateUser({ identifier, role, token, password }: SetPasswordBody) {
     const foundUser = await this.findUser(identifier, role);
     const userId = foundUser.id;
-    await this.verifyToken(userId, token);
+    await this.tokensService.verifyToken(
+      userId,
+      token,
+      TokenType.ACCOUNT_ACTIVATION,
+    );
 
     const hashedPassword = await argon2.hash(password);
     await this.prisma.user.update({
       where: { id: userId },
       data: { password: hashedPassword },
     });
-    await this.invalidateToken(userId);
 
     return { message: 'Account activated successfully' };
   }
@@ -132,8 +101,9 @@ export class AuthService {
 
   async requestPasswordReset({ identifier, role }: RequestPasswordResetBody) {
     const foundUser = await this.findUser(identifier, role);
-    await this.invalidateToken(foundUser.id);
-    await this.createToken(foundUser.id);
+    await this.tokensService.createActivationToken(foundUser.id);
+
+    // TODO: Send email with password reset token
 
     return { message: 'Password reset token generated' };
   }
@@ -145,15 +115,17 @@ export class AuthService {
     token,
   }: SetPasswordBody) {
     const foundUser = await this.findUser(identifier, role);
-    await this.verifyToken(token, foundUser.id);
+    await this.tokensService.verifyToken(
+      foundUser.id,
+      token,
+      TokenType.PASSWORD_RESET,
+    );
 
     const hashedPassword = await argon2.hash(password);
     await this.prisma.user.update({
       where: { id: foundUser.id },
       data: { password: hashedPassword },
     });
-
-    await this.invalidateToken(foundUser.id);
 
     return { message: 'Password reset successfully' };
   }
