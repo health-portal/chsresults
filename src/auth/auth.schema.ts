@@ -4,13 +4,33 @@ import {
   IsString,
   IsStrongPassword,
 } from 'class-validator';
-import { StaffRole, UserRole } from '@prisma/client';
+import { LecturerRole, UserRole } from '@prisma/client';
+
+export type AdminData = {
+  adminId: string;
+};
+
+export type LecturerData = {
+  lecturerId: string;
+  departmentId: string;
+  facultyId: string;
+  designations: { role: LecturerRole; entity: string }[];
+};
+
+export type StudentData = {
+  studentId: string;
+  departmentId: string;
+  facultyId: string;
+  matricNumber: string;
+  level: number;
+};
+
+export type UserData = AdminData | LecturerData | StudentData;
 
 export interface JwtPayload {
   sub: string;
-  userId: string;
   userRole: UserRole;
-  staffRole?: StaffRole;
+  userData: UserData;
 }
 
 export class SetPasswordBody {

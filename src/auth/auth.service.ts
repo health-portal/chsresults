@@ -10,11 +10,12 @@ import {
   JwtPayload,
   RequestPasswordResetBody,
   SigninUserBody,
+  UserData,
 } from './auth.schema';
 import * as argon2 from 'argon2';
 import { isEmail } from 'class-validator';
 import { JwtService } from '@nestjs/jwt';
-import { StaffRole, TokenType, User, UserRole } from '@prisma/client';
+import { TokenType, UserRole } from '@prisma/client';
 import { TokensService } from 'src/tokens/tokens.service';
 
 @Injectable()
@@ -43,50 +44,81 @@ export class AuthService {
   }
 
   private async findUser(identifier: string, role: UserRole) {
-    let foundUser: User;
-    if (role === UserRole.STAFF)
-      foundUser = await this.findUserByEmail(identifier);
-    else if (role === UserRole.STUDENT) {
-      if (isEmail(identifier)) {
-        foundUser = await this.findUserByEmail(identifier);
-      } else {
-        const foundStudent = await this.findStudentByMatric(identifier);
-        foundUser = foundStudent.user;
-      }
-    } else {
-      throw new BadRequestException('Invalid role');
-    }
+    if (role !== UserRole.STUDENT)
+      return await this.findUserByEmail(identifier);
+    else {
+      const foundUser = isEmail(identifier)
+        ? await this.findUserByEmail(identifier)
+        : (await this.findStudentByMatric(identifier)).user;
 
-    return foundUser;
+      return foundUser;
+    }
   }
 
-  private async getUserDetails(userId: string) {
+  private async getUserData(userId: string) {
     const foundUser = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: { student: true, staff: true },
+      include: {
+        admin: {
+          select: { id: true },
+        },
+        lecturer: {
+          include: {
+            designations: true,
+            department: {
+              select: { facultyId: true },
+            },
+          },
+        },
+        student: {
+          include: {
+            department: {
+              select: { facultyId: true },
+            },
+          },
+        },
+      },
     });
 
     if (!foundUser) throw new NotFoundException('User not found');
 
-    let userDetails: { userId: string; staffRole?: StaffRole };
-    if (foundUser.role === UserRole.STAFF) {
-      if (!foundUser.staff)
-        throw new NotFoundException('Staff details not found');
-      userDetails = {
-        userId: foundUser.staff.id,
-        staffRole: foundUser.staff.role,
-      };
-    } else if (foundUser.role === UserRole.STUDENT) {
-      if (!foundUser.student)
-        throw new NotFoundException('Student details not found');
-      userDetails = {
-        userId: foundUser.student.id,
-      };
-    } else {
-      throw new BadRequestException('Invalid user role');
-    }
+    switch (foundUser.role) {
+      case UserRole.ADMIN:
+        if (!foundUser.admin)
+          throw new Error('Admin data missing for admin user');
+        return {
+          adminId: foundUser.admin.id,
+        };
 
-    return userDetails;
+      case UserRole.LECTURER:
+        if (!foundUser.lecturer?.department)
+          throw new Error('Lecturer data incomplete');
+
+        return {
+          lecturerId: foundUser.lecturer.id,
+          departmentId: foundUser.lecturer.departmentId,
+          facultyId: foundUser.lecturer.department.facultyId,
+          designations: foundUser.lecturer.designations.map((designation) => ({
+            entity: designation.entity,
+            role: designation.role,
+          })),
+        };
+
+      case UserRole.STUDENT:
+        if (!foundUser.student?.department)
+          throw new Error('Student data incomplete');
+        return {
+          studentId: foundUser.student.id,
+          level: foundUser.student.level,
+
+          facultyId: foundUser.student.department.facultyId,
+          matricNumber: foundUser.student.matricNumber,
+          departmentId: foundUser.student.departmentId,
+        };
+
+      default:
+        throw new Error(`Unhandled user role`);
+    }
   }
 
   private async generateAccessToken(payload: JwtPayload) {
@@ -120,13 +152,12 @@ export class AuthService {
     if (!isPasswordValid)
       throw new UnauthorizedException('Invalid credentials');
 
-    const { userId, staffRole } = await this.getUserDetails(foundUser.id);
+    const userData: UserData = await this.getUserData(foundUser.id);
 
     const accessToken = await this.generateAccessToken({
       sub: foundUser.id,
-      userId,
       userRole: foundUser.role,
-      staffRole,
+      userData,
     });
 
     return { accessToken };

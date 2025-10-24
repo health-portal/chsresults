@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtPayload } from 'src/auth/auth.schema';
 import { AddAdminBody, UpdateAdminBody } from './admin.schema';
-import { StaffRole, UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import { TokensService } from 'src/tokens/tokens.service';
 
 @Injectable()
@@ -26,9 +26,8 @@ export class AdminService {
     await this.prisma.user.create({
       data: {
         email,
-        fullName: name,
-        role: UserRole.STAFF,
-        staff: { create: { role: StaffRole.ADMIN } },
+        role: UserRole.ADMIN,
+        admin: { create: { name } },
       },
     });
 
@@ -36,23 +35,22 @@ export class AdminService {
   }
 
   async getAdmins() {
-    return await this.prisma.staff.findMany({
-      where: { role: StaffRole.ADMIN },
+    return await this.prisma.admin.findMany({
       include: { user: true },
     });
   }
 
   async getProfile(adminId: string) {
-    return await this.prisma.staff.findUnique({
-      where: { role: StaffRole.ADMIN, userId: adminId },
+    return await this.prisma.admin.findUnique({
+      where: { userId: adminId },
       include: { user: true },
     });
   }
 
   async updateProfile(adminId: string, { name, phone }: UpdateAdminBody) {
-    return await this.prisma.staff.update({
-      data: { phone, user: { update: { fullName: name } } },
-      where: { role: StaffRole.ADMIN, userId: adminId },
+    return await this.prisma.admin.update({
+      data: { name, phone },
+      where: { userId: adminId },
     });
   }
 }

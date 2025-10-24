@@ -7,14 +7,21 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CollegeService } from './college.service';
 import {
   CreateDepartmentBody,
+  CreateSessionBody,
   UpsertFacultyAndDepartmentBody,
 } from './college.schema';
+import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
+import { UserRole } from '@prisma/client';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('college')
+@AuthRole(UserRole.ADMIN)
+@UseGuards(JwtAuthGuard, UserRoleGuard)
 export class CollegeController {
   constructor(private readonly collegeService: CollegeService) {}
 
@@ -57,5 +64,20 @@ export class CollegeController {
   @Delete('departments/:deptId')
   async deleteDepartment(@Param('deptId', ParseUUIDPipe) deptId: string) {
     return await this.collegeService.deleteDepartment(deptId);
+  }
+
+  @Post('sessions')
+  async createSession(@Body() body: CreateSessionBody) {
+    return await this.collegeService.createSession(body);
+  }
+
+  @Get('sessions')
+  async getSessions() {
+    return await this.collegeService.getSessions();
+  }
+
+  @Get('sessions/current')
+  async getCurrentSession() {
+    return await this.collegeService.getCurrentSession();
   }
 }

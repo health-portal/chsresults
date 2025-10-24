@@ -1,8 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   UpsertFacultyAndDepartmentBody,
   CreateDepartmentBody,
+  CreateSessionBody,
 } from './college.schema';
 
 @Injectable()
@@ -69,5 +74,36 @@ export class CollegeService {
 
     if (!dept) throw new NotFoundException('Department not found');
     return dept;
+  }
+
+  async createSession({ academicYear, startDate, endDate }: CreateSessionBody) {
+    const foundSession = await this.prisma.session.findFirst({
+      where: {
+        AND: { startDate: { lte: startDate }, endDate: { gte: endDate } },
+      },
+    });
+    if (foundSession) throw new ConflictException('Session already exists');
+
+    return await this.prisma.session.create({
+      data: { academicYear, startDate, endDate },
+    });
+  }
+
+  async getSessions() {
+    const foundSessions = await this.prisma.session.findMany({
+      orderBy: { endDate: 'desc' },
+    });
+    return foundSessions;
+  }
+
+  async getCurrentSession() {
+    const foundSession = await this.prisma.session.findFirst({
+      orderBy: { endDate: 'desc' },
+      where: {
+        AND: { endDate: { gte: new Date() }, startDate: { lte: new Date() } },
+      },
+    });
+    if (!foundSession) throw new NotFoundException('Current session not found');
+    return foundSession;
   }
 }

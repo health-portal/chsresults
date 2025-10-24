@@ -9,21 +9,24 @@ import {
   Patch,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LecturerService } from './lecturer.service';
 import { User } from 'src/auth/user.decorator';
-import { EditScoreBody, RegisterStudentBody } from './lecturer.schema';
+import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
+import { UserRole } from '@prisma/client';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('lecturer')
+@AuthRole(UserRole.LECTURER)
+@UseGuards(JwtAuthGuard, UserRoleGuard)
 export class LecturerController {
   constructor(private readonly lecturerService: LecturerService) {}
 
   @Get('courses')
-  async listCourses(@User('id') lecturerId: string) {
-    return await this.lecturerService.listCourses(lecturerId);
-  }
+  async listCourses(@User('id') lecturerId: string) {}
 
   @Post('courses/:courseId/students/batch')
   @UseInterceptors(FileInterceptor('file'))
@@ -36,26 +39,13 @@ export class LecturerController {
         .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
     )
     file: Express.Multer.File,
-  ) {
-    return await this.lecturerService.registerStudentsBatch(
-      lecturerId,
-      courseId,
-      file,
-    );
-  }
+  ) {}
 
   @Post('courses/:courseId/students')
   async registerStudent(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
-    @Body() body: RegisterStudentBody,
-  ) {
-    return await this.lecturerService.registerStudent(
-      lecturerId,
-      courseId,
-      body,
-    );
-  }
+  ) {}
 
   @Post('courses/:courseId/scores')
   @UseInterceptors(FileInterceptor('file'))
@@ -63,43 +53,27 @@ export class LecturerController {
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
     @UploadedFile() file: Express.Multer.File,
-  ) {
-    return await this.lecturerService.uploadScores(lecturerId, courseId, file);
-  }
+  ) {}
 
   @Patch('courses/:courseId/scores/:studentId')
   async editScore(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
     @Param('studentId', ParseUUIDPipe) studentId: string,
-    @Body() body: EditScoreBody,
-  ) {
-    return await this.lecturerService.editScore(
-      lecturerId,
-      courseId,
-      studentId,
-      body,
-    );
-  }
+  ) {}
 
   @Get('courses/:courseId/scores')
   async viewCourseScores(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
-  ) {
-    return await this.lecturerService.viewCourseScores(lecturerId, courseId);
-  }
+  ) {}
 
   @Get('courses/:courseId/students')
   async listCourseStudents(
     @User('id') lecturerId: string,
     @Param('courseId', ParseUUIDPipe) courseId: string,
-  ) {
-    return await this.lecturerService.listCourseStudents(lecturerId, courseId);
-  }
+  ) {}
 
   @Get('profile')
-  async getProfile(@User('id') lecturerId: string) {
-    return await this.lecturerService.getProfile(lecturerId);
-  }
+  async getProfile(@User('id') lecturerId: string) {}
 }

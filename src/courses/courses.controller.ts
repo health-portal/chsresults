@@ -12,7 +12,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CreateCourseBody, UpdateCourseBody } from './courses.schema';
 import { CoursesService } from './courses.service';
 
 @Controller('courses')
@@ -20,9 +19,7 @@ export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
   @Post()
-  async createCourse(@Body() body: CreateCourseBody) {
-    return await this.coursesService.createCourse(body);
-  }
+  async createCourse() {}
 
   @Post('batch')
   @UseInterceptors(FileInterceptor('file'))
@@ -33,25 +30,14 @@ export class CoursesController {
         .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
     )
     file: Express.Multer.File,
-  ) {
-    return await this.coursesService.createCourses(file);
-  }
+  ) {}
 
   @Get()
-  async getCourses() {
-    return await this.coursesService.getCourses();
-  }
+  async getCourses() {}
 
   @Patch(':courseId')
-  async updateCourse(
-    @Param('courseId') courseId: string,
-    @Body() body: UpdateCourseBody,
-  ) {
-    return await this.coursesService.updateCourse(courseId, body);
-  }
+  async updateCourse(@Param('courseId') courseId: string) {}
 
   @Delete(':courseId')
-  async deleteCourse(@Param('courseId') courseId: string) {
-    return await this.coursesService.deleteCourse(courseId);
-  }
+  async deleteCourse(@Param('courseId') courseId: string) {}
 }

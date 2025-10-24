@@ -8,8 +8,9 @@ datasource db {
 }
 
 enum UserRole {
+    ADMIN
+    LECTURER
     STUDENT
-    STAFF
 }
 
 enum TokenType {
@@ -33,14 +34,14 @@ enum StudentStatus {
 enum Semester {
     HARMATTAN
     RAIN
-    FULL
+    ACADEMIC_YEAR
 }
 
-enum StaffRole {
-    ADMIN
+enum LecturerRole {
     DEAN
     HOD
     LECTURER
+    PART_ADVISER
 }
 
 enum FileCategory {
@@ -56,37 +57,21 @@ enum EnrollmentStatus {
     ABSENT
 }
 
-enum AssessmentComponentType {
-    THEORY
-    PRACTICAL
-    EXAM
-    ASSIGNMENT
-    QUIZ
-    PROJECT
-    PRESENTATION
-    ORAL
-    CONTINUOUS_ASSESSMENT
-}
-
 model User {
     id        String    @id @default(uuid())
     createdAt DateTime  @default(now())
     updatedAt DateTime  @updatedAt
     deletedAt DateTime?
 
-    email    String   @unique @db.VarChar(255)
+    email    String   @unique
     password String?
-    fullName String   @db.VarChar(255)
     role     UserRole
 
-    token   Token?
-    staff   Staff?
-    student Student?
+    admin    Admin?
+    lecturer Lecturer?
+    student  Student?
+    tokens   Token?
 
-    @@index([email])
-    @@index([fullName])
-    @@index([role])
-    @@index([deletedAt])
     @@map("users")
 }
 
@@ -101,50 +86,64 @@ model Token {
     userId String @unique
     user   User   @relation(fields: [userId], references: [id])
 
-    @@index([userId])
     @@index([expiresAt])
     @@index([token])
     @@map("tokens")
 }
 
-model Staff {
+model Admin {
     id        String    @id @default(uuid())
     createdAt DateTime  @default(now())
     updatedAt DateTime  @updatedAt
     deletedAt DateTime?
 
+    name  String
+    phone String?
+
+    userId String @unique
+    user   User   @relation(fields: [userId], references: [id])
+
+    @@index([deletedAt])
+    @@map("admin")
+}
+
+model Lecturer {
+    id        String    @id @default(uuid())
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    name          String
     phone         String? @unique
     title         String?
     qualification String?
 
-    role         StaffRole
-    userId       String            @unique
-    user         User              @relation(fields: [userId], references: [id])
-    departmentId String?
-    department   Department?       @relation(fields: [departmentId], references: [id])
-    designation  StaffDesignation?
+    userId       String                @unique
+    user         User                  @relation(fields: [userId], references: [id])
+    departmentId String
+    department   Department            @relation(fields: [departmentId], references: [id])
+    designations LecturerDesignation[]
     courses      CourseLecturer[]
     files        File[]
 
     @@index([departmentId])
-    @@index([role])
-    @@map("staff")
+    @@index([deletedAt])
+    @@map("lecturers")
 }
 
-model StaffDesignation {
+model LecturerDesignation {
     id        String   @id @default(uuid())
     createdAt DateTime @default(now())
 
-    position String
-    entity   String
-    role     StaffRole
+    entity String
+    role   LecturerRole
 
-    staffId String? @unique
-    staff   Staff?  @relation(fields: [staffId], references: [id])
+    lecturerId String
+    lecturer   Lecturer @relation(fields: [lecturerId], references: [id])
 
-    @@unique([position, entity], name: "designation")
+    @@unique([entity, role], name: "designation")
     @@index([role])
-    @@map("staff_designations")
+    @@map("lecturer_designations")
 }
 
 model Student {
@@ -153,8 +152,11 @@ model Student {
     updatedAt DateTime  @updatedAt
     deletedAt DateTime?
 
-    admissionYear Int           @db.Year
     matricNumber  String        @unique
+    firstName     String
+    lastName      String
+    otherName     String?
+    admissionYear Int           @db.Year
     level         Int           @db.SmallInt
     gender        Gender
     degree        String
@@ -199,8 +201,8 @@ model Department {
     name String @unique
 
     facultyId String
-    faculty   Faculty   @relation(fields: [facultyId], references: [id])
-    staff     Staff[]
+    faculty   Faculty    @relation(fields: [facultyId], references: [id])
+    lecturer  Lecturer[]
     students  Student[]
 
     @@index([facultyId])
@@ -213,15 +215,13 @@ model Session {
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now())
 
-    name      String   @unique @db.VarChar(50)
+    academicYear      String   @unique @db.VarChar(50)
     startDate DateTime
     endDate   DateTime
-    isActive  Boolean  @default(false)
 
     enrollments Enrollment[]
     courses     Course[]
 
-    @@index([isActive])
     @@map("sessions")
 }
 
@@ -243,13 +243,10 @@ model Course {
     publishedAt DateTime?
     isActive    Boolean   @default(true)
 
-    gradingSystemId String
-    gradingSystem   GradingSystem         @relation(fields: [gradingSystemId], references: [id])
-    sessionId       String
-    session         Session               @relation(fields: [sessionId], references: [id])
-    lecturers       CourseLecturer[]
-    enrollments     Enrollment[]
-    components      AssessmentComponent[]
+    sessionId   String
+    session     Session          @relation(fields: [sessionId], references: [id])
+    lecturers   CourseLecturer[]
+    enrollments Enrollment[]
 
     @@index([sessionId])
     @@index([isApproved])
@@ -267,39 +264,14 @@ model CourseLecturer {
     isCoordinator Boolean @default(false)
 
     courseId   String
-    course     Course @relation(fields: [courseId], references: [id])
+    course     Course   @relation(fields: [courseId], references: [id])
     lecturerId String
-    lecturer   Staff  @relation(fields: [lecturerId], references: [id])
+    lecturer   Lecturer @relation(fields: [lecturerId], references: [id])
 
     @@unique([courseId, lecturerId], name: "courseLecturer")
     @@index([courseId])
     @@index([lecturerId])
     @@map("course_lecturers")
-}
-
-model AssessmentComponent {
-    id        String    @id @default(uuid())
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    deletedAt DateTime?
-
-    code        String                  @db.VarChar(50)
-    name        String                  @db.VarChar(255)
-    description String?
-    maxScore    Float
-    weight      Float
-    type        AssessmentComponentType
-    orderIndex  Int                     @default(0)
-
-    courseId String
-    course   Course           @relation(fields: [courseId], references: [id])
-    scores   ComponentScore[]
-
-    @@unique([courseId, code], name: "courseComponent")
-    @@index([courseId])
-    @@index([type])
-    @@index([deletedAt])
-    @@map("assessment_components")
 }
 
 model Enrollment {
@@ -330,71 +302,13 @@ model Score {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    totalScore Float
-    grade      String? @db.VarChar(100)
-    remarks    String?
+    score Json
 
-    enrollmentId    String           @unique
-    enrollment      Enrollment       @relation(fields: [enrollmentId], references: [id])
-    componentScores ComponentScore[]
+    enrollmentId String     @unique
+    enrollment   Enrollment @relation(fields: [enrollmentId], references: [id])
 
     @@index([enrollmentId])
-    @@index([grade])
     @@map("scores")
-}
-
-model ComponentScore {
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    rawScore      Float
-    weightedScore Float
-    remarks       String?
-
-    componentId String
-    component   AssessmentComponent @relation(fields: [componentId], references: [id])
-    scoreId     String
-    score       Score               @relation(fields: [scoreId], references: [id])
-
-    @@unique([scoreId, componentId], name: "scoreComponent")
-    @@index([scoreId])
-    @@index([componentId])
-    @@map("component_scores")
-}
-
-model GradingSystem {
-    id        String    @id @default(uuid())
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    deletedAt DateTime?
-
-    name        String        @db.VarChar(255)
-    description String?
-    rules       GradingRule[]
-
-    courses Course[]
-
-    @@index([deletedAt])
-    @@map("grading_systems")
-}
-
-model GradingRule {
-    id        String    @id @default(uuid())
-    deletedAt DateTime?
-
-    grade      String  @db.VarChar(100)
-    minScore   Float
-    maxScore   Float
-    gradePoint Float?
-    isFailing  Boolean @default(false)
-
-    systemId String
-    system   GradingSystem @relation(fields: [systemId], references: [id])
-
-    @@index([systemId])
-    @@index([deletedAt])
-    @@map("grading_rules")
 }
 
 model File {
@@ -407,10 +321,10 @@ model File {
     path     String
     category FileCategory
 
-    staffId String
-    staff   Staff  @relation(fields: [staffId], references: [id])
+    lecturerId String
+    lecturer   Lecturer @relation(fields: [lecturerId], references: [id])
 
-    @@index([staffId])
+    @@index([lecturerId])
     @@index([category])
     @@map("files")
 }

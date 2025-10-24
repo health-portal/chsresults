@@ -1,5 +1,5 @@
-import { PrismaClient, StaffRole, UserRole } from '@prisma/client';
-import { env } from 'src/environment';
+import { PrismaClient, UserRole } from '@prisma/client';
+import { env } from 'src/lib/environment';
 
 const prisma = new PrismaClient();
 
@@ -76,10 +76,9 @@ const seedAdmin = async () => {
     await prisma.user.create({
       data: {
         email: admin.email,
-        fullName: admin.name,
-        role: UserRole.STAFF,
-        staff: {
-          create: { role: StaffRole.ADMIN },
+        role: UserRole.ADMIN,
+        admin: {
+          create: { name: admin.name },
         },
       },
     });

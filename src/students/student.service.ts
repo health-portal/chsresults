@@ -40,6 +40,17 @@ export class StudentService {
     });
   }
 
+  async listEnrollment(
+    studentId: string,
+    sessionId: string,
+    enrollmentId: string,
+  ) {
+    return await this.prisma.enrollment.findUnique({
+      where: { id: enrollmentId, studentId, sessionId },
+      include: { course: true, score: true, session: true, student: true },
+    });
+  }
+
   async getProfile(studentId: string) {
     return await this.prisma.student.findUnique({
       where: { id: studentId },

@@ -1,4 +1,3 @@
-import { Readable } from 'stream';
 import * as csv from 'fast-csv';
 import { plainToInstance } from 'class-transformer';
 import { UnprocessableEntityException } from '@nestjs/common';
@@ -25,7 +24,7 @@ export class ParseCsvData<T extends object> {
 }
 
 export async function parseCsvFile<T extends object>(
-  file: Express.Multer.File,
+  content: string,
   validationClass: new () => T,
 ): Promise<ParseCsvData<T>> {
   return new Promise((resolve, reject) => {
@@ -33,10 +32,8 @@ export async function parseCsvFile<T extends object>(
     const invalidRows: RowValidationError[] = [];
 
     let currentRow = 0;
-
-    const stream = Readable.from(file.buffer);
-    stream
-      .pipe(csv.parse({ headers: true, strictColumnHandling: true }))
+    const stream = csv
+      .parse({})
       .on('error', (error) => {
         reject(new UnprocessableEntityException(error.message));
       })
@@ -59,5 +56,8 @@ export async function parseCsvFile<T extends object>(
       .on('end', () => {
         resolve({ validRows, invalidRows, numberOfRows: currentRow });
       });
+
+    stream.write(content);
+    stream.end();
   });
 }
