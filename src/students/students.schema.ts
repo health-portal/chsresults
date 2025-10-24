@@ -81,9 +81,8 @@ export class UpdateStudentBody {
   department?: string;
 
   @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  level?: number;
+  @IsEnum(Level)
+  level?: Level;
 
   @ApiProperty({ enum: Gender, required: false })
   @IsEnum(Gender)

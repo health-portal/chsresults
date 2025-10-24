@@ -36,14 +36,12 @@ export class StudentService {
   async listEnrollments(studentId: string) {
     return await this.prisma.enrollment.findMany({
       where: { studentId },
-      include: { course: true, score: true, student: true },
     });
   }
 
   async listEnrollment(studentId: string, enrollmentId: string) {
     return await this.prisma.enrollment.findUnique({
       where: { id: enrollmentId, studentId },
-      include: { course: true, score: true, student: true },
     });
   }
 

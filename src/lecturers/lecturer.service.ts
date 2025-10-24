@@ -103,6 +103,7 @@ export class LecturerService {
     } of parsedData.validRows) {
       try {
         await this.prisma.enrollment.update({
+          // TODO: Fix this error
           where: { courseSessionId, student: { matricNumber } },
           data: { score: { continuousAssessment, examination } },
         });

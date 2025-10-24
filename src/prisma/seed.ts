@@ -1,65 +1,81 @@
-import { PrismaClient, UserRole } from '@prisma/client';
+import { PrismaClient, UserRole, Level } from '@prisma/client';
 import { env } from 'src/lib/environment';
 
 const prisma = new PrismaClient();
 
 const seedFacultiesAndDepartments = async () => {
   console.log('Starting faculty and department seeding...');
-  const collegeOfHealthSciences = {
+
+  const collegeOfHealthSciences: Record<
+    string,
+    { name: string; maxLevel: Level }[]
+  > = {
     'Basic Medical Sciences': [
-      'Anatomy and Cell Biology',
-      'Chemical Pathology',
-      'Haematology and Immunology',
-      'Medical Biochemistry',
-      'Medical Pharmacology and Therapeutics',
-      'Department of Medical Rehabilitation',
-      'Morbid Anatomy and Forensic Medicine',
-      'Nursing Science',
-      'Physiological Sciences',
+      { name: 'Anatomy and Cell Biology', maxLevel: Level.LVL_400 },
+      { name: 'Chemical Pathology', maxLevel: Level.LVL_500 },
+      { name: 'Haematology and Immunology', maxLevel: Level.LVL_500 },
+      { name: 'Medical Biochemistry', maxLevel: Level.LVL_400 },
+      {
+        name: 'Medical Pharmacology and Therapeutics',
+        maxLevel: Level.LVL_500,
+      },
+      { name: 'Department of Medical Rehabilitation', maxLevel: Level.LVL_600 },
+      { name: 'Morbid Anatomy and Forensic Medicine', maxLevel: Level.LVL_500 },
+      { name: 'Nursing Science', maxLevel: Level.LVL_500 },
+      { name: 'Physiological Sciences', maxLevel: Level.LVL_400 },
     ],
     'Faculty of Clinical Sciences': [
-      'Anaethesia and Intensive Care',
-      'Community Health',
-      'Dermatology and Venereology',
-      'Medicine',
-      'Mental Health',
-      'Obstetrics, Gyanaecology and Perinatology',
-      'Ophthalmology',
-      'Orthopaedic Surgery and Traumatology',
-      'Otorhinolaryngology',
-      'Paediatrics and Child Health',
-      'Radiology',
-      'Surgery',
+      { name: 'Anaethesia and Intensive Care', maxLevel: Level.LVL_600 },
+      { name: 'Community Health', maxLevel: Level.LVL_600 },
+      { name: 'Dermatology and Venereology', maxLevel: Level.LVL_600 },
+      { name: 'Medicine', maxLevel: Level.LVL_600 },
+      { name: 'Mental Health', maxLevel: Level.LVL_600 },
+      {
+        name: 'Obstetrics, Gyanaecology and Perinatology',
+        maxLevel: Level.LVL_600,
+      },
+      { name: 'Ophthalmology', maxLevel: Level.LVL_600 },
+      { name: 'Orthopaedic Surgery and Traumatology', maxLevel: Level.LVL_600 },
+      { name: 'Otorhinolaryngology', maxLevel: Level.LVL_600 },
+      { name: 'Paediatrics and Child Health', maxLevel: Level.LVL_600 },
+      { name: 'Radiology', maxLevel: Level.LVL_600 },
+      { name: 'Surgery', maxLevel: Level.LVL_600 },
     ],
     Dentistry: [
-      'Child Dental Health',
-      'Oral or Maxillofacial Surgery',
-      'Oral Medicine and Oral Pathology',
-      'Preventive and Community Dentistry',
-      'Restorative Dentistry',
+      { name: 'Child Dental Health', maxLevel: Level.LVL_600 },
+      { name: 'Oral or Maxillofacial Surgery', maxLevel: Level.LVL_600 },
+      { name: 'Oral Medicine and Oral Pathology', maxLevel: Level.LVL_600 },
+      { name: 'Preventive and Community Dentistry', maxLevel: Level.LVL_600 },
+      { name: 'Restorative Dentistry', maxLevel: Level.LVL_600 },
     ],
   };
 
   await prisma.$transaction(async (tx) => {
-    for (const [facultyName, departmentNames] of Object.entries(
+    for (const [facultyName, departments] of Object.entries(
       collegeOfHealthSciences,
     )) {
       console.log(`Processing faculty: ${facultyName}`);
+
       await tx.faculty.upsert({
         where: { name: facultyName },
         update: {},
         create: {
           name: facultyName,
           departments: {
-            create: departmentNames.map((name) => ({ name })),
+            create: departments.map((dept) => ({
+              name: dept.name,
+              maxLevel: dept.maxLevel,
+            })),
           },
         },
       });
+
       console.log(
-        `Upserted faculty: ${facultyName} with ${departmentNames.length} departments`,
+        `Upserted faculty: ${facultyName} with ${departments.length} departments`,
       );
     }
   });
+
   console.log('Faculty and department seeding completed.');
 };
 
