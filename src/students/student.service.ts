@@ -33,21 +33,17 @@ export class StudentService {
     });
   }
 
-  async listEnrollments(studentId: string, sessionId: string) {
+  async listEnrollments(studentId: string) {
     return await this.prisma.enrollment.findMany({
-      where: { studentId, sessionId },
-      include: { course: true, score: true, session: true, student: true },
+      where: { studentId },
+      include: { course: true, score: true, student: true },
     });
   }
 
-  async listEnrollment(
-    studentId: string,
-    sessionId: string,
-    enrollmentId: string,
-  ) {
+  async listEnrollment(studentId: string, enrollmentId: string) {
     return await this.prisma.enrollment.findUnique({
-      where: { id: enrollmentId, studentId, sessionId },
-      include: { course: true, score: true, session: true, student: true },
+      where: { id: enrollmentId, studentId },
+      include: { course: true, score: true, student: true },
     });
   }
 

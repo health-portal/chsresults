@@ -23,7 +23,7 @@ export class ParseCsvData<T extends object> {
   invalidRows: RowValidationError[];
 }
 
-export async function parseCsvFile<T extends object>(
+export async function parseCsv<T extends object>(
   content: string,
   validationClass: new () => T,
 ): Promise<ParseCsvData<T>> {
@@ -33,7 +33,7 @@ export async function parseCsvFile<T extends object>(
 
     let currentRow = 0;
     const stream = csv
-      .parse({})
+      .parse({ headers: true })
       .on('error', (error) => {
         reject(new UnprocessableEntityException(error.message));
       })

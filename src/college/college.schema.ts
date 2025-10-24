@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Level } from '@prisma/client';
 import {
-  IsDate,
   IsNotEmpty,
   IsString,
   IsUUID,
   registerDecorator,
   ValidationOptions,
   ValidationArguments,
+  IsEnum,
 } from 'class-validator';
 
 export class UpsertFacultyAndDepartmentBody {
@@ -20,9 +21,15 @@ export class CreateDepartmentBody extends UpsertFacultyAndDepartmentBody {
   @ApiProperty()
   @IsUUID()
   facultyId: string;
+
+  @ApiProperty()
+  @IsEnum(Level)
+  maxLevel: Level;
 }
 
-function IsSequentialAcademicYear(validationOptions?: ValidationOptions) {
+export function IsSequentialAcademicYear(
+  validationOptions?: ValidationOptions,
+) {
   return function (object: Object, propertyName: string) {
     registerDecorator({
       name: 'isSequentialAcademicYear',
@@ -44,18 +51,4 @@ function IsSequentialAcademicYear(validationOptions?: ValidationOptions) {
       },
     });
   };
-}
-
-export class CreateSessionBody {
-  @ApiProperty()
-  @IsSequentialAcademicYear()
-  academicYear: string;
-
-  @ApiProperty()
-  @IsDate()
-  startDate: Date;
-
-  @ApiProperty()
-  @IsDate()
-  endDate: Date;
 }

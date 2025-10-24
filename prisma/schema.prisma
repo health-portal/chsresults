@@ -57,6 +57,16 @@ enum EnrollmentStatus {
     ABSENT
 }
 
+enum Level {
+    LVL_100
+    LVL_200
+    LVL_300
+    LVL_400
+    LVL_500
+    LVL_600
+    LVL_700
+}
+
 model User {
     id        String    @id @default(uuid())
     createdAt DateTime  @default(now())
@@ -113,7 +123,9 @@ model Lecturer {
     updatedAt DateTime  @updatedAt
     deletedAt DateTime?
 
-    name          String
+    firstName     String
+    lastName      String
+    otherName     String?
     phone         String? @unique
     title         String?
     qualification String?
@@ -123,7 +135,7 @@ model Lecturer {
     departmentId String
     department   Department            @relation(fields: [departmentId], references: [id])
     designations LecturerDesignation[]
-    courses      CourseLecturer[]
+    courseLinks  CourseLecturer[]
     files        File[]
 
     @@index([departmentId])
@@ -156,17 +168,18 @@ model Student {
     firstName     String
     lastName      String
     otherName     String?
-    admissionYear Int           @db.Year
-    level         Int           @db.SmallInt
+    admissionYear String
+    level         Level
     gender        Gender
     degree        String
     status        StudentStatus @default(ACTIVE)
 
-    userId       String       @unique
-    user         User         @relation(fields: [userId], references: [id])
+    userId       String     @unique
+    user         User       @relation(fields: [userId], references: [id])
     departmentId String
-    department   Department   @relation(fields: [departmentId], references: [id])
-    enrollments  Enrollment[]
+    department   Department @relation(fields: [departmentId], references: [id])
+
+    enrollments Enrollment[]
 
     @@index([departmentId])
     @@index([level])
@@ -198,12 +211,16 @@ model Department {
     updatedAt DateTime  @updatedAt
     deletedAt DateTime?
 
-    name String @unique
+    name     String @unique
+    maxLevel Level
 
     facultyId String
-    faculty   Faculty    @relation(fields: [facultyId], references: [id])
-    lecturer  Lecturer[]
-    students  Student[]
+    faculty   Faculty @relation(fields: [facultyId], references: [id])
+
+    lecturers            Lecturer[]
+    students             Student[]
+    courseDeptsAndLevels CourseSesnDeptAndLevel[]
+    courses              Course[]
 
     @@index([facultyId])
     @@index([deletedAt])
@@ -213,14 +230,13 @@ model Department {
 model Session {
     id        String   @id @default(uuid())
     createdAt DateTime @default(now())
-    updatedAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-    academicYear      String   @unique @db.VarChar(50)
-    startDate DateTime
-    endDate   DateTime
+    academicYear String   @unique @db.VarChar(50)
+    startDate    DateTime
+    endDate      DateTime
 
-    enrollments Enrollment[]
-    courses     Course[]
+    courseSessions CourseSession[]
 
     @@map("sessions")
 }
@@ -231,69 +247,99 @@ model Course {
     updatedAt DateTime  @updatedAt
     deletedAt DateTime?
 
-    code        String    @unique
+    code        String   @unique
     title       String
-    description String?
-    units       Int       @db.SmallInt
-    level       Int       @db.SmallInt
+    description String
+    units       Int      @db.SmallInt
     semester    Semester
+
+    departmentId String?
+    department   Department? @relation(fields: [departmentId], references: [id])
+
+    courseSessions CourseSession[]
+
+    @@index([deletedAt])
+    @@map("courses")
+}
+
+model CourseSession {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     isApproved  Boolean   @default(false)
     approvedAt  DateTime?
     isPublished Boolean   @default(false)
     publishedAt DateTime?
-    isActive    Boolean   @default(true)
 
-    sessionId   String
-    session     Session          @relation(fields: [sessionId], references: [id])
-    lecturers   CourseLecturer[]
-    enrollments Enrollment[]
+    courseId  String
+    course    Course  @relation(fields: [courseId], references: [id])
+    sessionId String
+    session   Session @relation(fields: [sessionId], references: [id])
 
+    lecturers      CourseLecturer[]
+    enrollments    Enrollment[]
+    deptsAndLevels CourseSesnDeptAndLevel[]
+
+    @@unique([courseId, sessionId], name: "uniqueCourseSession")
+    @@index([courseId])
     @@index([sessionId])
-    @@index([isApproved])
-    @@index([isPublished])
-    @@index([isActive])
-    @@index([deletedAt])
-    @@map("courses")
+    @@map("course_sessions")
 }
 
 model CourseLecturer {
     id        String   @id @default(uuid())
     createdAt DateTime @default(now())
-    updatedAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     isCoordinator Boolean @default(false)
 
-    courseId   String
-    course     Course   @relation(fields: [courseId], references: [id])
-    lecturerId String
-    lecturer   Lecturer @relation(fields: [lecturerId], references: [id])
+    courseSessionId String
+    courseSession   CourseSession @relation(fields: [courseSessionId], references: [id])
+    lecturerId      String
+    lecturer        Lecturer      @relation(fields: [lecturerId], references: [id])
 
-    @@unique([courseId, lecturerId], name: "courseLecturer")
-    @@index([courseId])
+    @@unique([courseSessionId, lecturerId], name: "uniqueCourseLecturer")
+    @@index([courseSessionId])
     @@index([lecturerId])
     @@map("course_lecturers")
+}
+
+model CourseSesnDeptAndLevel {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    level Level
+
+    departmentId    String
+    department      Department    @relation(fields: [departmentId], references: [id])
+    courseSessionId String
+    courseSession   CourseSession @relation(fields: [courseSessionId], references: [id])
+
+    @@unique([courseSessionId, departmentId, level], name: "uniqueCourseSesnDeptAndLevel")
+    @@index([courseSessionId])
+    @@index([departmentId])
+    @@index([level])
+    @@map("course_session_dept_levels")
 }
 
 model Enrollment {
     id        String   @id @default(uuid())
     createdAt DateTime @default(now())
-    updatedAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-    score  Score?
     status EnrollmentStatus @default(ENROLLED)
+    score  Score?
 
-    sessionId String
-    session   Session @relation(fields: [sessionId], references: [id])
-    courseId  String
-    course    Course  @relation(fields: [courseId], references: [id])
-    studentId String
-    student   Student @relation(fields: [studentId], references: [id])
+    studentId       String
+    student         Student       @relation(fields: [studentId], references: [id])
+    courseSessionId String
+    courseSession   CourseSession @relation(fields: [courseSessionId], references: [id])
 
-    @@unique([sessionId, courseId, studentId], name: "sessionCourseStudent")
-    @@index([studentId, sessionId])
-    @@index([sessionId])
-    @@index([courseId])
+    @@unique([studentId, courseSessionId], name: "uniqueEnrollment")
     @@index([studentId])
+    @@index([courseSessionId])
     @@map("enrollments")
 }
 

@@ -35,27 +35,19 @@ export class StudentController {
   }
 
   @Get('enrollments')
-  async listEnrollments(
-    @User() user: JwtPayload,
-    @Query('sessionId', ParseUUIDPipe) sessionId: string,
-  ) {
+  async listEnrollments(@User() user: JwtPayload) {
     const studentData = user.userData as StudentData;
-    return await this.studentService.listEnrollments(
-      studentData.studentId,
-      sessionId,
-    );
+    return await this.studentService.listEnrollments(studentData.studentId);
   }
 
   @Get('enrollments/:enrollmentId')
   async listEnrollment(
     @User() user: JwtPayload,
-    @Query('sessionId', ParseUUIDPipe) sessionId: string,
     @Param('enrollmentId', ParseUUIDPipe) enrollmentId: string,
   ) {
     const studentData = user.userData as StudentData;
     return await this.studentService.listEnrollment(
       studentData.studentId,
-      sessionId,
       enrollmentId,
     );
   }

@@ -12,7 +12,6 @@ import {
 import { CollegeService } from './college.service';
 import {
   CreateDepartmentBody,
-  CreateSessionBody,
   UpsertFacultyAndDepartmentBody,
 } from './college.schema';
 import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
@@ -64,20 +63,5 @@ export class CollegeController {
   @Delete('departments/:deptId')
   async deleteDepartment(@Param('deptId', ParseUUIDPipe) deptId: string) {
     return await this.collegeService.deleteDepartment(deptId);
-  }
-
-  @Post('sessions')
-  async createSession(@Body() body: CreateSessionBody) {
-    return await this.collegeService.createSession(body);
-  }
-
-  @Get('sessions')
-  async getSessions() {
-    return await this.collegeService.getSessions();
-  }
-
-  @Get('sessions/current')
-  async getCurrentSession() {
-    return await this.collegeService.getCurrentSession();
   }
 }

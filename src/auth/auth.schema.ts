@@ -4,7 +4,7 @@ import {
   IsString,
   IsStrongPassword,
 } from 'class-validator';
-import { LecturerRole, UserRole } from '@prisma/client';
+import { LecturerRole, UserRole, Level } from '@prisma/client';
 
 export type AdminData = {
   adminId: string;
@@ -22,7 +22,7 @@ export type StudentData = {
   departmentId: string;
   facultyId: string;
   matricNumber: string;
-  level: number;
+  level: Level;
 };
 
 export type UserData = AdminData | LecturerData | StudentData;

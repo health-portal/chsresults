@@ -10,6 +10,7 @@ import { LecturersModule } from './lecturers/lecturers.module';
 import { AdminModule } from './admin/admin.module';
 import { TokensModule } from './tokens/tokens.module';
 import { CollegeModule } from './college/college.module';
+import { SessionsModule } from './sessions/sessions.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CollegeModule } from './college/college.module';
     AdminModule,
     TokensModule,
     CollegeModule,
+    SessionsModule,
   ],
 })
 export class AppModule {}
