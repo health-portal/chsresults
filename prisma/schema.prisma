@@ -299,7 +299,7 @@ model CourseLecturer {
     lecturerId      String
     lecturer        Lecturer      @relation(fields: [lecturerId], references: [id])
 
-    @@unique([courseSessionId, lecturerId], name: "uniqueCourseLecturer")
+    @@unique([courseSessionId, lecturerId], name: "uniqueCourseSessionLecturer")
     @@index([courseSessionId])
     @@index([lecturerId])
     @@map("course_lecturers")
@@ -330,7 +330,7 @@ model Enrollment {
     updatedAt DateTime @updatedAt
 
     status EnrollmentStatus @default(ENROLLED)
-    score  Score?
+    score  Json?
 
     studentId       String
     student         Student       @relation(fields: [studentId], references: [id])
@@ -341,20 +341,6 @@ model Enrollment {
     @@index([studentId])
     @@index([courseSessionId])
     @@map("enrollments")
-}
-
-model Score {
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    score Json
-
-    enrollmentId String     @unique
-    enrollment   Enrollment @relation(fields: [enrollmentId], references: [id])
-
-    @@index([enrollmentId])
-    @@map("scores")
 }
 
 model File {

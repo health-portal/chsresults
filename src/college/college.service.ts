@@ -61,11 +61,10 @@ export class CollegeService {
   }
 
   async deleteDepartment(deptId: string) {
-    const dept = await this.prisma.department
-      .delete({
-        where: { id: deptId },
-      })
-      .catch(() => null);
+    const dept = await this.prisma.department.update({
+      where: { id: deptId },
+      data: { deletedAt: new Date() },
+    });
 
     if (!dept) throw new NotFoundException('Department not found');
     return dept;

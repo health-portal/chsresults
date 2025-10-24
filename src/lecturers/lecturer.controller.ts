@@ -33,17 +33,17 @@ export class LecturerController {
     return lecturerData.lecturerId;
   }
 
-  @Get('courses')
+  @Get('courses-sessions')
   async listCourses(@User() user: JwtPayload) {
     const lecturerId = this.getLecturerId(user);
     return this.lecturerService.listCourses(lecturerId);
   }
 
-  @Post('courses/:courseId/students/batch')
+  @Post('courses-sessions/:courseSessionId/students/batch')
   @UseInterceptors(FileInterceptor('file'))
   async registerStudents(
     @User() user: JwtPayload,
-    @Param('courseId', ParseUUIDPipe) courseId: string,
+    @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addMaxSizeValidator({ maxSize: 5 * 1024 })
@@ -54,68 +54,78 @@ export class LecturerController {
     const lecturerId = this.getLecturerId(user);
     return await this.lecturerService.registerStudents(
       lecturerId,
-      courseId,
+      courseSessionId,
       file,
     );
   }
 
-  @Post('courses/:courseId/students')
+  @Post('courses-sessions/:courseSessionId/students')
   async registerStudent(
     @User() user: JwtPayload,
-    @Param('courseId', ParseUUIDPipe) courseId: string,
+    @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
     @Body() body: RegisterStudentBody,
   ) {
     const lecturerId = this.getLecturerId(user);
     return await this.lecturerService.registerStudent(
       lecturerId,
-      courseId,
+      courseSessionId,
       body,
     );
   }
 
-  @Post('courses/:courseId/scores')
+  @Post('courses-sessions/:courseSessionId/scores')
   @UseInterceptors(FileInterceptor('file'))
   async uploadScores(
     @User() user: JwtPayload,
-    @Param('courseId', ParseUUIDPipe) courseId: string,
+    @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
     const lecturerId = this.getLecturerId(user);
-    return await this.lecturerService.uploadScores(lecturerId, courseId, file);
+    return await this.lecturerService.uploadScores(
+      lecturerId,
+      courseSessionId,
+      file,
+    );
   }
 
-  @Patch('courses/:courseId/scores/:studentId')
+  @Patch('courses-sessions/:courseSessionId/scores/:studentId')
   async editScore(
     @User() user: JwtPayload,
-    @Param('courseId', ParseUUIDPipe) courseId: string,
+    @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
     @Param('studentId', ParseUUIDPipe) studentId: string,
     @Body() body: EditScoreBody,
   ) {
     const lecturerId = this.getLecturerId(user);
     return await this.lecturerService.editScore(
       lecturerId,
-      courseId,
+      courseSessionId,
       studentId,
       body,
     );
   }
 
-  @Get('courses/:courseId/scores')
+  @Get('courses-sessions/:courseSessionId/scores')
   async viewCourseScores(
     @User() user: JwtPayload,
-    @Param('courseId', ParseUUIDPipe) courseId: string,
+    @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
   ) {
     const lecturerId = this.getLecturerId(user);
-    return await this.lecturerService.viewCourseScores(lecturerId, courseId);
+    return await this.lecturerService.viewCourseScores(
+      lecturerId,
+      courseSessionId,
+    );
   }
 
-  @Get('courses/:courseId/students')
+  @Get('course-sessions/:courseSessionId/students')
   async listCourseStudents(
     @User() user: JwtPayload,
-    @Param('courseId', ParseUUIDPipe) courseId: string,
+    @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
   ) {
     const lecturerId = this.getLecturerId(user);
-    return await this.lecturerService.listCourseStudents(lecturerId, courseId);
+    return await this.lecturerService.listCourseStudents(
+      lecturerId,
+      courseSessionId,
+    );
   }
 
   @Get('profile')

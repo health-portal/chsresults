@@ -8,6 +8,8 @@ import {
   RegisterStudentBody,
   EditScoreBody,
   BatchStudentRegistrationResult,
+  UploadScoreRow,
+  UploadScoresResult,
 } from './lecturers.schema';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -17,12 +19,16 @@ import { parseCsv } from 'src/lib/csv';
 export class LecturerService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private async validatorLecturerCourseAccess(
+  private async validateCourseLecturerAccess(
     lecturerId: string,
-    courseId: string,
+    courseSessionId: string,
+    isCoordinator: boolean = false,
   ) {
     const foundCourseLecturer = await this.prisma.courseLecturer.findUnique({
-      where: { isCoordinator: true, courseLecturer: { courseId, lecturerId } },
+      where: {
+        uniqueCourseSessionLecturer: { courseSessionId, lecturerId },
+        isCoordinator: isCoordinator ? true : undefined,
+      },
     });
 
     if (!foundCourseLecturer)
@@ -30,20 +36,23 @@ export class LecturerService {
   }
 
   async listCourses(lecturerId: string) {
-    return await this.prisma.course.findMany({
+    return await this.prisma.courseSession.findMany({
       where: { lecturers: { some: { id: lecturerId } } },
     });
   }
 
   async registerStudent(
     lecturerId: string,
-    courseId: string,
+    courseSessionId: string,
     { matricNumber }: RegisterStudentBody,
   ) {
-    await this.validatorLecturerCourseAccess(lecturerId, courseId);
+    await this.validateCourseLecturerAccess(lecturerId, courseSessionId, true);
     try {
-      await this.prisma.enrollment.create({
-        data: { courseId, studentId: 'STUDENT_ID' },
+      await this.prisma.courseSession.update({
+        where: { id: courseSessionId },
+        data: {
+          enrollments: { create: { student: { connect: { matricNumber } } } },
+        },
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
@@ -58,10 +67,10 @@ export class LecturerService {
 
   async registerStudents(
     lecturerId: string,
-    courseId: string,
+    courseSessionId: string,
     file: Express.Multer.File,
   ) {
-    await this.validatorLecturerCourseAccess(lecturerId, courseId);
+    await this.validateCourseLecturerAccess(lecturerId, courseSessionId, true);
     const content = file.buffer.toString('utf-8');
     const parsedData = await parseCsv(content, RegisterStudentBody);
     const result: BatchStudentRegistrationResult = {
@@ -75,20 +84,69 @@ export class LecturerService {
 
   async uploadScores(
     lecturerId: string,
-    courseId: string,
+    courseSessionId: string,
     file: Express.Multer.File,
-  ) {}
+  ) {
+    await this.validateCourseLecturerAccess(lecturerId, courseSessionId, true);
+    const content = file.buffer.toString('utf-8');
+    const parsedData = await parseCsv(content, UploadScoreRow);
+    const result: UploadScoresResult = {
+      ...parsedData,
+      studentsUploadedFor: [],
+      studentsNotFound: [],
+    };
+
+    for (const {
+      matricNumber,
+      continuousAssessment,
+      examination,
+    } of parsedData.validRows) {
+      try {
+        await this.prisma.enrollment.update({
+          where: { courseSessionId, student: { matricNumber } },
+          data: { score: { continuousAssessment, examination } },
+        });
+        result.studentsUploadedFor.push(matricNumber);
+      } catch (error) {
+        result.studentsNotFound.push(matricNumber);
+      }
+    }
+
+    return result;
+  }
 
   async editScore(
     lecturerId: string,
-    courseId: string,
+    courseSessionId: string,
     studentId: string,
-    body: EditScoreBody,
-  ) {}
+    { continuousAssessment, examination }: EditScoreBody,
+  ) {
+    await this.validateCourseLecturerAccess(lecturerId, courseSessionId, true);
+    await this.prisma.enrollment.update({
+      where: { uniqueEnrollment: { courseSessionId, studentId } },
+      data: { score: { continuousAssessment, examination } },
+    });
+  }
 
-  async viewCourseScores(lecturerId: string, courseId: string) {}
+  async viewCourseScores(lecturerId: string, courseSessionId: string) {
+    await this.validateCourseLecturerAccess(lecturerId, courseSessionId);
+    return await this.prisma.enrollment.findMany({
+      where: { courseSessionId },
+    });
+  }
 
-  async listCourseStudents(lecturerId: string, courseId: string) {}
+  async listCourseStudents(lecturerId: string, courseSessionId: string) {
+    await this.validateCourseLecturerAccess(lecturerId, courseSessionId);
+    return await this.prisma.enrollment.findMany({
+      where: { courseSessionId },
+      select: { score: false },
+    });
+  }
 
-  async getProfile(lecturerId: string) {}
+  async getProfile(lecturerId: string) {
+    const foundLecturer = await this.prisma.lecturer.findUnique({
+      where: { id: lecturerId },
+    });
+    return foundLecturer;
+  }
 }
