@@ -4,14 +4,12 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtPayload } from 'src/auth/auth.schema';
 import { AddAdminBody, UpdateAdminBody } from './admin.schema';
 import { UserRole } from '@prisma/client';
-import { TokensService } from 'src/tokens/tokens.service';
 
 @Injectable()
 export class AdminService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-    private readonly tokensService: TokensService,
   ) {}
 
   private async generateAccessToken(payload: JwtPayload) {

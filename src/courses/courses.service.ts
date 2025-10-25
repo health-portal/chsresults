@@ -63,7 +63,7 @@ export class CoursesService {
           },
         });
         result.courses.push({ ...row, isCreated: true });
-      } catch (error) {
+      } catch {
         result.courses.push({ ...row, isCreated: false });
       }
     }

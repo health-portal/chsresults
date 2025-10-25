@@ -30,7 +30,7 @@ export class CreateDepartmentBody extends UpsertFacultyAndDepartmentBody {
 export function IsSequentialAcademicYear(
   validationOptions?: ValidationOptions,
 ) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'isSequentialAcademicYear',
       target: object.constructor,

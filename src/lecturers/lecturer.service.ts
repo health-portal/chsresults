@@ -102,13 +102,17 @@ export class LecturerService {
       examination,
     } of parsedData.validRows) {
       try {
+        const foundStudent = await this.prisma.student.findUniqueOrThrow({
+          where: { matricNumber },
+        });
         await this.prisma.enrollment.update({
-          // TODO: Fix this error
-          where: { courseSessionId, student: { matricNumber } },
+          where: {
+            uniqueEnrollment: { courseSessionId, studentId: foundStudent.id },
+          },
           data: { score: { continuousAssessment, examination } },
         });
         result.studentsUploadedFor.push(matricNumber);
-      } catch (error) {
+      } catch {
         result.studentsNotFound.push(matricNumber);
       }
     }

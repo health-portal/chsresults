@@ -16,14 +16,15 @@ import * as argon2 from 'argon2';
 import { isEmail } from 'class-validator';
 import { JwtService } from '@nestjs/jwt';
 import { TokenType, UserRole } from '@prisma/client';
-import { TokensService } from 'src/tokens/tokens.service';
+import { env } from 'src/lib/environment';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { generateResetPasswordToken } from 'src/lib/tokens';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-    private readonly tokensService: TokensService,
   ) {}
 
   private async findUserByEmail(email: string) {
@@ -121,18 +122,47 @@ export class AuthService {
     }
   }
 
+  private async verifyToken(
+    userId: string,
+    tokenString: string,
+    tokenType: TokenType,
+  ) {
+    try {
+      const foundTokenData = await this.prisma.tokenData.findUniqueOrThrow({
+        where: { userId },
+      });
+
+      if (foundTokenData.tokenString !== tokenString)
+        throw new BadRequestException('Invalid token');
+      if (foundTokenData.tokenType !== tokenType)
+        throw new BadRequestException('Token type mismatch');
+      if (foundTokenData.expiresAt < new Date())
+        throw new BadRequestException('Token expired');
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new BadRequestException('Token not found');
+        }
+
+        throw new BadRequestException();
+      }
+    }
+  }
+
   private async generateAccessToken(payload: JwtPayload) {
     return await this.jwtService.signAsync(payload, { expiresIn: '1d' });
   }
 
-  async activateUser({ identifier, role, token, password }: SetPasswordBody) {
+  async activateUser({
+    identifier,
+    role,
+    tokenString,
+    password,
+  }: SetPasswordBody) {
     const foundUser = await this.findUser(identifier, role);
     const userId = foundUser.id;
-    await this.tokensService.verifyToken(
-      userId,
-      token,
-      TokenType.ACCOUNT_ACTIVATION,
-    );
+
+    await this.verifyToken(userId, tokenString, TokenType.ACCOUNT_ACTIVATION);
 
     const hashedPassword = await argon2.hash(password);
     await this.prisma.user.update({
@@ -165,9 +195,29 @@ export class AuthService {
 
   async requestPasswordReset({ identifier, role }: RequestPasswordResetBody) {
     const foundUser = await this.findUser(identifier, role);
-    await this.tokensService.createActivationToken(foundUser.id);
+    const { tokenString, expiresAt } = generateResetPasswordToken();
+
+    await this.prisma.tokenData.upsert({
+      where: { userId: foundUser.id },
+      update: {
+        tokenString,
+        tokenType: TokenType.PASSWORD_RESET,
+        expiresAt,
+      },
+      create: {
+        tokenString,
+        tokenType: TokenType.PASSWORD_RESET,
+        expiresAt,
+        userId: foundUser.id,
+      },
+    });
 
     // TODO: Send email with password reset token
+    const resetPasswordUrl = new URL(env.FRONTEND_BASE_URL);
+    resetPasswordUrl.searchParams.set('email', identifier);
+    resetPasswordUrl.searchParams.set('role', role);
+    resetPasswordUrl.searchParams.set('token', 'newTokenString');
+    console.log(resetPasswordUrl);
 
     return { message: 'Password reset token generated' };
   }
@@ -176,14 +226,10 @@ export class AuthService {
     identifier,
     password,
     role,
-    token,
+    tokenString,
   }: SetPasswordBody) {
     const foundUser = await this.findUser(identifier, role);
-    await this.tokensService.verifyToken(
-      foundUser.id,
-      token,
-      TokenType.PASSWORD_RESET,
-    );
+    await this.verifyToken(foundUser.id, tokenString, TokenType.PASSWORD_RESET);
 
     const hashedPassword = await argon2.hash(password);
     await this.prisma.user.update({

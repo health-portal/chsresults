@@ -77,28 +77,25 @@ model User {
     password String?
     role     UserRole
 
-    admin    Admin?
-    lecturer Lecturer?
-    student  Student?
-    tokens   Token?
-
-    @@map("users")
+    admin     Admin?
+    lecturer  Lecturer?
+    student   Student?
+    tokenData TokenData?
 }
 
-model Token {
+model TokenData {
     id        String   @id @default(uuid())
     createdAt DateTime @default(now())
 
-    token     String    @unique
-    tokenType TokenType
-    expiresAt DateTime
+    tokenString String    @unique
+    tokenType   TokenType
+    expiresAt   DateTime
 
     userId String @unique
     user   User   @relation(fields: [userId], references: [id])
 
     @@index([expiresAt])
-    @@index([token])
-    @@map("tokens")
+    @@index([tokenString])
 }
 
 model Admin {
@@ -114,7 +111,6 @@ model Admin {
     user   User   @relation(fields: [userId], references: [id])
 
     @@index([deletedAt])
-    @@map("admin")
 }
 
 model Lecturer {
@@ -140,7 +136,6 @@ model Lecturer {
 
     @@index([departmentId])
     @@index([deletedAt])
-    @@map("lecturers")
 }
 
 model LecturerDesignation {
@@ -188,7 +183,6 @@ model Student {
     @@index([deletedAt])
     @@index([departmentId, level])
     @@index([departmentId, status])
-    @@map("students")
 }
 
 model Faculty {
@@ -224,7 +218,6 @@ model Department {
 
     @@index([facultyId])
     @@index([deletedAt])
-    @@map("departments")
 }
 
 model Session {
@@ -284,7 +277,6 @@ model CourseSession {
     @@unique([courseId, sessionId], name: "uniqueCourseSession")
     @@index([courseId])
     @@index([sessionId])
-    @@map("course_sessions")
 }
 
 model CourseLecturer {
@@ -302,7 +294,6 @@ model CourseLecturer {
     @@unique([courseSessionId, lecturerId], name: "uniqueCourseSessionLecturer")
     @@index([courseSessionId])
     @@index([lecturerId])
-    @@map("course_lecturers")
 }
 
 model CourseSesnDeptAndLevel {
@@ -321,7 +312,6 @@ model CourseSesnDeptAndLevel {
     @@index([courseSessionId])
     @@index([departmentId])
     @@index([level])
-    @@map("course_session_dept_levels")
 }
 
 model Enrollment {
@@ -340,7 +330,6 @@ model Enrollment {
     @@unique([studentId, courseSessionId], name: "uniqueEnrollment")
     @@index([studentId])
     @@index([courseSessionId])
-    @@map("enrollments")
 }
 
 model File {
@@ -358,7 +347,6 @@ model File {
 
     @@index([lecturerId])
     @@index([category])
-    @@map("files")
 }
 
 model AuditLog {
@@ -372,5 +360,4 @@ model AuditLog {
     details   Json?
 
     @@index([entity, entityId])
-    @@map("audit_logs")
 }

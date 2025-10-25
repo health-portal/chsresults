@@ -8,7 +8,6 @@ import { CoursesModule } from './courses/courses.module';
 import { StudentsModule } from './students/students.module';
 import { LecturersModule } from './lecturers/lecturers.module';
 import { AdminModule } from './admin/admin.module';
-import { TokensModule } from './tokens/tokens.module';
 import { CollegeModule } from './college/college.module';
 import { SessionsModule } from './sessions/sessions.module';
 
@@ -22,7 +21,6 @@ import { SessionsModule } from './sessions/sessions.module';
     StudentsModule,
     LecturersModule,
     AdminModule,
-    TokensModule,
     CollegeModule,
     SessionsModule,
   ],

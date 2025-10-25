@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateStudentBody,
   CreateStudentsResult,
@@ -82,7 +82,7 @@ export class StudentsService {
         });
 
         result.students.push({ ...row, isCreated: true });
-      } catch (error) {
+      } catch {
         result.students.push({ ...row, isCreated: false });
       }
     }

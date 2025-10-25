@@ -1,5 +1,6 @@
-import { PrismaClient, UserRole, Level } from '@prisma/client';
+import { PrismaClient, UserRole, Level, TokenType } from '@prisma/client';
 import { env } from 'src/lib/environment';
+import { generateAccountActivationToken } from 'src/lib/tokens';
 
 const prisma = new PrismaClient();
 
@@ -79,17 +80,38 @@ const seedFacultiesAndDepartments = async () => {
   console.log('Faculty and department seeding completed.');
 };
 
+async function sendActivationToken(userId: string, email: string) {
+  const { tokenString, expiresAt } = generateAccountActivationToken();
+  await prisma.tokenData.upsert({
+    where: { userId },
+    update: {},
+    create: {
+      userId,
+      tokenString,
+      tokenType: TokenType.ACCOUNT_ACTIVATION,
+      expiresAt,
+    },
+  });
+
+  // TODO: Send activation link email
+  const resetPasswordUrl = new URL(env.FRONTEND_BASE_URL);
+  resetPasswordUrl.searchParams.set('email', email);
+  resetPasswordUrl.searchParams.set('role', UserRole.ADMIN);
+  resetPasswordUrl.searchParams.set('token', tokenString);
+  console.log(resetPasswordUrl);
+}
+
 const seedAdmin = async () => {
   console.log('Starting admin seeding...');
   for (const admin of env.DEFAULT_ADMINS) {
     console.log(`Checking admin: ${admin.email}`);
-    const existingUser = await prisma.user.findUnique({
+    const foundUser = await prisma.user.findUnique({
       where: { email: admin.email },
     });
 
-    if (existingUser) continue;
+    if (foundUser) continue;
 
-    await prisma.user.create({
+    const createdUser = await prisma.user.create({
       data: {
         email: admin.email,
         role: UserRole.ADMIN,
@@ -99,6 +121,7 @@ const seedAdmin = async () => {
       },
     });
 
+    await sendActivationToken(createdUser.id, admin.email);
     console.log(`Created admin: ${admin.email}`);
   }
   console.log('Admin seeding completed.');

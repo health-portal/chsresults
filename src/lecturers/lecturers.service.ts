@@ -79,7 +79,7 @@ export class LecturersService {
         });
 
         result.lecturers.push({ ...row, isCreated: true });
-      } catch (error) {
+      } catch {
         result.lecturers.push({ ...row, isCreated: false });
       }
     }

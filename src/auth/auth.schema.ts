@@ -47,7 +47,7 @@ export class SetPasswordBody {
 
   @IsString()
   @IsNotEmpty()
-  token: string;
+  tokenString: string;
 }
 
 export class SigninUserBody {
