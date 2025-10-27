@@ -4,18 +4,32 @@ import {
   AssignDepartmentAndLevelBody,
   AssignLecturersBody,
   CreateSessionBody,
+  SessionResponse,
 } from './sessions.schema';
+import {
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Sessions', 'Admin')
 @Controller('sessions')
 export class SessionsController {
   constructor(private readonly sessionsService: SessionsService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create a new session' })
+  @ApiCreatedResponse({ description: 'Session created successfully' })
+  @ApiConflictResponse({ description: 'Session already exists' })
   async createSession(@Body() body: CreateSessionBody) {
     return await this.sessionsService.createSession(body);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all sessions' })
+  @ApiOkResponse({ type: [SessionResponse] })
   async getSessions() {
     return await this.sessionsService.getSessions();
   }

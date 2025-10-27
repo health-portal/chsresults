@@ -1,27 +1,19 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { JwtPayload } from 'src/auth/auth.schema';
 import { AddAdminBody, UpdateAdminBody } from './admin.schema';
-import { UserRole } from '@prisma/client';
+import { TokenType, UserRole } from '@prisma/client';
+import { env } from 'src/lib/environment';
+import { generateAccountActivationToken } from 'src/lib/tokens';
 
 @Injectable()
 export class AdminService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
-  ) {}
-
-  private async generateAccessToken(payload: JwtPayload) {
-    const token = await this.jwtService.signAsync(payload, { expiresIn: '1d' });
-    return token;
-  }
+  constructor(private readonly prisma: PrismaService) {}
 
   async addAdmin({ email, name }: AddAdminBody) {
     const foundUser = await this.prisma.user.findUnique({ where: { email } });
     if (foundUser) throw new ConflictException('User already exists');
 
-    await this.prisma.user.create({
+    const createdUser = await this.prisma.user.create({
       data: {
         email,
         role: UserRole.ADMIN,
@@ -29,12 +21,48 @@ export class AdminService {
       },
     });
 
+    const { tokenString, expiresAt } = generateAccountActivationToken();
+    await this.prisma.tokenData.upsert({
+      where: { userId: createdUser.id },
+      update: {
+        tokenString,
+        tokenType: TokenType.ACCOUNT_ACTIVATION,
+        expiresAt,
+      },
+      create: {
+        tokenString,
+        tokenType: TokenType.ACCOUNT_ACTIVATION,
+        expiresAt,
+        userId: createdUser.id,
+      },
+    });
+
     // TODO: Send account activation email
+    const addAdminUrl = new URL(env.FRONTEND_BASE_URL + '/auth/activate');
+    addAdminUrl.searchParams.set('email', email);
+    addAdminUrl.searchParams.set('role', UserRole.ADMIN);
+    addAdminUrl.searchParams.set('token', tokenString);
+    console.log(addAdminUrl);
   }
 
   async getAdmins() {
-    return await this.prisma.admin.findMany({
-      include: { user: true },
+    const foundAdmins = await this.prisma.admin.findMany({
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        user: { select: { email: true, password: true } },
+      },
+    });
+
+    return foundAdmins.map((admin) => {
+      return {
+        id: admin.id,
+        name: admin.name,
+        phone: admin.phone,
+        email: admin.user.email,
+        isActivated: !!admin.user.password,
+      };
     });
   }
 

@@ -10,14 +10,24 @@ import {
   IsEnum,
 } from 'class-validator';
 
-export class UpsertFacultyAndDepartmentBody {
+export class CreateFacultyBody {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   name: string;
 }
 
-export class CreateDepartmentBody extends UpsertFacultyAndDepartmentBody {
+export class CreateDepartmentBody {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  shortName: string;
+
   @ApiProperty()
   @IsUUID()
   facultyId: string;

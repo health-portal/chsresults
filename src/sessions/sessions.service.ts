@@ -81,6 +81,7 @@ export class SessionsService {
     const foundSession = await this.prisma.session.findFirst({
       where: {
         AND: { startDate: { lte: startDate }, endDate: { gte: endDate } },
+        academicYear,
       },
     });
     if (foundSession) throw new ConflictException('Session already exists');
@@ -92,9 +93,50 @@ export class SessionsService {
 
   async getSessions() {
     const foundSessions = await this.prisma.session.findMany({
+      select: {
+        id: true,
+        academicYear: true,
+        startDate: true,
+        endDate: true,
+        courseSessions: {
+          select: {
+            course: {
+              select: {
+                title: true,
+                semester: true,
+                department: { select: { name: true } },
+              },
+            },
+            deptsAndLevels: {
+              select: {
+                department: { select: { shortName: true } },
+                level: true,
+              },
+            },
+          },
+        },
+      },
       orderBy: { endDate: 'desc' },
     });
-    return foundSessions;
+
+    return foundSessions.map((session) => {
+      return {
+        id: session.id,
+        academicYear: session.academicYear,
+        startDate: session.startDate,
+        endDate: session.endDate,
+
+        courses: session.courseSessions.map((courseSession) => ({
+          title: courseSession.course.title,
+          semester: courseSession.course.semester,
+          department: courseSession.course.department.name,
+          deptsAndLevels: courseSession.deptsAndLevels.map((deptAndLevel) => ({
+            department: deptAndLevel.department.shortName,
+            level: deptAndLevel.level,
+          })),
+        })),
+      };
+    });
   }
 
   async getCurrentSession() {

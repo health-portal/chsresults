@@ -5,15 +5,11 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
-  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import { CollegeService } from './college.service';
-import {
-  CreateDepartmentBody,
-  UpsertFacultyAndDepartmentBody,
-} from './college.schema';
+import { CreateDepartmentBody, CreateFacultyBody } from './college.schema';
 import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
 import { UserRole } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -30,16 +26,8 @@ export class CollegeController {
   }
 
   @Post('faculties')
-  async createFaculty(@Body() body: UpsertFacultyAndDepartmentBody) {
+  async createFaculty(@Body() body: CreateFacultyBody) {
     return await this.collegeService.createFaculty(body);
-  }
-
-  @Patch('faculties/:facultyId')
-  async updateFaculty(
-    @Param('facultyId', ParseUUIDPipe) facultyId: string,
-    @Body() body: UpsertFacultyAndDepartmentBody,
-  ) {
-    return await this.collegeService.updateFaculty(facultyId, body);
   }
 
   @Delete('faculties/:facultyId')
@@ -50,14 +38,6 @@ export class CollegeController {
   @Post('departments')
   async createDepartment(@Body() body: CreateDepartmentBody) {
     return await this.collegeService.createDepartment(body);
-  }
-
-  @Patch('departments/:deptId')
-  async updateDepartment(
-    @Param('deptId', ParseUUIDPipe) deptId: string,
-    @Body() body: UpsertFacultyAndDepartmentBody,
-  ) {
-    return await this.collegeService.updateDepartment(deptId, body);
   }
 
   @Delete('departments/:deptId')

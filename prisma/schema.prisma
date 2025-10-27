@@ -205,8 +205,9 @@ model Department {
     updatedAt DateTime  @updatedAt
     deletedAt DateTime?
 
-    name     String @unique
-    maxLevel Level
+    name      String @unique
+    shortName String @unique @db.VarChar(3)
+    maxLevel  Level
 
     facultyId String
     faculty   Faculty @relation(fields: [facultyId], references: [id])
@@ -246,8 +247,8 @@ model Course {
     units       Int      @db.SmallInt
     semester    Semester
 
-    departmentId String?
-    department   Department? @relation(fields: [departmentId], references: [id])
+    departmentId String
+    department   Department @relation(fields: [departmentId], references: [id])
 
     courseSessions CourseSession[]
 

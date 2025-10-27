@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -17,7 +18,6 @@ import { isEmail } from 'class-validator';
 import { JwtService } from '@nestjs/jwt';
 import { TokenType, UserRole } from '@prisma/client';
 import { env } from 'src/lib/environment';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { generateResetPasswordToken } from 'src/lib/tokens';
 
 @Injectable()
@@ -27,11 +27,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  private async findUserByEmail(email: string) {
+  private async findUserByEmail(email: string, role: UserRole) {
     const foundUser = await this.prisma.user.findUnique({
-      where: { email },
+      where: { email, role },
     });
-    if (!foundUser) throw new NotFoundException('User not found');
+    if (!foundUser) throw new UnauthorizedException('User not found');
     return foundUser;
   }
 
@@ -40,16 +40,16 @@ export class AuthService {
       where: { matricNumber },
       include: { user: true },
     });
-    if (!foundStudent) throw new NotFoundException('Student not found');
+    if (!foundStudent) throw new UnauthorizedException('User not found');
     return foundStudent;
   }
 
   private async findUser(identifier: string, role: UserRole) {
     if (role !== UserRole.STUDENT)
-      return await this.findUserByEmail(identifier);
+      return await this.findUserByEmail(identifier, role);
     else {
       const foundUser = isEmail(identifier)
-        ? await this.findUserByEmail(identifier)
+        ? await this.findUserByEmail(identifier, role)
         : (await this.findStudentByMatric(identifier)).user;
 
       return foundUser;
@@ -127,26 +127,17 @@ export class AuthService {
     tokenString: string,
     tokenType: TokenType,
   ) {
-    try {
-      const foundTokenData = await this.prisma.tokenData.findUniqueOrThrow({
-        where: { userId },
-      });
+    const foundTokenData = await this.prisma.tokenData.findUnique({
+      where: { userId },
+    });
 
-      if (foundTokenData.tokenString !== tokenString)
-        throw new BadRequestException('Invalid token');
-      if (foundTokenData.tokenType !== tokenType)
-        throw new BadRequestException('Token type mismatch');
-      if (foundTokenData.expiresAt < new Date())
-        throw new BadRequestException('Token expired');
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new BadRequestException('Token not found');
-        }
-
-        throw new BadRequestException();
-      }
-    }
+    if (
+      !foundTokenData ||
+      foundTokenData.tokenString !== tokenString ||
+      foundTokenData.tokenType !== tokenType ||
+      foundTokenData.expiresAt < new Date()
+    )
+      throw new BadRequestException('Non-existent or mismatched token');
   }
 
   private async generateAccessToken(payload: JwtPayload) {
@@ -162,21 +153,24 @@ export class AuthService {
     const foundUser = await this.findUser(identifier, role);
     const userId = foundUser.id;
 
+    if (foundUser.password)
+      throw new BadRequestException('User already activated');
+
     await this.verifyToken(userId, tokenString, TokenType.ACCOUNT_ACTIVATION);
 
     const hashedPassword = await argon2.hash(password);
-    await this.prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: { password: hashedPassword },
+      select: { id: true, email: true, role: true },
     });
 
-    return { message: 'Account activated successfully' };
+    return updatedUser;
   }
 
   async signinUser({ identifier, password, role }: SigninUserBody) {
     const foundUser = await this.findUser(identifier, role);
-    if (!foundUser.password)
-      throw new BadRequestException('Account not activated');
+    if (!foundUser.password) throw new ForbiddenException('User not activated');
 
     const isPasswordValid = await argon2.verify(foundUser.password, password);
     if (!isPasswordValid)
@@ -186,6 +180,7 @@ export class AuthService {
 
     const accessToken = await this.generateAccessToken({
       sub: foundUser.id,
+      email: foundUser.email,
       userRole: foundUser.role,
       userData,
     });
@@ -213,13 +208,13 @@ export class AuthService {
     });
 
     // TODO: Send email with password reset token
-    const resetPasswordUrl = new URL(env.FRONTEND_BASE_URL);
+    const resetPasswordUrl = new URL(env.FRONTEND_BASE_URL + '/reset-password');
     resetPasswordUrl.searchParams.set('email', identifier);
     resetPasswordUrl.searchParams.set('role', role);
-    resetPasswordUrl.searchParams.set('token', 'newTokenString');
+    resetPasswordUrl.searchParams.set('token', tokenString);
     console.log(resetPasswordUrl);
 
-    return { message: 'Password reset token generated' };
+    return { message: 'Password reset request sent' };
   }
 
   async confirmPasswordReset({
@@ -232,11 +227,12 @@ export class AuthService {
     await this.verifyToken(foundUser.id, tokenString, TokenType.PASSWORD_RESET);
 
     const hashedPassword = await argon2.hash(password);
-    await this.prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id: foundUser.id },
       data: { password: hashedPassword },
+      select: { id: true, email: true, role: true },
     });
 
-    return { message: 'Password reset successfully' };
+    return updatedUser;
   }
 }
