@@ -81,14 +81,14 @@ export class UpdateLecturerBody {
   title?: string;
 }
 
-export class CreateLecturerResult extends CreateLecturerBody {
+export class CreateLecturerRes extends CreateLecturerBody {
   @ApiProperty()
   isCreated: boolean;
 }
 
-export class CreateLecturersResult extends ParseCsvData<CreateLecturerBody> {
-  @ApiProperty({ type: [CreateLecturerResult] })
-  lecturers: CreateLecturerResult[];
+export class CreateLecturersRes extends ParseCsvData<CreateLecturerBody> {
+  @ApiProperty({ type: [CreateLecturerRes] })
+  lecturers: CreateLecturerRes[];
 }
 
 export class Scores {
@@ -123,7 +123,7 @@ export class UploadScoreRow extends Scores {
   matricNumber: string;
 }
 
-export class BatchStudentRegistrationResult extends ParseCsvData<RegisterStudentBody> {
+export class BatchStudentRegistrationRes extends ParseCsvData<RegisterStudentBody> {
   @ApiProperty()
   registeredStudents: string[];
 
@@ -131,7 +131,7 @@ export class BatchStudentRegistrationResult extends ParseCsvData<RegisterStudent
   unregisteredStudents: string[];
 }
 
-export class UploadScoresResult extends ParseCsvData<UploadScoreRow> {
+export class UploadScoresRes extends ParseCsvData<UploadScoreRow> {
   @ApiProperty()
   studentsUploadedFor: string[];
 

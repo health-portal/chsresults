@@ -1,21 +1,29 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { SessionsService } from './sessions.service';
 import {
-  AssignDepartmentAndLevelBody,
+  AssignDeptAndLevelBody,
   AssignLecturersBody,
   CreateSessionBody,
-  SessionResponse,
+  SessionRes,
+  SessionWithCoursesRes,
 } from './sessions.schema';
 import {
+  ApiBadRequestResponse,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
+import { UserRole } from '@prisma/client';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('Sessions', 'Admin')
 @Controller('sessions')
+@AuthRole(UserRole.ADMIN)
+@UseGuards(JwtAuthGuard, UserRoleGuard)
 export class SessionsController {
   constructor(private readonly sessionsService: SessionsService) {}
 
@@ -29,17 +37,25 @@ export class SessionsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all sessions' })
-  @ApiOkResponse({ type: [SessionResponse] })
+  @ApiOkResponse({ type: [SessionRes] })
   async getSessions() {
     return await this.sessionsService.getSessions();
   }
 
-  @Get('current')
-  async getCurrentSession() {
-    return await this.sessionsService.getCurrentSession();
+  @Get(':sessionId')
+  @ApiOperation({ summary: 'Get a session' })
+  @ApiOkResponse({ type: SessionWithCoursesRes })
+  @ApiNotFoundResponse({ description: 'Session not found' })
+  async getSession(@Param('sessionId') sessionId: string) {
+    return await this.sessionsService.getSession(sessionId);
   }
 
   @Post(':sessionId/courses/:courseId/lecturers')
+  @ApiOperation({ summary: 'Assign lecturers to a course' })
+  @ApiCreatedResponse({ description: 'Lecturers assigned successfully' })
+  @ApiBadRequestResponse({
+    description: 'Invalid session or course or lecturer information',
+  })
   async assignLecturersToCourse(
     @Param('sessionId') sessionId: string,
     @Param('courseId') courseId: string,
@@ -53,10 +69,17 @@ export class SessionsController {
   }
 
   @Post(':sessionId/courses/:courseId/depts-and-levels')
+  @ApiOperation({ summary: 'Assign departments and levels to a course' })
+  @ApiCreatedResponse({
+    description: 'Departments and levels assigned successfully',
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid session or course or department or level information',
+  })
   async assignDeptsAndLevelsToCourse(
     @Param('sessionId') sessionId: string,
     @Param('courseId') courseId: string,
-    @Body() body: AssignDepartmentAndLevelBody[],
+    @Body() body: AssignDeptAndLevelBody[],
   ) {
     return await this.sessionsService.assignDeptsAndLevelsToCourse(
       sessionId,

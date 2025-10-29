@@ -31,7 +31,7 @@ export class AssignLecturersBody {
   coordinatorId: string;
 }
 
-export class AssignDepartmentAndLevelBody {
+export class AssignDeptAndLevelBody {
   @ApiProperty()
   @IsUUID('4')
   departmentId: string;
@@ -63,7 +63,7 @@ class Course {
   deptsAndLevels: DeptAndLevel[];
 }
 
-export class SessionResponse {
+export class SessionRes {
   @ApiProperty()
   id: string;
 
@@ -75,7 +75,9 @@ export class SessionResponse {
 
   @ApiProperty({ type: 'string', format: 'date-time' })
   endDate: Date;
+}
 
+export class SessionWithCoursesRes extends SessionRes {
   @ApiProperty({ type: [Course] })
   courses: Course[];
 }

@@ -55,12 +55,35 @@ export class UpdateCourseBody {
   description?: string;
 }
 
-export class CreateCourseResult extends CreateCourseBody {
+export class CreateCourseRes extends CreateCourseBody {
   @ApiProperty()
   isCreated: boolean;
 }
 
-export class CreateCoursesResult extends ParseCsvData<CreateCourseBody> {
-  @ApiProperty({ type: [CreateCourseResult] })
-  courses: CreateCourseResult[];
+export class CreateCoursesRes extends ParseCsvData<CreateCourseBody> {
+  @ApiProperty({ type: [CreateCourseRes] })
+  courses: CreateCourseRes[];
+}
+
+export class CourseRes {
+  @ApiProperty()
+  department: string;
+
+  @ApiProperty()
+  description: string;
+
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  code: string;
+
+  @ApiProperty()
+  title: string;
+
+  @ApiProperty()
+  units: number;
+
+  @ApiProperty({ enum: Semester })
+  semester: Semester;
 }

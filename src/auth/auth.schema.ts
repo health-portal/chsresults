@@ -93,7 +93,7 @@ export class ChangePasswordBody {
   newPassword: string;
 }
 
-export class SetPasswordResponse {
+export class SetPasswordRes {
   @ApiProperty()
   id: string;
 
@@ -104,7 +104,7 @@ export class SetPasswordResponse {
   role: UserRole;
 }
 
-export class SigninUserResponse {
+export class SigninUserRes {
   @ApiProperty()
   accessToken: string;
 }

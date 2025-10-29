@@ -4,8 +4,8 @@ import {
   SetPasswordBody,
   RequestPasswordResetBody,
   SigninUserBody,
-  SetPasswordResponse,
-  SigninUserResponse,
+  SetPasswordRes,
+  SigninUserRes,
 } from './auth.schema';
 import {
   ApiBadRequestResponse,
@@ -27,7 +27,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Activate a user account' })
   @ApiBody({ type: SetPasswordBody })
-  @ApiOkResponse({ type: SetPasswordResponse })
+  @ApiOkResponse({ type: SetPasswordRes })
   @ApiConflictResponse({ description: 'User already activated' })
   @ApiBadRequestResponse({ description: 'Non-existent or invalid token' })
   async activateUser(@Body() body: SetPasswordBody) {
@@ -38,7 +38,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Signin a user account' })
   @ApiBody({ type: SigninUserBody })
-  @ApiOkResponse({ type: SigninUserResponse })
+  @ApiOkResponse({ type: SigninUserRes })
   @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
   @ApiForbiddenResponse({ description: 'User not activated' })
   async signinUser(@Body() body: SigninUserBody) {
@@ -59,7 +59,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset password' })
   @ApiBody({ type: SetPasswordBody })
-  @ApiOkResponse({ type: SetPasswordResponse })
+  @ApiOkResponse({ type: SetPasswordRes })
   @ApiUnauthorizedResponse({ description: 'User not found' })
   @ApiBadRequestResponse({ description: 'Non-existent or invalid token' })
   async confirmPasswordReset(@Body() body: SetPasswordBody) {

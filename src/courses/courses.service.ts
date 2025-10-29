@@ -2,11 +2,12 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateCourseBody,
-  CreateCoursesResult,
+  CreateCoursesRes,
   UpdateCourseBody,
 } from './courses.schema';
 import { parseCsv } from 'src/lib/csv';
@@ -48,7 +49,7 @@ export class CoursesService {
   async createCourses(file: Express.Multer.File) {
     const content = file.buffer.toString('utf-8');
     const parsedData = await parseCsv(content, CreateCourseBody);
-    const result: CreateCoursesResult = { courses: [], ...parsedData };
+    const result: CreateCoursesRes = { courses: [], ...parsedData };
 
     for (const row of parsedData.validRows) {
       try {
@@ -72,29 +73,86 @@ export class CoursesService {
   }
 
   async getCourses() {
-    return await this.prisma.course.findMany({
+    const foundCourses = await this.prisma.course.findMany({
       where: { deletedAt: null },
-      include: {
-        courseSessions: true,
-        department: true,
+      select: {
+        id: true,
+        code: true,
+        title: true,
+        description: true,
+        semester: true,
+        units: true,
+        department: { select: { name: true } },
       },
     });
+
+    return foundCourses.map((course) => ({
+      ...course,
+      department: course.department.name,
+    }));
+  }
+
+  async getCourse(courseId: string) {
+    try {
+      const foundCourse = await this.prisma.course.findUnique({
+        where: { id: courseId },
+        select: {
+          id: true,
+          code: true,
+          title: true,
+          description: true,
+          semester: true,
+          units: true,
+          department: { select: { name: true } },
+        },
+      });
+
+      return foundCourse;
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Course not found');
+        }
+      }
+
+      throw new BadRequestException(error);
+    }
   }
 
   async updateCourse(
     courseId: string,
     { title, description }: UpdateCourseBody,
   ) {
-    return this.prisma.course.update({
-      where: { id: courseId },
-      data: { title, description },
-    });
+    try {
+      await this.prisma.course.update({
+        where: { id: courseId },
+        data: { title, description },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Course not found');
+        }
+      }
+
+      throw new BadRequestException(error);
+    }
   }
 
   async deleteCourse(courseId: string) {
-    return this.prisma.course.update({
-      where: { id: courseId },
-      data: { deletedAt: new Date() },
-    });
+    try {
+      await this.prisma.course.update({
+        where: { id: courseId },
+        data: { deletedAt: new Date() },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Course not found');
+        }
+      }
+
+      throw new BadRequestException(error);
+    }
   }
 }

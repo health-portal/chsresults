@@ -62,3 +62,28 @@ export function IsSequentialAcademicYear(
     });
   };
 }
+
+export class DepartmentRes {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  shortName: string;
+
+  @ApiProperty()
+  maxLevel: Level;
+}
+
+export class FacultyWithDepartmentsRes {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty({ type: [DepartmentRes] })
+  departments: DepartmentRes[];
+}

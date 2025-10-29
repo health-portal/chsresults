@@ -1,8 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateStudentBody,
-  CreateStudentsResult,
+  CreateStudentsRes,
   UpdateStudentBody,
 } from './students.schema';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -48,16 +53,18 @@ export class StudentsService {
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          throw new BadRequestException('Email already exists');
+          throw new ConflictException('Email already exists');
         }
       }
+
+      throw new BadRequestException(error);
     }
   }
 
   async createStudents(file: Express.Multer.File) {
     const content = file.buffer.toString('utf-8');
     const parsedData = await parseCsv(content, CreateStudentBody);
-    const result: CreateStudentsResult = { students: [], ...parsedData };
+    const result: CreateStudentsRes = { students: [], ...parsedData };
 
     for (const row of parsedData.validRows) {
       try {
@@ -91,7 +98,79 @@ export class StudentsService {
   }
 
   async getStudents() {
-    return await this.prisma.student.findMany({ where: { deletedAt: null } });
+    const foundStudents = await this.prisma.student.findMany({
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        otherName: true,
+        matricNumber: true,
+        admissionYear: true,
+        degree: true,
+        gender: true,
+        level: true,
+        status: true,
+        department: { select: { name: true } },
+        user: { select: { email: true } },
+      },
+      where: { deletedAt: null },
+    });
+
+    return foundStudents.map((student) => {
+      return {
+        id: student.id,
+        firstName: student.firstName,
+        lastName: student.lastName,
+        otherName: student.otherName,
+        matricNumber: student.matricNumber,
+        admissionYear: student.admissionYear,
+        degree: student.degree,
+        gender: student.gender,
+        level: student.level,
+        status: student.status,
+        department: student.department.name,
+        email: student.user.email,
+      };
+    });
+  }
+
+  async getStudent(studentId: string) {
+    const foundStudent = await this.prisma.student.findUnique({
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        otherName: true,
+        matricNumber: true,
+        admissionYear: true,
+        degree: true,
+        gender: true,
+        level: true,
+        status: true,
+        department: { select: { name: true } },
+        user: { select: { email: true } },
+      },
+      where: { id: studentId, deletedAt: null },
+    });
+
+    if (!foundStudent) {
+      throw new NotFoundException('Student not found');
+    }
+
+    return {
+      id: foundStudent.id,
+      firstName: foundStudent.firstName,
+      lastName: foundStudent.lastName,
+      otherName: foundStudent.otherName,
+      matricNumber: foundStudent.matricNumber,
+      admissionYear: foundStudent.admissionYear,
+      degree: foundStudent.degree,
+      gender: foundStudent.gender,
+      level: foundStudent.level,
+      status: foundStudent.status,
+      department: foundStudent.department.name,
+      email: foundStudent.user.email,
+    };
   }
 
   async updateStudent(
@@ -124,9 +203,11 @@ export class StudentsService {
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
-          throw new BadRequestException('Student not found');
+          throw new NotFoundException('Student not found');
         }
       }
+
+      throw new BadRequestException(error);
     }
   }
 
@@ -139,12 +220,13 @@ export class StudentsService {
         },
       });
     } catch (error) {
-      // TODO: Correct error handling
       if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          throw new BadRequestException('Email already exists');
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Student not found');
         }
       }
+
+      throw new BadRequestException(error);
     }
   }
 }

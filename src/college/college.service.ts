@@ -1,6 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateDepartmentBody, CreateFacultyBody } from './college.schema';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class CollegeService {
@@ -8,23 +14,53 @@ export class CollegeService {
 
   async getFacultiesAndDepartments() {
     return await this.prisma.faculty.findMany({
-      include: { departments: true },
+      where: { deletedAt: null },
+      select: {
+        id: true,
+        name: true,
+        departments: {
+          select: {
+            id: true,
+            name: true,
+            shortName: true,
+            maxLevel: true,
+          },
+        },
+      },
     });
   }
 
   async createFaculty({ name }: CreateFacultyBody) {
-    return await this.prisma.faculty.create({ data: { name } });
+    try {
+      await this.prisma.faculty.create({ data: { name } });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ConflictException('Faculty already exists');
+        }
+      }
+
+      throw new BadRequestException(error);
+    }
   }
 
   async deleteFaculty(facultyId: string) {
-    const faculty = await this.prisma.faculty
-      .delete({
-        where: { id: facultyId },
-      })
-      .catch(() => null);
+    try {
+      await this.prisma.faculty
+        .update({
+          where: { id: facultyId },
+          data: { deletedAt: new Date() },
+        })
+        .catch(() => null);
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Faculty not found');
+        }
+      }
 
-    if (!faculty) throw new NotFoundException('Faculty not found');
-    return faculty;
+      throw new BadRequestException(error);
+    }
   }
 
   async createDepartment({
@@ -33,18 +69,35 @@ export class CollegeService {
     shortName,
     maxLevel,
   }: CreateDepartmentBody) {
-    return await this.prisma.department.create({
-      data: { facultyId, name, shortName, maxLevel },
-    });
+    try {
+      await this.prisma.department.create({
+        data: { facultyId, name, shortName, maxLevel },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ConflictException('Department already exists');
+        }
+      }
+
+      throw new BadRequestException(error);
+    }
   }
 
   async deleteDepartment(deptId: string) {
-    const dept = await this.prisma.department.update({
-      where: { id: deptId },
-      data: { deletedAt: new Date() },
-    });
+    try {
+      await this.prisma.department.update({
+        where: { id: deptId },
+        data: { deletedAt: new Date() },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Department not found');
+        }
+      }
 
-    if (!dept) throw new NotFoundException('Department not found');
-    return dept;
+      throw new BadRequestException(error);
+    }
   }
 }

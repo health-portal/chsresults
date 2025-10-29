@@ -6,14 +6,98 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
-  AssignDepartmentAndLevelBody,
+  AssignDeptAndLevelBody,
   AssignLecturersBody,
   CreateSessionBody,
 } from './sessions.schema';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class SessionsService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async createSession({ academicYear, startDate, endDate }: CreateSessionBody) {
+    const foundSession = await this.prisma.session.findFirst({
+      where: {
+        AND: { startDate: { lte: startDate }, endDate: { gte: endDate } },
+        academicYear,
+      },
+    });
+    if (foundSession) throw new ConflictException('Session already exists');
+
+    return await this.prisma.session.create({
+      data: { academicYear, startDate, endDate },
+    });
+  }
+
+  async getSessions() {
+    const foundSessions = await this.prisma.session.findMany({
+      orderBy: { endDate: 'desc' },
+      select: {
+        id: true,
+        academicYear: true,
+        startDate: true,
+        endDate: true,
+      },
+    });
+
+    return foundSessions;
+  }
+
+  async getSession(sessionId: string) {
+    try {
+      const foundSession = await this.prisma.session.findUniqueOrThrow({
+        where: { id: sessionId },
+        select: {
+          id: true,
+          academicYear: true,
+          startDate: true,
+          endDate: true,
+          courseSessions: {
+            select: {
+              course: {
+                select: {
+                  title: true,
+                  semester: true,
+                  department: { select: { name: true } },
+                },
+              },
+              deptsAndLevels: {
+                select: {
+                  department: { select: { shortName: true } },
+                  level: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return {
+        id: foundSession.id,
+        academicYear: foundSession.academicYear,
+        startDate: foundSession.startDate,
+        endDate: foundSession.endDate,
+        courses: foundSession.courseSessions.map((courseSession) => ({
+          title: courseSession.course.title,
+          semester: courseSession.course.semester,
+          department: courseSession.course.department.name,
+          deptsAndLevels: courseSession.deptsAndLevels.map((deptAndLevel) => ({
+            department: deptAndLevel.department.shortName,
+            level: deptAndLevel.level,
+          })),
+        })),
+      };
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Session not found');
+        }
+      }
+
+      throw new BadRequestException(error);
+    }
+  }
 
   async assignLecturersToCourse(
     sessionId: string,
@@ -51,7 +135,7 @@ export class SessionsService {
   async assignDeptsAndLevelsToCourse(
     sessionId: string,
     courseId: string,
-    body: AssignDepartmentAndLevelBody[],
+    body: AssignDeptAndLevelBody[],
   ) {
     try {
       await this.prisma.$transaction(async (tx) => {
@@ -75,78 +159,5 @@ export class SessionsService {
     } catch (error) {
       throw new BadRequestException(error);
     }
-  }
-
-  async createSession({ academicYear, startDate, endDate }: CreateSessionBody) {
-    const foundSession = await this.prisma.session.findFirst({
-      where: {
-        AND: { startDate: { lte: startDate }, endDate: { gte: endDate } },
-        academicYear,
-      },
-    });
-    if (foundSession) throw new ConflictException('Session already exists');
-
-    return await this.prisma.session.create({
-      data: { academicYear, startDate, endDate },
-    });
-  }
-
-  async getSessions() {
-    const foundSessions = await this.prisma.session.findMany({
-      select: {
-        id: true,
-        academicYear: true,
-        startDate: true,
-        endDate: true,
-        courseSessions: {
-          select: {
-            course: {
-              select: {
-                title: true,
-                semester: true,
-                department: { select: { name: true } },
-              },
-            },
-            deptsAndLevels: {
-              select: {
-                department: { select: { shortName: true } },
-                level: true,
-              },
-            },
-          },
-        },
-      },
-      orderBy: { endDate: 'desc' },
-    });
-
-    return foundSessions.map((session) => {
-      return {
-        id: session.id,
-        academicYear: session.academicYear,
-        startDate: session.startDate,
-        endDate: session.endDate,
-
-        courses: session.courseSessions.map((courseSession) => ({
-          title: courseSession.course.title,
-          semester: courseSession.course.semester,
-          department: courseSession.course.department.name,
-          deptsAndLevels: courseSession.deptsAndLevels.map((deptAndLevel) => ({
-            department: deptAndLevel.department.shortName,
-            level: deptAndLevel.level,
-          })),
-        })),
-      };
-    });
-  }
-
-  async getCurrentSession() {
-    const foundSession = await this.prisma.session.findFirst({
-      orderBy: { endDate: 'desc' },
-      where: {
-        AND: { endDate: { gte: new Date() }, startDate: { lte: new Date() } },
-      },
-    });
-    if (!foundSession) throw new NotFoundException('Current session not found');
-    return foundSession;
   }
 }

@@ -7,9 +7,9 @@ import {
 import {
   RegisterStudentBody,
   EditScoreBody,
-  BatchStudentRegistrationResult,
+  BatchStudentRegistrationRes,
   UploadScoreRow,
-  UploadScoresResult,
+  UploadScoresRes,
 } from './lecturers.schema';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -73,7 +73,7 @@ export class LecturerService {
     await this.validateCourseLecturerAccess(lecturerId, courseSessionId, true);
     const content = file.buffer.toString('utf-8');
     const parsedData = await parseCsv(content, RegisterStudentBody);
-    const result: BatchStudentRegistrationResult = {
+    const result: BatchStudentRegistrationRes = {
       ...parsedData,
       registeredStudents: [],
       unregisteredStudents: [],
@@ -90,7 +90,7 @@ export class LecturerService {
     await this.validateCourseLecturerAccess(lecturerId, courseSessionId, true);
     const content = file.buffer.toString('utf-8');
     const parsedData = await parseCsv(content, UploadScoreRow);
-    const result: UploadScoresResult = {
+    const result: UploadScoresRes = {
       ...parsedData,
       studentsUploadedFor: [],
       studentsNotFound: [],

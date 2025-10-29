@@ -98,12 +98,47 @@ export class UpdateStudentBody {
   degree?: string;
 }
 
-export class CreateStudentResult extends CreateStudentBody {
+export class CreateStudentRes extends CreateStudentBody {
   @ApiProperty()
   isCreated: boolean;
 }
 
-export class CreateStudentsResult extends ParseCsvData<CreateStudentBody> {
-  @ApiProperty({ type: [CreateStudentResult] })
-  students: CreateStudentResult[];
+export class CreateStudentsRes extends ParseCsvData<CreateStudentBody> {
+  @ApiProperty({ type: [CreateStudentRes] })
+  students: CreateStudentRes[];
+}
+
+export class StudentRes {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  email: string;
+
+  @ApiProperty()
+  matricNumber: string;
+
+  @ApiProperty()
+  firstName: string;
+
+  @ApiProperty()
+  lastName: string;
+
+  @ApiProperty()
+  otherName: string;
+
+  @ApiProperty()
+  department: string;
+
+  @ApiProperty()
+  level: Level;
+
+  @ApiProperty()
+  gender: Gender;
+
+  @ApiProperty()
+  admissionYear: string;
+
+  @ApiProperty()
+  degree: string;
 }

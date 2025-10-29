@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateLecturerBody,
-  CreateLecturersResult,
+  CreateLecturersRes,
   UpdateLecturerBody,
 } from './lecturers.schema';
 import { UserRole } from '@prisma/client';
@@ -57,7 +57,7 @@ export class LecturersService {
   async createLecturers(file: Express.Multer.File) {
     const content = file.buffer.toString('utf-8');
     const parsedData = await parseCsv(content, CreateLecturerBody);
-    const result: CreateLecturersResult = { lecturers: [], ...parsedData };
+    const result: CreateLecturersRes = { lecturers: [], ...parsedData };
 
     for (const row of parsedData.validRows) {
       try {
