@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateCourseBody,
@@ -11,7 +6,6 @@ import {
   UpdateCourseBody,
 } from './courses.schema';
 import { parseCsv } from 'src/lib/csv';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class CoursesService {
@@ -25,25 +19,16 @@ export class CoursesService {
     semester,
     units,
   }: CreateCourseBody) {
-    try {
-      await this.prisma.course.create({
-        data: {
-          code,
-          title,
-          description,
-          department: { connect: { name: department } },
-          semester,
-          units,
-        },
-      });
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          throw new ConflictException('Course already exists');
-        }
-      }
-      throw new BadRequestException(error);
-    }
+    await this.prisma.course.create({
+      data: {
+        code,
+        title,
+        description,
+        department: { connect: { name: department } },
+        semester,
+        units,
+      },
+    });
   }
 
   async createCourses(file: Express.Multer.File) {
@@ -93,66 +78,39 @@ export class CoursesService {
   }
 
   async getCourse(courseId: string) {
-    try {
-      const foundCourse = await this.prisma.course.findUnique({
-        where: { id: courseId },
-        select: {
-          id: true,
-          code: true,
-          title: true,
-          description: true,
-          semester: true,
-          units: true,
-          department: { select: { name: true } },
-        },
-      });
+    const foundCourse = await this.prisma.course.findUniqueOrThrow({
+      where: { id: courseId },
+      select: {
+        id: true,
+        code: true,
+        title: true,
+        description: true,
+        semester: true,
+        units: true,
+        department: { select: { name: true } },
+      },
+    });
 
-      return foundCourse;
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException('Course not found');
-        }
-      }
-
-      throw new BadRequestException(error);
-    }
+    return {
+      ...foundCourse,
+      department: foundCourse.department.name,
+    };
   }
 
   async updateCourse(
     courseId: string,
     { title, description }: UpdateCourseBody,
   ) {
-    try {
-      await this.prisma.course.update({
-        where: { id: courseId },
-        data: { title, description },
-      });
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException('Course not found');
-        }
-      }
-
-      throw new BadRequestException(error);
-    }
+    await this.prisma.course.update({
+      where: { id: courseId },
+      data: { title, description },
+    });
   }
 
   async deleteCourse(courseId: string) {
-    try {
-      await this.prisma.course.update({
-        where: { id: courseId },
-        data: { deletedAt: new Date() },
-      });
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException('Course not found');
-        }
-      }
-
-      throw new BadRequestException(error);
-    }
+    await this.prisma.course.update({
+      where: { id: courseId },
+      data: { deletedAt: new Date() },
+    });
   }
 }

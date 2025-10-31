@@ -22,6 +22,8 @@ import {
 } from './courses.schema';
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -43,13 +45,15 @@ export class CoursesController {
   @ApiOperation({ summary: 'Create a new course' })
   @ApiCreatedResponse({ description: 'Course created successfully' })
   @ApiBadRequestResponse({ description: 'Invalid course creation data' })
+  @ApiConflictResponse({ description: 'Course already exists' })
   @Post()
   async createCourse(@Body() body: CreateCourseBody) {
     return await this.coursesService.createCourse(body);
   }
 
   @ApiOperation({ summary: 'Create multiple courses from a file' })
-  @ApiCreatedResponse({ type: CreateCoursesRes })
+  @ApiConsumes('multipart/form-data')
+  @ApiCreatedResponse({ type: [CreateCoursesRes] })
   @ApiUnprocessableEntityResponse({
     description: 'Invalid file format or size',
   })
@@ -84,6 +88,7 @@ export class CoursesController {
   @ApiOperation({ summary: 'Update a course by ID' })
   @ApiOkResponse({ description: 'Course updated successfully' })
   @ApiNotFoundResponse({ description: 'Course not found' })
+  @ApiConflictResponse({ description: 'Course already exists' })
   @Patch(':courseId')
   async updateCourse(
     @Param('courseId') courseId: string,

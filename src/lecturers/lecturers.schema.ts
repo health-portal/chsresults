@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { EnrollmentStatus, Level, ResultType, Semester } from '@prisma/client';
 import {
   IsEmail,
   IsNotEmpty,
-  IsNumber,
+  IsObject,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -75,9 +75,9 @@ export class UpdateLecturerBody {
   @IsNotEmpty()
   department: string;
 
-  @ApiProperty()
-  @IsString()
+  @ApiProperty({ required: false })
   @IsOptional()
+  @IsString()
   title?: string;
 }
 
@@ -91,39 +91,43 @@ export class CreateLecturersRes extends ParseCsvData<CreateLecturerBody> {
   lecturers: CreateLecturerRes[];
 }
 
-export class Scores {
+export class EditResultBody {
   @ApiProperty()
-  @IsNumber()
-  @Transform(({ value }: { value: string }) => parseInt(value, 10), {
-    toClassOnly: true,
-  })
-  continuousAssessment: number;
-
-  @ApiProperty()
-  @IsNumber()
-  @Transform(({ value }: { value: string }) => parseInt(value, 10), {
-    toClassOnly: true,
-  })
-  examination: number;
+  @IsObject()
+  scores: Record<string, number>;
 }
 
-export class EditScoreBody extends Scores {}
+export class UploadResultRow {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  matricNumber: string;
+
+  @ApiProperty()
+  @IsObject()
+  scores: Record<string, number>;
+}
+
+export class UploadResultsRes extends ParseCsvData<UploadResultRow> {
+  @ApiProperty()
+  studentsUploadedFor: string[];
+
+  @ApiProperty()
+  studentsNotFound: string[];
+}
 
 export class RegisterStudentBody {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   matricNumber: string;
+
+  @ApiProperty({ type: Object })
+  @IsObject()
+  scores: Record<string, number>;
 }
 
-export class UploadScoreRow extends Scores {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  matricNumber: string;
-}
-
-export class BatchStudentRegistrationRes extends ParseCsvData<RegisterStudentBody> {
+export class RegisterStudentsRes extends ParseCsvData<RegisterStudentBody> {
   @ApiProperty()
   registeredStudents: string[];
 
@@ -131,10 +135,82 @@ export class BatchStudentRegistrationRes extends ParseCsvData<RegisterStudentBod
   unregisteredStudents: string[];
 }
 
-export class UploadScoresRes extends ParseCsvData<UploadScoreRow> {
+export class CourseSessionRes {
   @ApiProperty()
-  studentsUploadedFor: string[];
+  academicYear: string;
 
   @ApiProperty()
-  studentsNotFound: string[];
+  description: string;
+
+  @ApiProperty()
+  code: string;
+
+  @ApiProperty()
+  title: string;
+
+  @ApiProperty()
+  units: number;
+
+  @ApiProperty({ enum: Semester })
+  semester: Semester;
+}
+
+class Result {
+  @ApiProperty()
+  scores: object;
+
+  @ApiProperty()
+  type: ResultType;
+}
+
+export class EnrollmentRes {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({ enum: EnrollmentStatus })
+  status: EnrollmentStatus;
+
+  @ApiProperty()
+  studentId: string;
+
+  @ApiProperty()
+  studentName: string;
+
+  @ApiProperty()
+  studentLevel: Level;
+
+  @ApiProperty()
+  studentDepartment: string;
+
+  @ApiProperty({ type: [Result], nullable: true })
+  results: Result[] | null;
+}
+
+export class LecturerProfileRes {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  email: string;
+
+  @ApiProperty()
+  firstName: string;
+
+  @ApiProperty()
+  lastName: string;
+
+  @ApiProperty({ nullable: true })
+  otherName: string | null;
+
+  @ApiProperty({ nullable: true })
+  phone: string | null;
+
+  @ApiProperty()
+  department: string;
+
+  @ApiProperty()
+  title: string;
+
+  @ApiProperty()
+  qualification: string;
 }

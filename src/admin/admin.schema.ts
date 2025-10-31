@@ -24,7 +24,7 @@ export class UpdateAdminBody {
   phone?: string;
 }
 
-export class AdminProfileResponse {
+export class AdminProfileRes {
   @ApiProperty()
   id: string;
 
@@ -37,6 +37,6 @@ export class AdminProfileResponse {
   @ApiProperty()
   email: string;
 
-  @ApiProperty()
-  isActivated: boolean;
+  @ApiProperty({ nullable: true })
+  isActivated?: boolean;
 }

@@ -18,6 +18,7 @@ import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
 import { UserRole } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import {
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -27,6 +28,7 @@ import {
 } from '@nestjs/swagger';
 
 @ApiTags('College', 'Admin')
+@ApiBearerAuth('accessToken')
 @Controller('college')
 @AuthRole(UserRole.ADMIN)
 @UseGuards(JwtAuthGuard, UserRoleGuard)
@@ -35,7 +37,7 @@ export class CollegeController {
 
   @ApiOperation({ summary: 'Get all faculties and departments' })
   @ApiOkResponse({ type: [FacultyWithDepartmentsRes] })
-  @Get()
+  @Get('faculties-and-depts')
   async getFacultiesAndDepartments() {
     return await this.collegeService.getFacultiesAndDepartments();
   }

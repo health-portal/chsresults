@@ -1,9 +1,10 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
@@ -28,20 +29,18 @@ export class AuthService {
   ) {}
 
   private async findUserByEmail(email: string, role: UserRole) {
-    const foundUser = await this.prisma.user.findUnique({
+    return await this.prisma.user.findUniqueOrThrow({
       where: { email, role },
     });
-    if (!foundUser) throw new UnauthorizedException('User not found');
-    return foundUser;
   }
 
-  private async findStudentByMatric(matricNumber: string) {
-    const foundStudent = await this.prisma.student.findUnique({
+  private async findUserByMatric(matricNumber: string) {
+    const { user: foundUser } = await this.prisma.student.findUniqueOrThrow({
       where: { matricNumber },
-      include: { user: true },
+      select: { user: true },
     });
-    if (!foundStudent) throw new UnauthorizedException('User not found');
-    return foundStudent;
+
+    return foundUser;
   }
 
   private async findUser(identifier: string, role: UserRole) {
@@ -50,21 +49,26 @@ export class AuthService {
     else {
       const foundUser = isEmail(identifier)
         ? await this.findUserByEmail(identifier, role)
-        : (await this.findStudentByMatric(identifier)).user;
+        : await this.findUserByMatric(identifier);
 
       return foundUser;
     }
   }
 
   private async getUserData(userId: string) {
-    const foundUser = await this.prisma.user.findUnique({
+    const foundUser = await this.prisma.user.findUniqueOrThrow({
       where: { id: userId },
-      include: {
+      select: {
+        id: true,
+        role: true,
+        email: true,
         admin: {
           select: { id: true },
         },
         lecturer: {
-          include: {
+          select: {
+            id: true,
+            departmentId: true,
             designations: true,
             department: {
               select: { facultyId: true },
@@ -72,7 +76,11 @@ export class AuthService {
           },
         },
         student: {
-          include: {
+          select: {
+            id: true,
+            departmentId: true,
+            matricNumber: true,
+            level: true,
             department: {
               select: { facultyId: true },
             },
@@ -81,44 +89,32 @@ export class AuthService {
       },
     });
 
-    if (!foundUser) throw new NotFoundException('User not found');
-
     switch (foundUser.role) {
       case UserRole.ADMIN:
-        if (!foundUser.admin)
-          throw new Error('Admin data missing for admin user');
-        return {
-          adminId: foundUser.admin.id,
-        };
+        return { adminId: foundUser.admin!.id };
 
       case UserRole.LECTURER:
-        if (!foundUser.lecturer?.department)
-          throw new Error('Lecturer data incomplete');
-
         return {
-          lecturerId: foundUser.lecturer.id,
-          departmentId: foundUser.lecturer.departmentId,
-          facultyId: foundUser.lecturer.department.facultyId,
-          designations: foundUser.lecturer.designations.map((designation) => ({
+          lecturerId: foundUser.lecturer!.id,
+          departmentId: foundUser.lecturer!.departmentId,
+          facultyId: foundUser.lecturer!.department.facultyId,
+          designations: foundUser.lecturer!.designations.map((designation) => ({
             entity: designation.entity,
             role: designation.role,
           })),
         };
 
       case UserRole.STUDENT:
-        if (!foundUser.student?.department)
-          throw new Error('Student data incomplete');
         return {
-          studentId: foundUser.student.id,
-          level: foundUser.student.level,
-
-          facultyId: foundUser.student.department.facultyId,
-          matricNumber: foundUser.student.matricNumber,
-          departmentId: foundUser.student.departmentId,
+          studentId: foundUser.student!.id,
+          level: foundUser.student!.level,
+          facultyId: foundUser.student!.department.facultyId,
+          matricNumber: foundUser.student!.matricNumber,
+          departmentId: foundUser.student!.departmentId,
         };
 
       default:
-        throw new Error(`Unhandled user role`);
+        throw new UnprocessableEntityException(`User role does not exist`);
     }
   }
 
@@ -137,7 +133,7 @@ export class AuthService {
       foundTokenData.tokenType !== tokenType ||
       foundTokenData.expiresAt < new Date()
     )
-      throw new BadRequestException('Non-existent or mismatched token');
+      throw new BadRequestException('Non-existent or invalid token');
   }
 
   private async generateAccessToken(payload: JwtPayload) {
@@ -154,7 +150,7 @@ export class AuthService {
     const userId = foundUser.id;
 
     if (foundUser.password)
-      throw new BadRequestException('User already activated');
+      throw new ConflictException('User already activated');
 
     await this.verifyToken(userId, tokenString, TokenType.ACCOUNT_ACTIVATION);
 

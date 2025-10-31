@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateLecturerBody,
@@ -7,7 +7,6 @@ import {
 } from './lecturers.schema';
 import { UserRole } from '@prisma/client';
 import { parseCsv } from 'src/lib/csv';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class LecturersService {
@@ -22,36 +21,23 @@ export class LecturersService {
     phone,
     title,
   }: CreateLecturerBody) {
-    try {
-      const createdUser = await this.prisma.user.create({
-        data: {
-          email,
-          role: UserRole.LECTURER,
-          lecturer: {
-            create: {
-              firstName,
-              lastName,
-              otherName,
-              department: { connect: { name: department } },
-              phone,
-              title,
-            },
+    await this.prisma.user.create({
+      data: {
+        email,
+        role: UserRole.LECTURER,
+        lecturer: {
+          create: {
+            firstName,
+            lastName,
+            otherName,
+            department: { connect: { name: department } },
+            phone,
+            title,
           },
         },
-        include: { lecturer: true },
-      });
-
-      return createdUser;
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          throw new BadRequestException(
-            'A user with this email or phone already exists',
-          );
-        }
-      }
-      throw new BadRequestException('Failed to create lecturer');
-    }
+      },
+      include: { lecturer: true },
+    });
   }
 
   async createLecturers(file: Express.Multer.File) {
@@ -88,11 +74,36 @@ export class LecturersService {
   }
 
   async getLecturers() {
-    return await this.prisma.lecturer.findMany({ where: { deletedAt: null } });
+    const foundLecturers = await this.prisma.lecturer.findMany({
+      where: { deletedAt: null },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        otherName: true,
+        title: true,
+        phone: true,
+        qualification: true,
+        department: { select: { name: true } },
+        user: { select: { email: true } },
+      },
+    });
+
+    return foundLecturers.map((lecturer) => ({
+      id: lecturer.id,
+      firstName: lecturer.firstName,
+      lastName: lecturer.lastName,
+      otherName: lecturer.otherName,
+      phone: lecturer.phone,
+      title: lecturer.title,
+      qualification: lecturer.qualification,
+      department: lecturer.department.name,
+      email: lecturer.user.email,
+    }));
   }
 
   async updateLecturer(
-    id: string,
+    lecturerId: string,
     {
       firstName,
       lastName,
@@ -102,52 +113,28 @@ export class LecturersService {
       title,
     }: UpdateLecturerBody,
   ) {
-    try {
-      const updatedUser = await this.prisma.user.update({
-        where: { id },
-        data: {
-          lecturer: {
-            update: {
-              firstName,
-              lastName,
-              otherName,
-              department: { connect: { name: department } },
-              phone,
-              title,
-            },
+    await this.prisma.user.update({
+      where: { id: lecturerId },
+      data: {
+        lecturer: {
+          update: {
+            firstName,
+            lastName,
+            otherName,
+            department: { connect: { name: department } },
+            phone,
+            title,
           },
         },
-        include: { lecturer: true },
-      });
-
-      return updatedUser;
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new BadRequestException('Lecturer not found');
-        }
-      }
-
-      throw new BadRequestException('Failed to update lecturer');
-    }
+      },
+      include: { lecturer: true },
+    });
   }
 
   async deleteLecturer(lecturerId: string) {
-    try {
-      const deletedUser = await this.prisma.user.update({
-        where: { id: lecturerId },
-        data: { deletedAt: new Date() },
-      });
-
-      return deletedUser;
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new BadRequestException('Lecturer not found');
-        }
-      }
-
-      throw new BadRequestException('Failed to delete lecturer');
-    }
+    await this.prisma.user.update({
+      where: { id: lecturerId },
+      data: { deletedAt: new Date() },
+    });
   }
 }

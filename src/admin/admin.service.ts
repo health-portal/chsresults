@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AddAdminBody, UpdateAdminBody } from './admin.schema';
 import { TokenType, UserRole } from '@prisma/client';
@@ -10,9 +10,6 @@ export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
 
   async addAdmin({ email, name }: AddAdminBody) {
-    const foundUser = await this.prisma.user.findUnique({ where: { email } });
-    if (foundUser) throw new ConflictException('User already exists');
-
     const createdUser = await this.prisma.user.create({
       data: {
         email,
@@ -55,28 +52,51 @@ export class AdminService {
       },
     });
 
-    return foundAdmins.map((admin) => {
-      return {
-        id: admin.id,
-        name: admin.name,
-        phone: admin.phone,
-        email: admin.user.email,
-        isActivated: !!admin.user.password,
-      };
-    });
+    return foundAdmins.map((admin) => ({
+      id: admin.id,
+      name: admin.name,
+      phone: admin.phone,
+      email: admin.user.email,
+      isActivated: !!admin.user.password,
+    }));
   }
 
   async getProfile(adminId: string) {
-    return await this.prisma.admin.findUnique({
+    const foundAdmin = await this.prisma.admin.findUniqueOrThrow({
       where: { userId: adminId },
-      include: { user: true },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        user: { select: { email: true } },
+      },
     });
+
+    return {
+      id: foundAdmin.id,
+      name: foundAdmin.name,
+      phone: foundAdmin.phone,
+      email: foundAdmin.user.email,
+    };
   }
 
   async updateProfile(adminId: string, { name, phone }: UpdateAdminBody) {
-    return await this.prisma.admin.update({
+    const foundAdmin = await this.prisma.admin.update({
       data: { name, phone },
       where: { userId: adminId },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        user: { select: { email: true } },
+      },
     });
+
+    return {
+      id: foundAdmin.id,
+      name: foundAdmin.name,
+      phone: foundAdmin.phone,
+      email: foundAdmin.user.email,
+    };
   }
 }

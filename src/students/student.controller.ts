@@ -14,6 +14,11 @@ import { ChangePasswordBody } from 'src/auth/auth.schema';
 import { UserRole } from '@prisma/client';
 import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
 @Controller('student')
 @AuthRole(UserRole.STUDENT)
@@ -51,6 +56,9 @@ export class StudentController {
     );
   }
 
+  @ApiOperation({ summary: 'Get student profile' })
+  @ApiOkResponse({ description: 'Student profile' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @Get('profile')
   async getProfile(@User() user: JwtPayload) {
     const studentData = user.userData as StudentData;

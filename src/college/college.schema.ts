@@ -63,7 +63,7 @@ export function IsSequentialAcademicYear(
   };
 }
 
-export class DepartmentRes {
+class Department {
   @ApiProperty()
   id: string;
 
@@ -84,6 +84,6 @@ export class FacultyWithDepartmentsRes {
   @ApiProperty()
   name: string;
 
-  @ApiProperty({ type: [DepartmentRes] })
-  departments: DepartmentRes[];
+  @ApiProperty({ type: [Department] })
+  departments: Department[];
 }
