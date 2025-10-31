@@ -16,6 +16,7 @@ import {
   CreateLecturerBody,
   CreateLecturersRes,
   UpdateLecturerBody,
+  LecturerProfileRes,
 } from './lecturers.schema';
 import {
   ApiBadRequestResponse,
@@ -23,7 +24,9 @@ import {
   ApiConsumes,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiNotFoundResponse,
   ApiOperation,
+  ApiConflictResponse,
 } from '@nestjs/swagger';
 
 @Controller('lecturers')
@@ -55,7 +58,7 @@ export class LecturersController {
   }
 
   @ApiOperation({ summary: 'Get all lecturers' })
-  @ApiOkResponse({ description: 'Lecturers retrieved successfully' })
+  @ApiOkResponse({ type: [LecturerProfileRes] })
   @Get()
   async getLecturers() {
     return await this.lecturersService.getLecturers();
@@ -63,6 +66,8 @@ export class LecturersController {
 
   @ApiOperation({ summary: 'Update a lecturer' })
   @ApiOkResponse({ description: 'Lecturer updated successfully' })
+  @ApiConflictResponse({ description: 'Lecturer data already exists' })
+  @ApiNotFoundResponse({ description: 'Lecturer not found' })
   @Patch(':lecturerId')
   async updateLecturer(
     @Param('lecturerId', ParseUUIDPipe) lecturerId: string,
@@ -73,6 +78,7 @@ export class LecturersController {
 
   @ApiOperation({ summary: 'Delete a lecturer' })
   @ApiOkResponse({ description: 'Lecturer deleted successfully' })
+  @ApiNotFoundResponse({ description: 'Lecturer not found' })
   @Delete(':lecturerId')
   async deleteLecturer(@Param('lecturerId', ParseUUIDPipe) lecturerId: string) {
     return await this.lecturersService.deleteLecturer(lecturerId);

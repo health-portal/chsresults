@@ -38,9 +38,9 @@ enum Semester {
 }
 
 enum LecturerRole {
+    PROVOST
     DEAN
     HOD
-    LECTURER
     PART_ADVISER
 }
 
@@ -156,8 +156,8 @@ model LecturerDesignation {
     entity String
     role   LecturerRole
 
-    lecturerId String
-    lecturer   Lecturer @relation(fields: [lecturerId], references: [id])
+    lecturerId String?
+    lecturer   Lecturer? @relation(fields: [lecturerId], references: [id])
 
     @@unique([entity, role], name: "designation")
     @@index([role])
@@ -403,7 +403,7 @@ model Result {
     updatedAt DateTime @updatedAt
 
     scores Json
-    type  ResultType
+    type   ResultType
 
     enrollmentId String
     enrollment   Enrollment @relation(fields: [enrollmentId], references: [id])
