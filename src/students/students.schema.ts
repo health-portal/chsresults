@@ -108,7 +108,7 @@ export class CreateStudentsRes extends ParseCsvData<CreateStudentBody> {
   students: CreateStudentRes[];
 }
 
-export class StudentRes {
+export class StudentProfileRes {
   @ApiProperty()
   id: string;
 

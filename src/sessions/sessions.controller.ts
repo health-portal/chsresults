@@ -9,6 +9,7 @@ import {
 } from './sessions.schema';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -21,6 +22,7 @@ import { UserRole } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('Sessions', 'Admin')
+@ApiBearerAuth('accessToken')
 @Controller('sessions')
 @AuthRole(UserRole.ADMIN)
 @UseGuards(JwtAuthGuard, UserRoleGuard)

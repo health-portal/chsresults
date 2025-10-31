@@ -15,17 +15,29 @@ import { UserRole } from '@prisma/client';
 import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiUnauthorizedResponse,
+  ApiTags,
 } from '@nestjs/swagger';
+import { EnrollmentRes } from 'src/lecturers/lecturers.schema';
+import { StudentProfileRes } from './students.schema';
 
+@ApiTags('Student')
+@ApiBearerAuth('accessToken')
 @Controller('student')
 @AuthRole(UserRole.STUDENT)
 @UseGuards(JwtAuthGuard, UserRoleGuard)
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
 
+  @ApiOperation({ summary: 'Change password' })
+  @ApiBody({ type: ChangePasswordBody })
+  @ApiOkResponse({ description: 'Password changed successfully' })
+  @ApiBadRequestResponse({ description: 'Invalid credentials' })
   @Post('change-password')
   async changePassword(
     @User() user: JwtPayload,
@@ -38,12 +50,17 @@ export class StudentController {
     );
   }
 
+  @ApiOperation({ summary: "List all student's enrollments" })
+  @ApiOkResponse({ type: [EnrollmentRes] })
   @Get('enrollments')
   async listEnrollments(@User() user: JwtPayload) {
     const studentData = user.userData as StudentData;
     return await this.studentService.listEnrollments(studentData.studentId);
   }
 
+  @ApiOperation({ summary: "Get a student's enrollment by ID" })
+  @ApiOkResponse({ type: EnrollmentRes })
+  @ApiNotFoundResponse({ description: 'Enrollment not found' })
   @Get('enrollments/:enrollmentId')
   async listEnrollment(
     @User() user: JwtPayload,
@@ -57,8 +74,7 @@ export class StudentController {
   }
 
   @ApiOperation({ summary: 'Get student profile' })
-  @ApiOkResponse({ description: 'Student profile' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiOkResponse({ type: StudentProfileRes })
   @Get('profile')
   async getProfile(@User() user: JwtPayload) {
     const studentData = user.userData as StudentData;

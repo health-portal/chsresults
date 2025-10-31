@@ -22,6 +22,7 @@ import {
 } from './courses.schema';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiConsumes,
   ApiCreatedResponse,
@@ -36,6 +37,7 @@ import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('Courses')
+@ApiBearerAuth('accessToken')
 @Controller('courses')
 @AuthRole(UserRole.ADMIN)
 @UseGuards(JwtAuthGuard, UserRoleGuard)

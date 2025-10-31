@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { LecturersService } from './lecturers.service';
 import {
@@ -27,9 +28,19 @@ import {
   ApiNotFoundResponse,
   ApiOperation,
   ApiConflictResponse,
+  ApiUnprocessableEntityResponse,
+  ApiBearerAuth,
+  ApiTags,
 } from '@nestjs/swagger';
+import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UserRole } from '@prisma/client';
 
+@ApiTags('Lecturers', 'Admin')
+@ApiBearerAuth('accessToken')
 @Controller('lecturers')
+@AuthRole(UserRole.ADMIN)
+@UseGuards(JwtAuthGuard, UserRoleGuard)
 export class LecturersController {
   constructor(private readonly lecturersService: LecturersService) {}
 
@@ -37,14 +48,16 @@ export class LecturersController {
   @ApiBody({ type: CreateLecturerBody })
   @ApiCreatedResponse({ description: 'Lecturer created successfully' })
   @ApiBadRequestResponse({ description: 'Invalid request body' })
+  @ApiConflictResponse({ description: 'Lecturer already exists.' })
   @Post()
   async createLecturer(@Body() body: CreateLecturerBody) {
     return await this.lecturersService.createLecturer(body);
   }
 
-  @ApiOperation({ summary: 'Create multiple lecturers from a CSV file' })
+  @ApiOperation({ summary: 'Create multiple lecturers from a file' })
   @ApiConsumes('multipart/form-data')
   @ApiCreatedResponse({ type: CreateLecturersRes })
+  @ApiUnprocessableEntityResponse({ description: 'Invalid file data or size' })
   @Post('batch')
   async createLecturers(
     @UploadedFile(

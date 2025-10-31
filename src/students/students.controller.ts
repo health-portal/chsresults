@@ -17,7 +17,8 @@ import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import {
   CreateStudentBody,
-  StudentRes,
+  CreateStudentsRes,
+  StudentProfileRes,
   UpdateStudentBody,
 } from './students.schema';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -25,8 +26,10 @@ import { UserRole } from '@prisma/client';
 import { StudentsService } from './students.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -37,6 +40,7 @@ import {
 } from '@nestjs/swagger';
 
 @ApiTags('Students', 'Admin')
+@ApiBearerAuth('accessToken')
 @Controller('students')
 @AuthRole(UserRole.ADMIN)
 @UseGuards(JwtAuthGuard, UserRoleGuard)
@@ -44,24 +48,18 @@ export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 
   @ApiOperation({ summary: 'Create a new student' })
-  @ApiCreatedResponse({
-    description: 'The student has been successfully created.',
-  })
-  @ApiConflictResponse({
-    description: 'The student already exists.',
-  })
+  @ApiCreatedResponse({ description: 'Student created successfully' })
+  @ApiBadRequestResponse({ description: 'Invalid request body' })
+  @ApiConflictResponse({ description: 'Student already exists.' })
   @Post()
   async createStudent(@Body() body: CreateStudentBody) {
     return await this.studentsService.createStudent(body);
   }
 
-  @ApiOperation({ summary: 'Create multiple students from a CSV file' })
-  @ApiCreatedResponse({
-    description: 'The students have been successfully created.',
-  })
-  @ApiUnprocessableEntityResponse({
-    description: 'Invalid CSV file',
-  })
+  @ApiOperation({ summary: 'Create multiple students from a file' })
+  @ApiConsumes('multipart/form-data')
+  @ApiCreatedResponse({ type: CreateStudentsRes })
+  @ApiUnprocessableEntityResponse({ description: 'Invalid file data or size' })
   @Post('batch')
   @UseInterceptors(FileInterceptor('file'))
   async createStudents(
@@ -76,7 +74,7 @@ export class StudentsController {
   }
 
   @ApiOperation({ summary: 'Get all students' })
-  @ApiOkResponse({ type: [StudentRes] })
+  @ApiOkResponse({ type: [StudentProfileRes] })
   @Get()
   async getStudents() {
     return await this.studentsService.getStudents();
@@ -85,10 +83,10 @@ export class StudentsController {
   @ApiOperation({ summary: 'Get a student' })
   @ApiParam({
     name: 'studentId',
-    description: 'The ID of the student to get',
+    description: 'The ID of Student to get',
   })
-  @ApiOkResponse({ type: StudentRes })
-  @ApiNotFoundResponse({ description: 'The student does not exist.' })
+  @ApiOkResponse({ type: StudentProfileRes })
+  @ApiNotFoundResponse({ description: 'Student not found' })
   @Get(':studentId')
   async getStudent(@Param('studentId', ParseUUIDPipe) studentId: string) {
     return await this.studentsService.getStudent(studentId);
@@ -97,11 +95,11 @@ export class StudentsController {
   @ApiOperation({ summary: 'Update a student' })
   @ApiParam({
     name: 'studentId',
-    description: 'The ID of the student to update',
+    description: 'The ID of Student to update',
   })
   @ApiBody({ type: UpdateStudentBody })
-  @ApiOkResponse({ description: 'The student has been successfully updated.' })
-  @ApiNotFoundResponse({ description: 'The student does not exist.' })
+  @ApiOkResponse({ description: 'Student updated successfully' })
+  @ApiNotFoundResponse({ description: 'Student not found' })
   @ApiBadRequestResponse({ description: 'Invalid request body' })
   @Patch(':studentId')
   async updateStudent(
@@ -114,10 +112,10 @@ export class StudentsController {
   @ApiOperation({ summary: 'Delete a student' })
   @ApiParam({
     name: 'studentId',
-    description: 'The ID of the student to delete',
+    description: 'The ID of Student to delete',
   })
-  @ApiOkResponse({ description: 'The student has been successfully deleted.' })
-  @ApiNotFoundResponse({ description: 'The student does not exist.' })
+  @ApiOkResponse({ description: 'Student deleted successfully' })
+  @ApiNotFoundResponse({ description: 'Student does not exist.' })
   @Delete(':studentId')
   async deleteStudent(@Param('studentId', ParseUUIDPipe) studentId: string) {
     return await this.studentsService.deleteStudent(studentId);
