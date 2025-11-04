@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { DepartmentRes } from 'src/college/college.schema';
 import { ParseCsvData } from 'src/lib/csv';
 
 export class CreateCourseBody {
@@ -67,16 +68,13 @@ export class CreateCoursesRes extends ParseCsvData<CreateCourseBody> {
 
 export class CourseRes {
   @ApiProperty()
-  department: string;
-
-  @ApiProperty()
-  description: string;
-
-  @ApiProperty()
   id: string;
 
   @ApiProperty()
   code: string;
+
+  @ApiProperty({ nullable: true })
+  description: string | null;
 
   @ApiProperty()
   title: string;
@@ -86,4 +84,7 @@ export class CourseRes {
 
   @ApiProperty({ enum: Semester })
   semester: Semester;
+
+  @ApiProperty({ type: DepartmentRes })
+  department: DepartmentRes;
 }

@@ -2,15 +2,14 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
+  AssignCoursesToSessionBody,
   AssignDeptAndLevelBody,
   AssignLecturersBody,
   CreateSessionBody,
 } from './sessions.schema';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class SessionsService {
@@ -45,58 +44,52 @@ export class SessionsService {
   }
 
   async getSession(sessionId: string) {
-    try {
-      const foundSession = await this.prisma.session.findUniqueOrThrow({
-        where: { id: sessionId },
-        select: {
-          id: true,
-          academicYear: true,
-          startDate: true,
-          endDate: true,
-          courseSessions: {
-            select: {
-              course: {
-                select: {
-                  title: true,
-                  semester: true,
-                  department: { select: { name: true } },
-                },
-              },
-              deptsAndLevels: {
-                select: {
-                  department: { select: { shortName: true } },
-                  level: true,
-                },
-              },
-            },
-          },
-        },
-      });
+    const foundSession = await this.prisma.session.findUniqueOrThrow({
+      where: { id: sessionId },
+      select: {
+        id: true,
+        academicYear: true,
+        startDate: true,
+        endDate: true,
+      },
+    });
 
-      return {
-        id: foundSession.id,
-        academicYear: foundSession.academicYear,
-        startDate: foundSession.startDate,
-        endDate: foundSession.endDate,
-        courses: foundSession.courseSessions.map((courseSession) => ({
-          title: courseSession.course.title,
-          semester: courseSession.course.semester,
-          department: courseSession.course.department.name,
-          deptsAndLevels: courseSession.deptsAndLevels.map((deptAndLevel) => ({
-            department: deptAndLevel.department.shortName,
-            level: deptAndLevel.level,
-          })),
-        })),
-      };
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException('Session not found');
-        }
-      }
+    return {
+      id: foundSession.id,
+      academicYear: foundSession.academicYear,
+      startDate: foundSession.startDate,
+      endDate: foundSession.endDate,
+    };
+  }
 
-      throw new BadRequestException(error);
-    }
+  async assignCoursesToSession(
+    sessionId: string,
+    { courseIds }: AssignCoursesToSessionBody,
+  ) {
+    await this.prisma.courseSession.createMany({
+      data: courseIds.map((courseId) => ({
+        sessionId,
+        courseId,
+        // TODO: Implement grading system
+        gradingSystemId: 'GRADING SYSTEM ID',
+      })),
+      skipDuplicates: true,
+    });
+  }
+
+  async getCoursesInSession(sessionId: string) {
+    return await this.prisma.course.findMany({
+      where: { courseSessions: { every: { sessionId } } },
+      select: {
+        id: true,
+        code: true,
+        title: true,
+        description: true,
+        semester: true,
+        units: true,
+        department: { select: { id: true, name: true, shortName: true } },
+      },
+    });
   }
 
   async assignLecturersToCourse(
@@ -108,28 +101,58 @@ export class SessionsService {
       throw new BadRequestException('Coordinator not included in lecturers');
     }
 
-    try {
-      await this.prisma.$transaction(async (tx) => {
-        await tx.courseLecturer.deleteMany({
-          where: { courseSession: { courseId, sessionId } },
-        });
-        await tx.courseSession.update({
-          where: { uniqueCourseSession: { courseId, sessionId } },
-          data: {
-            lecturers: {
-              createMany: {
-                data: body.lecturerIds.map((id) => {
-                  const isCoordinator = id === body.coordinatorId;
-                  return { lecturerId: id, isCoordinator };
-                }),
-              },
+    await this.prisma.$transaction(async (tx) => {
+      await tx.courseLecturer.deleteMany({
+        where: { courseSession: { courseId, sessionId } },
+      });
+      await tx.courseSession.update({
+        where: { uniqueCourseSession: { courseId, sessionId } },
+        data: {
+          lecturers: {
+            createMany: {
+              data: body.lecturerIds.map((id) => {
+                const isCoordinator = id === body.coordinatorId;
+                return { lecturerId: id, isCoordinator };
+              }),
+              skipDuplicates: true,
             },
           },
-        });
+        },
       });
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
+    });
+  }
+
+  async getCourseLecturers(sessionId: string, courseId: string) {
+    const foundCourseLecturers = await this.prisma.courseLecturer.findMany({
+      where: { courseSession: { courseId, sessionId } },
+      select: {
+        lecturer: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            otherName: true,
+            title: true,
+            phone: true,
+            qualification: true,
+            department: { select: { name: true } },
+            user: { select: { email: true } },
+          },
+        },
+      },
+    });
+
+    return foundCourseLecturers.map((courseLecturer) => ({
+      id: courseLecturer.lecturer.id,
+      firstName: courseLecturer.lecturer.firstName,
+      lastName: courseLecturer.lecturer.lastName,
+      otherName: courseLecturer.lecturer.otherName,
+      phone: courseLecturer.lecturer.phone,
+      title: courseLecturer.lecturer.title,
+      qualification: courseLecturer.lecturer.qualification,
+      department: courseLecturer.lecturer.department.name,
+      email: courseLecturer.lecturer.user.email,
+    }));
   }
 
   async assignDeptsAndLevelsToCourse(
@@ -137,27 +160,33 @@ export class SessionsService {
     courseId: string,
     body: AssignDeptAndLevelBody[],
   ) {
-    try {
-      await this.prisma.$transaction(async (tx) => {
-        await tx.courseSesnDeptAndLevel.deleteMany({
-          where: { courseSession: { courseId, sessionId } },
-        });
-        await tx.courseSession.update({
-          where: { uniqueCourseSession: { courseId, sessionId } },
-          data: {
-            deptsAndLevels: {
-              createMany: {
-                data: body.map(({ departmentId, level }) => ({
-                  departmentId,
-                  level,
-                })),
-              },
+    await this.prisma.$transaction(async (tx) => {
+      await tx.courseSesnDeptAndLevel.deleteMany({
+        where: { courseSession: { courseId, sessionId } },
+      });
+      await tx.courseSession.update({
+        where: { uniqueCourseSession: { courseId, sessionId } },
+        data: {
+          deptsAndLevels: {
+            createMany: {
+              data: body.map(({ departmentId, level }) => ({
+                departmentId,
+                level,
+              })),
             },
           },
-        });
+        },
       });
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
+    });
+  }
+
+  async getDeptsAndLevelsForCourse(sessionId: string, courseId: string) {
+    return await this.prisma.courseSesnDeptAndLevel.findMany({
+      where: { courseSession: { courseId, sessionId } },
+      select: {
+        department: { select: { id: true, name: true, shortName: true } },
+        level: true,
+      },
+    });
   }
 }

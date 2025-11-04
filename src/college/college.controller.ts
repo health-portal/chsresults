@@ -12,7 +12,8 @@ import { CollegeService } from './college.service';
 import {
   CreateDepartmentBody,
   CreateFacultyBody,
-  FacultyWithDepartmentsRes,
+  DepartmentRes,
+  FacultyRes,
 } from './college.schema';
 import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
 import { UserRole } from '@prisma/client';
@@ -35,11 +36,18 @@ import {
 export class CollegeController {
   constructor(private readonly collegeService: CollegeService) {}
 
-  @ApiOperation({ summary: 'Get all faculties and departments' })
-  @ApiOkResponse({ type: [FacultyWithDepartmentsRes] })
-  @Get('faculties-and-depts')
-  async getFacultiesAndDepartments() {
-    return await this.collegeService.getFacultiesAndDepartments();
+  @ApiOperation({ summary: 'Get all faculties' })
+  @ApiOkResponse({ type: [FacultyRes] })
+  @Get('faculties')
+  async getFaculties() {
+    return await this.collegeService.getFaculties();
+  }
+
+  @ApiOperation({ summary: 'Get all departments' })
+  @ApiOkResponse({ type: [DepartmentRes] })
+  @Get('departments')
+  async getDepartments() {
+    return await this.collegeService.getDepartments();
   }
 
   @ApiOperation({ summary: 'Create a new faculty' })

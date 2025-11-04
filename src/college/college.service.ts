@@ -6,19 +6,28 @@ import { CreateDepartmentBody, CreateFacultyBody } from './college.schema';
 export class CollegeService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getFacultiesAndDepartments() {
+  async getFaculties() {
     return await this.prisma.faculty.findMany({
       where: { deletedAt: null },
       select: {
         id: true,
         name: true,
-        departments: {
-          where: { deletedAt: null },
+      },
+    });
+  }
+
+  async getDepartments() {
+    return await this.prisma.department.findMany({
+      where: { deletedAt: null },
+      select: {
+        id: true,
+        name: true,
+        shortName: true,
+        maxLevel: true,
+        faculty: {
           select: {
             id: true,
             name: true,
-            shortName: true,
-            maxLevel: true,
           },
         },
       },

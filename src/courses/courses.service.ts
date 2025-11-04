@@ -58,7 +58,7 @@ export class CoursesService {
   }
 
   async getCourses() {
-    const foundCourses = await this.prisma.course.findMany({
+    return await this.prisma.course.findMany({
       where: { deletedAt: null },
       select: {
         id: true,
@@ -67,18 +67,13 @@ export class CoursesService {
         description: true,
         semester: true,
         units: true,
-        department: { select: { name: true } },
+        department: { select: { id: true, name: true, shortName: true } },
       },
     });
-
-    return foundCourses.map((course) => ({
-      ...course,
-      department: course.department.name,
-    }));
   }
 
   async getCourse(courseId: string) {
-    const foundCourse = await this.prisma.course.findUniqueOrThrow({
+    return await this.prisma.course.findUniqueOrThrow({
       where: { id: courseId },
       select: {
         id: true,
@@ -87,14 +82,9 @@ export class CoursesService {
         description: true,
         semester: true,
         units: true,
-        department: { select: { name: true } },
+        department: { select: { id: true, name: true, shortName: true } },
       },
     });
-
-    return {
-      ...foundCourse,
-      department: foundCourse.department.name,
-    };
   }
 
   async updateCourse(

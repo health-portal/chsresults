@@ -26,13 +26,13 @@ const collegeOfHealthSciences = JSON.parse(
 >;
 
 const seedFacultiesAndDepartments = async () => {
-  console.log('Starting faculty and department seeding...');
+  console.log('\n=== Faculty & Department Seeding Started ===\n');
 
   await prisma.$transaction(async (tx) => {
     for (const [facultyName, departments] of Object.entries(
       collegeOfHealthSciences,
     )) {
-      console.log(`Processing faculty: ${facultyName}`);
+      console.log(`Processing Faculty: ${facultyName}`);
 
       await tx.faculty.upsert({
         where: { name: facultyName },
@@ -50,12 +50,12 @@ const seedFacultiesAndDepartments = async () => {
       });
 
       console.log(
-        `Upserted faculty: ${facultyName} with ${departments.length} departments`,
+        `→ Upserted Faculty: ${facultyName} (${departments.length} departments)\n`,
       );
     }
   });
 
-  console.log('Faculty and department seeding completed.');
+  console.log('=== Faculty & Department Seeding Completed ===\n');
 };
 
 async function sendActivationToken(userId: string, email: string) {
@@ -71,23 +71,28 @@ async function sendActivationToken(userId: string, email: string) {
     },
   });
 
-  // TODO: Send activation link email
   const resetPasswordUrl = new URL(env.FRONTEND_BASE_URL);
   resetPasswordUrl.searchParams.set('email', email);
   resetPasswordUrl.searchParams.set('role', UserRole.ADMIN);
   resetPasswordUrl.searchParams.set('token', tokenString);
-  console.log(resetPasswordUrl);
+  console.log(`Activation link generated for ${email}:`);
+  console.log(resetPasswordUrl.toString(), '\n');
 }
 
 const seedAdmin = async () => {
-  console.log('Starting admin seeding...');
+  console.log('\n=== Admin Seeding Started ===\n');
+
   for (const admin of env.DEFAULT_ADMINS) {
-    console.log(`Checking admin: ${admin.email}`);
+    console.log(`Checking Admin: ${admin.email}`);
+
     const foundUser = await prisma.user.findUnique({
       where: { email: admin.email },
     });
 
-    if (foundUser) continue;
+    if (foundUser) {
+      console.log(`→ Admin already exists: ${admin.email}\n`);
+      continue;
+    }
 
     const createdUser = await prisma.user.create({
       data: {
@@ -100,20 +105,23 @@ const seedAdmin = async () => {
     });
 
     await sendActivationToken(createdUser.id, admin.email);
-    console.log(`Created admin: ${admin.email}`);
+    console.log(`→ Created Admin: ${admin.email}\n`);
   }
-  console.log('Admin seeding completed.');
+
+  console.log('=== Admin Seeding Completed ===\n');
 };
 
 const seedLecturerDesignations = async () => {
+  console.log('\n=== Lecturer Designations Seeding Started ===\n');
+
   const designations: { role: LecturerRole; entity: string }[] = [
     {
       role: LecturerRole.PROVOST,
       entity: `College of Health Sciences`,
     },
   ];
+  console.log('→ Added Provost Designation');
 
-  // DeansMedicine
   const deanOfFacultyDesignations = Object.keys(collegeOfHealthSciences).map(
     (faculty) => ({
       role: LecturerRole.DEAN,
@@ -121,8 +129,8 @@ const seedLecturerDesignations = async () => {
     }),
   );
   designations.push(...deanOfFacultyDesignations);
+  console.log(`→ Added ${deanOfFacultyDesignations.length} Dean Designations`);
 
-  // HODs
   const departments = Object.values(collegeOfHealthSciences).flatMap(
     (faculty) => faculty,
   );
@@ -131,40 +139,49 @@ const seedLecturerDesignations = async () => {
     entity: dept.name,
   }));
   designations.push(...hodDesignations);
+  console.log(`→ Added ${hodDesignations.length} HOD Designations`);
 
-  // Part Advisers
+  let partAdviserCount = 0;
   for (const dept of departments) {
     const maxLevel = parseInt(dept.maxLevel.split('LVL_')[1], 10);
-    for (let level = 100; level <= maxLevel; level + 100) {
+    for (let level = 100; level <= maxLevel; level += 100) {
       designations.push({
         role: LecturerRole.PART_ADVISER,
         entity: `${dept.name} LVL_${level}`,
       });
+      partAdviserCount++;
     }
   }
-
-  console.log(JSON.stringify(designations));
+  console.log(`→ Added ${partAdviserCount} Part Adviser Designations`);
 
   await prisma.lecturerDesignation.createMany({
     data: designations,
     skipDuplicates: true,
   });
+
+  console.log(
+    `\nTotal Lecturer Designations Added: ${designations.length}\n=== Lecturer Designations Seeding Completed ===\n`,
+  );
 };
 
 async function main() {
   try {
-    console.log('Starting database seeding...');
+    console.log('\n====================================');
+    console.log('🚀 Starting Database Seeding Process');
+    console.log('====================================\n');
+
     await seedAdmin();
     await seedFacultiesAndDepartments();
     await seedLecturerDesignations();
-    console.log('Database seeded successfully.');
+
+    console.log('✅ Database Seeding Completed Successfully.\n');
   } catch (error) {
-    console.error('Error seeding database:', error);
+    console.error('\n❌ Error Seeding Database:\n', error);
     process.exit(1);
   } finally {
-    console.log('Disconnecting Prisma client...');
+    console.log('Disconnecting Prisma Client...\n');
     await prisma.$disconnect();
-    console.log('Prisma client disconnected.');
+    console.log('✅ Prisma Client Disconnected.\n');
   }
 }
 
