@@ -32,14 +32,14 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { UserRole } from '@prisma/client';
-import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
+import { UserRole } from 'prisma/client/database';
+import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('Courses')
 @ApiBearerAuth('accessToken')
 @Controller('courses')
-@AuthRole(UserRole.ADMIN)
+@AuthRoles([UserRole.ADMIN])
 @UseGuards(JwtAuthGuard, UserRoleGuard)
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}

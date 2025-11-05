@@ -47,8 +47,10 @@ enum LecturerRole {
 
 enum FileCategory {
     RESULTS
-    USER_DATA
-    OTHER
+    LECTURERS
+    COURSES
+    STUDENTS
+    REGISTRATIONS
 }
 
 enum EnrollmentStatus {
@@ -88,8 +90,11 @@ model User {
     student   Student?
     tokenData TokenData?
 
+    files File[]
+
     @@index([role])
     @@index([deletedAt])
+    @@map("users")
 }
 
 model TokenData {
@@ -106,6 +111,7 @@ model TokenData {
     @@index([tokenType])
     @@index([expiresAt])
     @@index([tokenString])
+    @@map("token_data")
 }
 
 model Admin {
@@ -122,6 +128,7 @@ model Admin {
 
     @@index([name])
     @@index([deletedAt])
+    @@map("admins")
 }
 
 model Lecturer {
@@ -143,11 +150,11 @@ model Lecturer {
     department      Department            @relation(fields: [departmentId], references: [id])
     designations    LecturerDesignation[]
     coursesLectured CourseLecturer[]
-    files           File[]
 
     @@index([departmentId])
     @@index([lastName])
     @@index([deletedAt])
+    @@map("lecturers")
 }
 
 model LecturerDesignation {
@@ -196,6 +203,7 @@ model Student {
     @@index([deletedAt])
     @@index([departmentId, level])
     @@index([departmentId, status])
+    @@map("students")
 }
 
 model Faculty {
@@ -233,6 +241,7 @@ model Department {
     @@index([facultyId])
     @@index([deletedAt])
     @@index([name])
+    @@map("departments")
 }
 
 model Session {
@@ -301,6 +310,7 @@ model CourseSession {
     @@index([sessionId])
     @@index([isApproved])
     @@index([isPublished])
+    @@map("course_sessions")
 }
 
 model GradingSystem {
@@ -311,35 +321,13 @@ model GradingSystem {
 
     name        String  @unique
     description String?
-    isDefault   Boolean @default(false)
+    config      Json?
 
     courseSessions CourseSession[]
-    fields         GradingField[]
 
-    @@index([isDefault])
     @@index([deletedAt])
     @@index([name])
     @@map("grading_systems")
-}
-
-model GradingField {
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    name        String
-    description String?
-    maxScore    Float
-    weight      Float?
-    isRequired  Boolean @default(true)
-
-    gradingSystemId String
-    gradingSystem   GradingSystem @relation(fields: [gradingSystemId], references: [id])
-
-    @@unique([gradingSystemId, name])
-    @@index([gradingSystemId])
-    @@index([isRequired])
-    @@map("grading_fields")
 }
 
 model CourseLecturer {
@@ -358,6 +346,7 @@ model CourseLecturer {
     @@index([courseSessionId])
     @@index([lecturerId])
     @@index([isCoordinator])
+    @@map("course_lecturers")
 }
 
 model CourseSesnDeptAndLevel {
@@ -376,6 +365,7 @@ model CourseSesnDeptAndLevel {
     @@index([courseSessionId])
     @@index([departmentId])
     @@index([level])
+    @@map("course_session_department_levels")
 }
 
 model Enrollment {
@@ -396,6 +386,7 @@ model Enrollment {
     @@index([studentId])
     @@index([courseSessionId])
     @@index([status])
+    @@map("enrollments")
 }
 
 model Result {
@@ -424,12 +415,13 @@ model File {
     path     String
     category FileCategory
 
-    lecturerId String
-    lecturer   Lecturer @relation(fields: [lecturerId], references: [id])
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
 
-    @@index([lecturerId])
+    @@index([userId])
     @@index([category])
     @@index([createdAt])
+    @@map("files")
 }
 
 model AuditLog {
@@ -445,4 +437,5 @@ model AuditLog {
     @@index([entity, entityId])
     @@index([action])
     @@index([createdAt])
+    @@map("audit_logs")
 }

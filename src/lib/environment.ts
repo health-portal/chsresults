@@ -4,6 +4,11 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 export const env = cleanEnv(process.env, {
+  CLOUDFLARE_R2_ACCESS_KEY_ID: str(),
+  CLOUDFLARE_R2_ACCOUNT_ID: str(),
+  CLOUDFLARE_R2_BUCKET: str(),
+  CLOUDFLARE_R2_SECRET_ACCESS_KEY: str(),
+  CLOUDFLARE_R2_TOKEN: str(),
   DATABASE_URL: str(),
   DEFAULT_ADMINS: json<{ name: string; email: string }[]>(),
   FRONTEND_BASE_URL: url(),

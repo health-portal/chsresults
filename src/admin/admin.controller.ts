@@ -10,15 +10,15 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
-import { UserRole } from '@prisma/client';
+import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
+import { UserRole } from 'prisma/client/database';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AdminData, type JwtPayload } from 'src/auth/auth.schema';
 
 @ApiTags('Admin')
 @ApiBearerAuth('accessToken')
 @Controller('admin')
-@AuthRole(UserRole.ADMIN)
+@AuthRoles([UserRole.ADMIN])
 @UseGuards(JwtAuthGuard, UserRoleGuard)
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}

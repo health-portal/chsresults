@@ -13,7 +13,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
+import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import {
   CreateStudentBody,
@@ -22,7 +22,7 @@ import {
   UpdateStudentBody,
 } from './students.schema';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UserRole } from '@prisma/client';
+import { UserRole } from 'prisma/client/database';
 import { StudentsService } from './students.service';
 import {
   ApiBadRequestResponse,
@@ -42,7 +42,7 @@ import {
 @ApiTags('Students', 'Admin')
 @ApiBearerAuth('accessToken')
 @Controller('students')
-@AuthRole(UserRole.ADMIN)
+@AuthRoles([UserRole.ADMIN])
 @UseGuards(JwtAuthGuard, UserRoleGuard)
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}

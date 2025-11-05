@@ -8,7 +8,7 @@ import {
 } from './lecturers.schema';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { parseCsv } from 'src/lib/csv';
-import { ResultType } from '@prisma/client';
+import { ResultType } from 'prisma/client/database';
 
 @Injectable()
 export class LecturerService {

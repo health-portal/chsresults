@@ -5,7 +5,7 @@ import {
   CreateStudentsRes,
   UpdateStudentBody,
 } from './students.schema';
-import { UserRole } from '@prisma/client';
+import { UserRole } from 'prisma/client/database';
 import { parseCsv } from 'src/lib/csv';
 
 @Injectable()

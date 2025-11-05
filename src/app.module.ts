@@ -12,6 +12,7 @@ import { SessionsModule } from './sessions/sessions.module';
 import { StudentsModule } from './students/students.module';
 import { MessageQueueModule } from './message-queue/message-queue.module';
 import { GradingSystemsModule } from './grading-systems/grading-systems.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { GradingSystemsModule } from './grading-systems/grading-systems.module';
     StudentsModule,
     MessageQueueModule,
     GradingSystemsModule,
+    FilesModule,
   ],
 })
 export class AppModule {}

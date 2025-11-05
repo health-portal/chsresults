@@ -4,7 +4,7 @@ import {
   IsString,
   IsStrongPassword,
 } from 'class-validator';
-import { LecturerRole, UserRole, Level } from '@prisma/client';
+import { LecturerRole, UserRole, Level } from 'prisma/client/database';
 import { ApiProperty } from '@nestjs/swagger';
 
 export type AdminData = {

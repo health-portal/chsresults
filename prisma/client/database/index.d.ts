@@ -74,11 +74,6 @@ export type CourseSession = $Result.DefaultSelection<Prisma.$CourseSessionPayloa
  */
 export type GradingSystem = $Result.DefaultSelection<Prisma.$GradingSystemPayload>
 /**
- * Model GradingField
- * 
- */
-export type GradingField = $Result.DefaultSelection<Prisma.$GradingFieldPayload>
-/**
  * Model CourseLecturer
  * 
  */
@@ -170,8 +165,10 @@ export type LecturerRole = (typeof LecturerRole)[keyof typeof LecturerRole]
 
 export const FileCategory: {
   RESULTS: 'RESULTS',
-  USER_DATA: 'USER_DATA',
-  OTHER: 'OTHER'
+  LECTURERS: 'LECTURERS',
+  COURSES: 'COURSES',
+  STUDENTS: 'STUDENTS',
+  REGISTRATIONS: 'REGISTRATIONS'
 };
 
 export type FileCategory = (typeof FileCategory)[keyof typeof FileCategory]
@@ -486,16 +483,6 @@ export class PrismaClient<
     * ```
     */
   get gradingSystem(): Prisma.GradingSystemDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.gradingField`: Exposes CRUD operations for the **GradingField** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more GradingFields
-    * const gradingFields = await prisma.gradingField.findMany()
-    * ```
-    */
-  get gradingField(): Prisma.GradingFieldDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.courseLecturer`: Exposes CRUD operations for the **CourseLecturer** model.
@@ -1009,7 +996,6 @@ export namespace Prisma {
     Course: 'Course',
     CourseSession: 'CourseSession',
     GradingSystem: 'GradingSystem',
-    GradingField: 'GradingField',
     CourseLecturer: 'CourseLecturer',
     CourseSesnDeptAndLevel: 'CourseSesnDeptAndLevel',
     Enrollment: 'Enrollment',
@@ -1034,7 +1020,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "tokenData" | "admin" | "lecturer" | "lecturerDesignation" | "student" | "faculty" | "department" | "session" | "course" | "courseSession" | "gradingSystem" | "gradingField" | "courseLecturer" | "courseSesnDeptAndLevel" | "enrollment" | "result" | "file" | "auditLog"
+      modelProps: "user" | "tokenData" | "admin" | "lecturer" | "lecturerDesignation" | "student" | "faculty" | "department" | "session" | "course" | "courseSession" | "gradingSystem" | "courseLecturer" | "courseSesnDeptAndLevel" | "enrollment" | "result" | "file" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1830,72 +1816,6 @@ export namespace Prisma {
           }
         }
       }
-      GradingField: {
-        payload: Prisma.$GradingFieldPayload<ExtArgs>
-        fields: Prisma.GradingFieldFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.GradingFieldFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GradingFieldPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.GradingFieldFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GradingFieldPayload>
-          }
-          findFirst: {
-            args: Prisma.GradingFieldFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GradingFieldPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.GradingFieldFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GradingFieldPayload>
-          }
-          findMany: {
-            args: Prisma.GradingFieldFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GradingFieldPayload>[]
-          }
-          create: {
-            args: Prisma.GradingFieldCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GradingFieldPayload>
-          }
-          createMany: {
-            args: Prisma.GradingFieldCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          delete: {
-            args: Prisma.GradingFieldDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GradingFieldPayload>
-          }
-          update: {
-            args: Prisma.GradingFieldUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GradingFieldPayload>
-          }
-          deleteMany: {
-            args: Prisma.GradingFieldDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.GradingFieldUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.GradingFieldUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$GradingFieldPayload>
-          }
-          aggregate: {
-            args: Prisma.GradingFieldAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateGradingField>
-          }
-          groupBy: {
-            args: Prisma.GradingFieldGroupByArgs<ExtArgs>
-            result: $Utils.Optional<GradingFieldGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.GradingFieldCountArgs<ExtArgs>
-            result: $Utils.Optional<GradingFieldCountAggregateOutputType> | number
-          }
-        }
-      }
       CourseLecturer: {
         payload: Prisma.$CourseLecturerPayload<ExtArgs>
         fields: Prisma.CourseLecturerFieldRefs
@@ -2400,7 +2320,6 @@ export namespace Prisma {
     course?: CourseOmit
     courseSession?: CourseSessionOmit
     gradingSystem?: GradingSystemOmit
-    gradingField?: GradingFieldOmit
     courseLecturer?: CourseLecturerOmit
     courseSesnDeptAndLevel?: CourseSesnDeptAndLevelOmit
     enrollment?: EnrollmentOmit
@@ -2483,19 +2402,48 @@ export namespace Prisma {
 
 
   /**
+   * Count Type UserCountOutputType
+   */
+
+  export type UserCountOutputType = {
+    files: number
+  }
+
+  export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    files?: boolean | UserCountOutputTypeCountFilesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserCountOutputType
+     */
+    select?: UserCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FileWhereInput
+  }
+
+
+  /**
    * Count Type LecturerCountOutputType
    */
 
   export type LecturerCountOutputType = {
     designations: number
     coursesLectured: number
-    files: number
   }
 
   export type LecturerCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     designations?: boolean | LecturerCountOutputTypeCountDesignationsArgs
     coursesLectured?: boolean | LecturerCountOutputTypeCountCoursesLecturedArgs
-    files?: boolean | LecturerCountOutputTypeCountFilesArgs
   }
 
   // Custom InputTypes
@@ -2521,13 +2469,6 @@ export namespace Prisma {
    */
   export type LecturerCountOutputTypeCountCoursesLecturedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CourseLecturerWhereInput
-  }
-
-  /**
-   * LecturerCountOutputType without action
-   */
-  export type LecturerCountOutputTypeCountFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: FileWhereInput
   }
 
 
@@ -2768,12 +2709,10 @@ export namespace Prisma {
 
   export type GradingSystemCountOutputType = {
     courseSessions: number
-    fields: number
   }
 
   export type GradingSystemCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     courseSessions?: boolean | GradingSystemCountOutputTypeCountCourseSessionsArgs
-    fields?: boolean | GradingSystemCountOutputTypeCountFieldsArgs
   }
 
   // Custom InputTypes
@@ -2792,13 +2731,6 @@ export namespace Prisma {
    */
   export type GradingSystemCountOutputTypeCountCourseSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CourseSessionWhereInput
-  }
-
-  /**
-   * GradingSystemCountOutputType without action
-   */
-  export type GradingSystemCountOutputTypeCountFieldsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: GradingFieldWhereInput
   }
 
 
@@ -3021,6 +2953,8 @@ export namespace Prisma {
     lecturer?: boolean | User$lecturerArgs<ExtArgs>
     student?: boolean | User$studentArgs<ExtArgs>
     tokenData?: boolean | User$tokenDataArgs<ExtArgs>
+    files?: boolean | User$filesArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
 
@@ -3041,6 +2975,8 @@ export namespace Prisma {
     lecturer?: boolean | User$lecturerArgs<ExtArgs>
     student?: boolean | User$studentArgs<ExtArgs>
     tokenData?: boolean | User$tokenDataArgs<ExtArgs>
+    files?: boolean | User$filesArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3050,6 +2986,7 @@ export namespace Prisma {
       lecturer: Prisma.$LecturerPayload<ExtArgs> | null
       student: Prisma.$StudentPayload<ExtArgs> | null
       tokenData: Prisma.$TokenDataPayload<ExtArgs> | null
+      files: Prisma.$FilePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3403,6 +3340,7 @@ export namespace Prisma {
     lecturer<T extends User$lecturerArgs<ExtArgs> = {}>(args?: Subset<T, User$lecturerArgs<ExtArgs>>): Prisma__LecturerClient<$Result.GetResult<Prisma.$LecturerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     student<T extends User$studentArgs<ExtArgs> = {}>(args?: Subset<T, User$studentArgs<ExtArgs>>): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     tokenData<T extends User$tokenDataArgs<ExtArgs> = {}>(args?: Subset<T, User$tokenDataArgs<ExtArgs>>): Prisma__TokenDataClient<$Result.GetResult<Prisma.$TokenDataPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    files<T extends User$filesArgs<ExtArgs> = {}>(args?: Subset<T, User$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3855,6 +3793,30 @@ export namespace Prisma {
      */
     include?: TokenDataInclude<ExtArgs> | null
     where?: TokenDataWhereInput
+  }
+
+  /**
+   * User.files
+   */
+  export type User$filesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the File
+     */
+    select?: FileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the File
+     */
+    omit?: FileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FileInclude<ExtArgs> | null
+    where?: FileWhereInput
+    orderBy?: FileOrderByWithRelationInput | FileOrderByWithRelationInput[]
+    cursor?: FileWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FileScalarFieldEnum | FileScalarFieldEnum[]
   }
 
   /**
@@ -5991,7 +5953,6 @@ export namespace Prisma {
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
     designations?: boolean | Lecturer$designationsArgs<ExtArgs>
     coursesLectured?: boolean | Lecturer$coursesLecturedArgs<ExtArgs>
-    files?: boolean | Lecturer$filesArgs<ExtArgs>
     _count?: boolean | LecturerCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["lecturer"]>
 
@@ -6018,7 +5979,6 @@ export namespace Prisma {
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
     designations?: boolean | Lecturer$designationsArgs<ExtArgs>
     coursesLectured?: boolean | Lecturer$coursesLecturedArgs<ExtArgs>
-    files?: boolean | Lecturer$filesArgs<ExtArgs>
     _count?: boolean | LecturerCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -6029,7 +5989,6 @@ export namespace Prisma {
       department: Prisma.$DepartmentPayload<ExtArgs>
       designations: Prisma.$LecturerDesignationPayload<ExtArgs>[]
       coursesLectured: Prisma.$CourseLecturerPayload<ExtArgs>[]
-      files: Prisma.$FilePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6388,7 +6347,6 @@ export namespace Prisma {
     department<T extends DepartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DepartmentDefaultArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     designations<T extends Lecturer$designationsArgs<ExtArgs> = {}>(args?: Subset<T, Lecturer$designationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LecturerDesignationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     coursesLectured<T extends Lecturer$coursesLecturedArgs<ExtArgs> = {}>(args?: Subset<T, Lecturer$coursesLecturedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CourseLecturerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    files<T extends Lecturer$filesArgs<ExtArgs> = {}>(args?: Subset<T, Lecturer$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6818,30 +6776,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: CourseLecturerScalarFieldEnum | CourseLecturerScalarFieldEnum[]
-  }
-
-  /**
-   * Lecturer.files
-   */
-  export type Lecturer$filesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the File
-     */
-    select?: FileSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the File
-     */
-    omit?: FileOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: FileInclude<ExtArgs> | null
-    where?: FileWhereInput
-    orderBy?: FileOrderByWithRelationInput | FileOrderByWithRelationInput[]
-    cursor?: FileWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: FileScalarFieldEnum | FileScalarFieldEnum[]
   }
 
   /**
@@ -14024,7 +13958,6 @@ export namespace Prisma {
     deletedAt: Date | null
     name: string | null
     description: string | null
-    isDefault: boolean | null
   }
 
   export type GradingSystemMaxAggregateOutputType = {
@@ -14034,7 +13967,6 @@ export namespace Prisma {
     deletedAt: Date | null
     name: string | null
     description: string | null
-    isDefault: boolean | null
   }
 
   export type GradingSystemCountAggregateOutputType = {
@@ -14044,7 +13976,7 @@ export namespace Prisma {
     deletedAt: number
     name: number
     description: number
-    isDefault: number
+    config: number
     _all: number
   }
 
@@ -14056,7 +13988,6 @@ export namespace Prisma {
     deletedAt?: true
     name?: true
     description?: true
-    isDefault?: true
   }
 
   export type GradingSystemMaxAggregateInputType = {
@@ -14066,7 +13997,6 @@ export namespace Prisma {
     deletedAt?: true
     name?: true
     description?: true
-    isDefault?: true
   }
 
   export type GradingSystemCountAggregateInputType = {
@@ -14076,7 +14006,7 @@ export namespace Prisma {
     deletedAt?: true
     name?: true
     description?: true
-    isDefault?: true
+    config?: true
     _all?: true
   }
 
@@ -14159,7 +14089,7 @@ export namespace Prisma {
     deletedAt: Date | null
     name: string
     description: string | null
-    isDefault: boolean
+    config: JsonValue | null
     _count: GradingSystemCountAggregateOutputType | null
     _min: GradingSystemMinAggregateOutputType | null
     _max: GradingSystemMaxAggregateOutputType | null
@@ -14186,9 +14116,8 @@ export namespace Prisma {
     deletedAt?: boolean
     name?: boolean
     description?: boolean
-    isDefault?: boolean
+    config?: boolean
     courseSessions?: boolean | GradingSystem$courseSessionsArgs<ExtArgs>
-    fields?: boolean | GradingSystem$fieldsArgs<ExtArgs>
     _count?: boolean | GradingSystemCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["gradingSystem"]>
 
@@ -14201,13 +14130,12 @@ export namespace Prisma {
     deletedAt?: boolean
     name?: boolean
     description?: boolean
-    isDefault?: boolean
+    config?: boolean
   }
 
-  export type GradingSystemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "deletedAt" | "name" | "description" | "isDefault", ExtArgs["result"]["gradingSystem"]>
+  export type GradingSystemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "deletedAt" | "name" | "description" | "config", ExtArgs["result"]["gradingSystem"]>
   export type GradingSystemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     courseSessions?: boolean | GradingSystem$courseSessionsArgs<ExtArgs>
-    fields?: boolean | GradingSystem$fieldsArgs<ExtArgs>
     _count?: boolean | GradingSystemCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -14215,7 +14143,6 @@ export namespace Prisma {
     name: "GradingSystem"
     objects: {
       courseSessions: Prisma.$CourseSessionPayload<ExtArgs>[]
-      fields: Prisma.$GradingFieldPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -14224,7 +14151,7 @@ export namespace Prisma {
       deletedAt: Date | null
       name: string
       description: string | null
-      isDefault: boolean
+      config: Prisma.JsonValue | null
     }, ExtArgs["result"]["gradingSystem"]>
     composites: {}
   }
@@ -14566,7 +14493,6 @@ export namespace Prisma {
   export interface Prisma__GradingSystemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     courseSessions<T extends GradingSystem$courseSessionsArgs<ExtArgs> = {}>(args?: Subset<T, GradingSystem$courseSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CourseSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    fields<T extends GradingSystem$fieldsArgs<ExtArgs> = {}>(args?: Subset<T, GradingSystem$fieldsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GradingFieldPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14602,7 +14528,7 @@ export namespace Prisma {
     readonly deletedAt: FieldRef<"GradingSystem", 'DateTime'>
     readonly name: FieldRef<"GradingSystem", 'String'>
     readonly description: FieldRef<"GradingSystem", 'String'>
-    readonly isDefault: FieldRef<"GradingSystem", 'Boolean'>
+    readonly config: FieldRef<"GradingSystem", 'Json'>
   }
     
 
@@ -14970,30 +14896,6 @@ export namespace Prisma {
   }
 
   /**
-   * GradingSystem.fields
-   */
-  export type GradingSystem$fieldsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the GradingField
-     */
-    select?: GradingFieldSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the GradingField
-     */
-    omit?: GradingFieldOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: GradingFieldInclude<ExtArgs> | null
-    where?: GradingFieldWhereInput
-    orderBy?: GradingFieldOrderByWithRelationInput | GradingFieldOrderByWithRelationInput[]
-    cursor?: GradingFieldWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: GradingFieldScalarFieldEnum | GradingFieldScalarFieldEnum[]
-  }
-
-  /**
    * GradingSystem without action
    */
   export type GradingSystemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -15009,1017 +14911,6 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: GradingSystemInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model GradingField
-   */
-
-  export type AggregateGradingField = {
-    _count: GradingFieldCountAggregateOutputType | null
-    _avg: GradingFieldAvgAggregateOutputType | null
-    _sum: GradingFieldSumAggregateOutputType | null
-    _min: GradingFieldMinAggregateOutputType | null
-    _max: GradingFieldMaxAggregateOutputType | null
-  }
-
-  export type GradingFieldAvgAggregateOutputType = {
-    maxScore: number | null
-    weight: number | null
-  }
-
-  export type GradingFieldSumAggregateOutputType = {
-    maxScore: number | null
-    weight: number | null
-  }
-
-  export type GradingFieldMinAggregateOutputType = {
-    id: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-    name: string | null
-    description: string | null
-    maxScore: number | null
-    weight: number | null
-    isRequired: boolean | null
-    gradingSystemId: string | null
-  }
-
-  export type GradingFieldMaxAggregateOutputType = {
-    id: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-    name: string | null
-    description: string | null
-    maxScore: number | null
-    weight: number | null
-    isRequired: boolean | null
-    gradingSystemId: string | null
-  }
-
-  export type GradingFieldCountAggregateOutputType = {
-    id: number
-    createdAt: number
-    updatedAt: number
-    name: number
-    description: number
-    maxScore: number
-    weight: number
-    isRequired: number
-    gradingSystemId: number
-    _all: number
-  }
-
-
-  export type GradingFieldAvgAggregateInputType = {
-    maxScore?: true
-    weight?: true
-  }
-
-  export type GradingFieldSumAggregateInputType = {
-    maxScore?: true
-    weight?: true
-  }
-
-  export type GradingFieldMinAggregateInputType = {
-    id?: true
-    createdAt?: true
-    updatedAt?: true
-    name?: true
-    description?: true
-    maxScore?: true
-    weight?: true
-    isRequired?: true
-    gradingSystemId?: true
-  }
-
-  export type GradingFieldMaxAggregateInputType = {
-    id?: true
-    createdAt?: true
-    updatedAt?: true
-    name?: true
-    description?: true
-    maxScore?: true
-    weight?: true
-    isRequired?: true
-    gradingSystemId?: true
-  }
-
-  export type GradingFieldCountAggregateInputType = {
-    id?: true
-    createdAt?: true
-    updatedAt?: true
-    name?: true
-    description?: true
-    maxScore?: true
-    weight?: true
-    isRequired?: true
-    gradingSystemId?: true
-    _all?: true
-  }
-
-  export type GradingFieldAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which GradingField to aggregate.
-     */
-    where?: GradingFieldWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of GradingFields to fetch.
-     */
-    orderBy?: GradingFieldOrderByWithRelationInput | GradingFieldOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: GradingFieldWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` GradingFields from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` GradingFields.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned GradingFields
-    **/
-    _count?: true | GradingFieldCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: GradingFieldAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: GradingFieldSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: GradingFieldMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: GradingFieldMaxAggregateInputType
-  }
-
-  export type GetGradingFieldAggregateType<T extends GradingFieldAggregateArgs> = {
-        [P in keyof T & keyof AggregateGradingField]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateGradingField[P]>
-      : GetScalarType<T[P], AggregateGradingField[P]>
-  }
-
-
-
-
-  export type GradingFieldGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: GradingFieldWhereInput
-    orderBy?: GradingFieldOrderByWithAggregationInput | GradingFieldOrderByWithAggregationInput[]
-    by: GradingFieldScalarFieldEnum[] | GradingFieldScalarFieldEnum
-    having?: GradingFieldScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: GradingFieldCountAggregateInputType | true
-    _avg?: GradingFieldAvgAggregateInputType
-    _sum?: GradingFieldSumAggregateInputType
-    _min?: GradingFieldMinAggregateInputType
-    _max?: GradingFieldMaxAggregateInputType
-  }
-
-  export type GradingFieldGroupByOutputType = {
-    id: string
-    createdAt: Date
-    updatedAt: Date
-    name: string
-    description: string | null
-    maxScore: number
-    weight: number | null
-    isRequired: boolean
-    gradingSystemId: string
-    _count: GradingFieldCountAggregateOutputType | null
-    _avg: GradingFieldAvgAggregateOutputType | null
-    _sum: GradingFieldSumAggregateOutputType | null
-    _min: GradingFieldMinAggregateOutputType | null
-    _max: GradingFieldMaxAggregateOutputType | null
-  }
-
-  type GetGradingFieldGroupByPayload<T extends GradingFieldGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<GradingFieldGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof GradingFieldGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], GradingFieldGroupByOutputType[P]>
-            : GetScalarType<T[P], GradingFieldGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type GradingFieldSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    name?: boolean
-    description?: boolean
-    maxScore?: boolean
-    weight?: boolean
-    isRequired?: boolean
-    gradingSystemId?: boolean
-    gradingSystem?: boolean | GradingSystemDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["gradingField"]>
-
-
-
-  export type GradingFieldSelectScalar = {
-    id?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    name?: boolean
-    description?: boolean
-    maxScore?: boolean
-    weight?: boolean
-    isRequired?: boolean
-    gradingSystemId?: boolean
-  }
-
-  export type GradingFieldOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "name" | "description" | "maxScore" | "weight" | "isRequired" | "gradingSystemId", ExtArgs["result"]["gradingField"]>
-  export type GradingFieldInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    gradingSystem?: boolean | GradingSystemDefaultArgs<ExtArgs>
-  }
-
-  export type $GradingFieldPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "GradingField"
-    objects: {
-      gradingSystem: Prisma.$GradingSystemPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      createdAt: Date
-      updatedAt: Date
-      name: string
-      description: string | null
-      maxScore: number
-      weight: number | null
-      isRequired: boolean
-      gradingSystemId: string
-    }, ExtArgs["result"]["gradingField"]>
-    composites: {}
-  }
-
-  type GradingFieldGetPayload<S extends boolean | null | undefined | GradingFieldDefaultArgs> = $Result.GetResult<Prisma.$GradingFieldPayload, S>
-
-  type GradingFieldCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<GradingFieldFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: GradingFieldCountAggregateInputType | true
-    }
-
-  export interface GradingFieldDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['GradingField'], meta: { name: 'GradingField' } }
-    /**
-     * Find zero or one GradingField that matches the filter.
-     * @param {GradingFieldFindUniqueArgs} args - Arguments to find a GradingField
-     * @example
-     * // Get one GradingField
-     * const gradingField = await prisma.gradingField.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends GradingFieldFindUniqueArgs>(args: SelectSubset<T, GradingFieldFindUniqueArgs<ExtArgs>>): Prisma__GradingFieldClient<$Result.GetResult<Prisma.$GradingFieldPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one GradingField that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {GradingFieldFindUniqueOrThrowArgs} args - Arguments to find a GradingField
-     * @example
-     * // Get one GradingField
-     * const gradingField = await prisma.gradingField.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends GradingFieldFindUniqueOrThrowArgs>(args: SelectSubset<T, GradingFieldFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GradingFieldClient<$Result.GetResult<Prisma.$GradingFieldPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first GradingField that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {GradingFieldFindFirstArgs} args - Arguments to find a GradingField
-     * @example
-     * // Get one GradingField
-     * const gradingField = await prisma.gradingField.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends GradingFieldFindFirstArgs>(args?: SelectSubset<T, GradingFieldFindFirstArgs<ExtArgs>>): Prisma__GradingFieldClient<$Result.GetResult<Prisma.$GradingFieldPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first GradingField that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {GradingFieldFindFirstOrThrowArgs} args - Arguments to find a GradingField
-     * @example
-     * // Get one GradingField
-     * const gradingField = await prisma.gradingField.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends GradingFieldFindFirstOrThrowArgs>(args?: SelectSubset<T, GradingFieldFindFirstOrThrowArgs<ExtArgs>>): Prisma__GradingFieldClient<$Result.GetResult<Prisma.$GradingFieldPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more GradingFields that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {GradingFieldFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all GradingFields
-     * const gradingFields = await prisma.gradingField.findMany()
-     * 
-     * // Get first 10 GradingFields
-     * const gradingFields = await prisma.gradingField.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const gradingFieldWithIdOnly = await prisma.gradingField.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends GradingFieldFindManyArgs>(args?: SelectSubset<T, GradingFieldFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GradingFieldPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a GradingField.
-     * @param {GradingFieldCreateArgs} args - Arguments to create a GradingField.
-     * @example
-     * // Create one GradingField
-     * const GradingField = await prisma.gradingField.create({
-     *   data: {
-     *     // ... data to create a GradingField
-     *   }
-     * })
-     * 
-     */
-    create<T extends GradingFieldCreateArgs>(args: SelectSubset<T, GradingFieldCreateArgs<ExtArgs>>): Prisma__GradingFieldClient<$Result.GetResult<Prisma.$GradingFieldPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many GradingFields.
-     * @param {GradingFieldCreateManyArgs} args - Arguments to create many GradingFields.
-     * @example
-     * // Create many GradingFields
-     * const gradingField = await prisma.gradingField.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends GradingFieldCreateManyArgs>(args?: SelectSubset<T, GradingFieldCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a GradingField.
-     * @param {GradingFieldDeleteArgs} args - Arguments to delete one GradingField.
-     * @example
-     * // Delete one GradingField
-     * const GradingField = await prisma.gradingField.delete({
-     *   where: {
-     *     // ... filter to delete one GradingField
-     *   }
-     * })
-     * 
-     */
-    delete<T extends GradingFieldDeleteArgs>(args: SelectSubset<T, GradingFieldDeleteArgs<ExtArgs>>): Prisma__GradingFieldClient<$Result.GetResult<Prisma.$GradingFieldPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one GradingField.
-     * @param {GradingFieldUpdateArgs} args - Arguments to update one GradingField.
-     * @example
-     * // Update one GradingField
-     * const gradingField = await prisma.gradingField.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends GradingFieldUpdateArgs>(args: SelectSubset<T, GradingFieldUpdateArgs<ExtArgs>>): Prisma__GradingFieldClient<$Result.GetResult<Prisma.$GradingFieldPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more GradingFields.
-     * @param {GradingFieldDeleteManyArgs} args - Arguments to filter GradingFields to delete.
-     * @example
-     * // Delete a few GradingFields
-     * const { count } = await prisma.gradingField.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends GradingFieldDeleteManyArgs>(args?: SelectSubset<T, GradingFieldDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more GradingFields.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {GradingFieldUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many GradingFields
-     * const gradingField = await prisma.gradingField.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends GradingFieldUpdateManyArgs>(args: SelectSubset<T, GradingFieldUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one GradingField.
-     * @param {GradingFieldUpsertArgs} args - Arguments to update or create a GradingField.
-     * @example
-     * // Update or create a GradingField
-     * const gradingField = await prisma.gradingField.upsert({
-     *   create: {
-     *     // ... data to create a GradingField
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the GradingField we want to update
-     *   }
-     * })
-     */
-    upsert<T extends GradingFieldUpsertArgs>(args: SelectSubset<T, GradingFieldUpsertArgs<ExtArgs>>): Prisma__GradingFieldClient<$Result.GetResult<Prisma.$GradingFieldPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of GradingFields.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {GradingFieldCountArgs} args - Arguments to filter GradingFields to count.
-     * @example
-     * // Count the number of GradingFields
-     * const count = await prisma.gradingField.count({
-     *   where: {
-     *     // ... the filter for the GradingFields we want to count
-     *   }
-     * })
-    **/
-    count<T extends GradingFieldCountArgs>(
-      args?: Subset<T, GradingFieldCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], GradingFieldCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a GradingField.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {GradingFieldAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends GradingFieldAggregateArgs>(args: Subset<T, GradingFieldAggregateArgs>): Prisma.PrismaPromise<GetGradingFieldAggregateType<T>>
-
-    /**
-     * Group by GradingField.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {GradingFieldGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends GradingFieldGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: GradingFieldGroupByArgs['orderBy'] }
-        : { orderBy?: GradingFieldGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, GradingFieldGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGradingFieldGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the GradingField model
-   */
-  readonly fields: GradingFieldFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for GradingField.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__GradingFieldClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    gradingSystem<T extends GradingSystemDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GradingSystemDefaultArgs<ExtArgs>>): Prisma__GradingSystemClient<$Result.GetResult<Prisma.$GradingSystemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the GradingField model
-   */
-  interface GradingFieldFieldRefs {
-    readonly id: FieldRef<"GradingField", 'String'>
-    readonly createdAt: FieldRef<"GradingField", 'DateTime'>
-    readonly updatedAt: FieldRef<"GradingField", 'DateTime'>
-    readonly name: FieldRef<"GradingField", 'String'>
-    readonly description: FieldRef<"GradingField", 'String'>
-    readonly maxScore: FieldRef<"GradingField", 'Float'>
-    readonly weight: FieldRef<"GradingField", 'Float'>
-    readonly isRequired: FieldRef<"GradingField", 'Boolean'>
-    readonly gradingSystemId: FieldRef<"GradingField", 'String'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * GradingField findUnique
-   */
-  export type GradingFieldFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the GradingField
-     */
-    select?: GradingFieldSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the GradingField
-     */
-    omit?: GradingFieldOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: GradingFieldInclude<ExtArgs> | null
-    /**
-     * Filter, which GradingField to fetch.
-     */
-    where: GradingFieldWhereUniqueInput
-  }
-
-  /**
-   * GradingField findUniqueOrThrow
-   */
-  export type GradingFieldFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the GradingField
-     */
-    select?: GradingFieldSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the GradingField
-     */
-    omit?: GradingFieldOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: GradingFieldInclude<ExtArgs> | null
-    /**
-     * Filter, which GradingField to fetch.
-     */
-    where: GradingFieldWhereUniqueInput
-  }
-
-  /**
-   * GradingField findFirst
-   */
-  export type GradingFieldFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the GradingField
-     */
-    select?: GradingFieldSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the GradingField
-     */
-    omit?: GradingFieldOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: GradingFieldInclude<ExtArgs> | null
-    /**
-     * Filter, which GradingField to fetch.
-     */
-    where?: GradingFieldWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of GradingFields to fetch.
-     */
-    orderBy?: GradingFieldOrderByWithRelationInput | GradingFieldOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for GradingFields.
-     */
-    cursor?: GradingFieldWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` GradingFields from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` GradingFields.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of GradingFields.
-     */
-    distinct?: GradingFieldScalarFieldEnum | GradingFieldScalarFieldEnum[]
-  }
-
-  /**
-   * GradingField findFirstOrThrow
-   */
-  export type GradingFieldFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the GradingField
-     */
-    select?: GradingFieldSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the GradingField
-     */
-    omit?: GradingFieldOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: GradingFieldInclude<ExtArgs> | null
-    /**
-     * Filter, which GradingField to fetch.
-     */
-    where?: GradingFieldWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of GradingFields to fetch.
-     */
-    orderBy?: GradingFieldOrderByWithRelationInput | GradingFieldOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for GradingFields.
-     */
-    cursor?: GradingFieldWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` GradingFields from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` GradingFields.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of GradingFields.
-     */
-    distinct?: GradingFieldScalarFieldEnum | GradingFieldScalarFieldEnum[]
-  }
-
-  /**
-   * GradingField findMany
-   */
-  export type GradingFieldFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the GradingField
-     */
-    select?: GradingFieldSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the GradingField
-     */
-    omit?: GradingFieldOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: GradingFieldInclude<ExtArgs> | null
-    /**
-     * Filter, which GradingFields to fetch.
-     */
-    where?: GradingFieldWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of GradingFields to fetch.
-     */
-    orderBy?: GradingFieldOrderByWithRelationInput | GradingFieldOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing GradingFields.
-     */
-    cursor?: GradingFieldWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` GradingFields from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` GradingFields.
-     */
-    skip?: number
-    distinct?: GradingFieldScalarFieldEnum | GradingFieldScalarFieldEnum[]
-  }
-
-  /**
-   * GradingField create
-   */
-  export type GradingFieldCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the GradingField
-     */
-    select?: GradingFieldSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the GradingField
-     */
-    omit?: GradingFieldOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: GradingFieldInclude<ExtArgs> | null
-    /**
-     * The data needed to create a GradingField.
-     */
-    data: XOR<GradingFieldCreateInput, GradingFieldUncheckedCreateInput>
-  }
-
-  /**
-   * GradingField createMany
-   */
-  export type GradingFieldCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many GradingFields.
-     */
-    data: GradingFieldCreateManyInput | GradingFieldCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * GradingField update
-   */
-  export type GradingFieldUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the GradingField
-     */
-    select?: GradingFieldSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the GradingField
-     */
-    omit?: GradingFieldOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: GradingFieldInclude<ExtArgs> | null
-    /**
-     * The data needed to update a GradingField.
-     */
-    data: XOR<GradingFieldUpdateInput, GradingFieldUncheckedUpdateInput>
-    /**
-     * Choose, which GradingField to update.
-     */
-    where: GradingFieldWhereUniqueInput
-  }
-
-  /**
-   * GradingField updateMany
-   */
-  export type GradingFieldUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update GradingFields.
-     */
-    data: XOR<GradingFieldUpdateManyMutationInput, GradingFieldUncheckedUpdateManyInput>
-    /**
-     * Filter which GradingFields to update
-     */
-    where?: GradingFieldWhereInput
-    /**
-     * Limit how many GradingFields to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * GradingField upsert
-   */
-  export type GradingFieldUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the GradingField
-     */
-    select?: GradingFieldSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the GradingField
-     */
-    omit?: GradingFieldOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: GradingFieldInclude<ExtArgs> | null
-    /**
-     * The filter to search for the GradingField to update in case it exists.
-     */
-    where: GradingFieldWhereUniqueInput
-    /**
-     * In case the GradingField found by the `where` argument doesn't exist, create a new GradingField with this data.
-     */
-    create: XOR<GradingFieldCreateInput, GradingFieldUncheckedCreateInput>
-    /**
-     * In case the GradingField was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<GradingFieldUpdateInput, GradingFieldUncheckedUpdateInput>
-  }
-
-  /**
-   * GradingField delete
-   */
-  export type GradingFieldDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the GradingField
-     */
-    select?: GradingFieldSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the GradingField
-     */
-    omit?: GradingFieldOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: GradingFieldInclude<ExtArgs> | null
-    /**
-     * Filter which GradingField to delete.
-     */
-    where: GradingFieldWhereUniqueInput
-  }
-
-  /**
-   * GradingField deleteMany
-   */
-  export type GradingFieldDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which GradingFields to delete
-     */
-    where?: GradingFieldWhereInput
-    /**
-     * Limit how many GradingFields to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * GradingField without action
-   */
-  export type GradingFieldDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the GradingField
-     */
-    select?: GradingFieldSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the GradingField
-     */
-    omit?: GradingFieldOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: GradingFieldInclude<ExtArgs> | null
   }
 
 
@@ -19849,7 +18740,7 @@ export namespace Prisma {
     size: number | null
     path: string | null
     category: $Enums.FileCategory | null
-    lecturerId: string | null
+    userId: string | null
   }
 
   export type FileMaxAggregateOutputType = {
@@ -19860,7 +18751,7 @@ export namespace Prisma {
     size: number | null
     path: string | null
     category: $Enums.FileCategory | null
-    lecturerId: string | null
+    userId: string | null
   }
 
   export type FileCountAggregateOutputType = {
@@ -19871,7 +18762,7 @@ export namespace Prisma {
     size: number
     path: number
     category: number
-    lecturerId: number
+    userId: number
     _all: number
   }
 
@@ -19892,7 +18783,7 @@ export namespace Prisma {
     size?: true
     path?: true
     category?: true
-    lecturerId?: true
+    userId?: true
   }
 
   export type FileMaxAggregateInputType = {
@@ -19903,7 +18794,7 @@ export namespace Prisma {
     size?: true
     path?: true
     category?: true
-    lecturerId?: true
+    userId?: true
   }
 
   export type FileCountAggregateInputType = {
@@ -19914,7 +18805,7 @@ export namespace Prisma {
     size?: true
     path?: true
     category?: true
-    lecturerId?: true
+    userId?: true
     _all?: true
   }
 
@@ -20012,7 +18903,7 @@ export namespace Prisma {
     size: number
     path: string
     category: $Enums.FileCategory
-    lecturerId: string
+    userId: string
     _count: FileCountAggregateOutputType | null
     _avg: FileAvgAggregateOutputType | null
     _sum: FileSumAggregateOutputType | null
@@ -20042,8 +18933,8 @@ export namespace Prisma {
     size?: boolean
     path?: boolean
     category?: boolean
-    lecturerId?: boolean
-    lecturer?: boolean | LecturerDefaultArgs<ExtArgs>
+    userId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["file"]>
 
 
@@ -20056,18 +18947,18 @@ export namespace Prisma {
     size?: boolean
     path?: boolean
     category?: boolean
-    lecturerId?: boolean
+    userId?: boolean
   }
 
-  export type FileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "filename" | "mimetype" | "size" | "path" | "category" | "lecturerId", ExtArgs["result"]["file"]>
+  export type FileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "filename" | "mimetype" | "size" | "path" | "category" | "userId", ExtArgs["result"]["file"]>
   export type FileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    lecturer?: boolean | LecturerDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $FilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "File"
     objects: {
-      lecturer: Prisma.$LecturerPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -20077,7 +18968,7 @@ export namespace Prisma {
       size: number
       path: string
       category: $Enums.FileCategory
-      lecturerId: string
+      userId: string
     }, ExtArgs["result"]["file"]>
     composites: {}
   }
@@ -20418,7 +19309,7 @@ export namespace Prisma {
    */
   export interface Prisma__FileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    lecturer<T extends LecturerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LecturerDefaultArgs<ExtArgs>>): Prisma__LecturerClient<$Result.GetResult<Prisma.$LecturerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -20455,7 +19346,7 @@ export namespace Prisma {
     readonly size: FieldRef<"File", 'Int'>
     readonly path: FieldRef<"File", 'String'>
     readonly category: FieldRef<"File", 'FileCategory'>
-    readonly lecturerId: FieldRef<"File", 'String'>
+    readonly userId: FieldRef<"File", 'String'>
   }
     
 
@@ -21895,25 +20786,10 @@ export namespace Prisma {
     deletedAt: 'deletedAt',
     name: 'name',
     description: 'description',
-    isDefault: 'isDefault'
+    config: 'config'
   };
 
   export type GradingSystemScalarFieldEnum = (typeof GradingSystemScalarFieldEnum)[keyof typeof GradingSystemScalarFieldEnum]
-
-
-  export const GradingFieldScalarFieldEnum: {
-    id: 'id',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    name: 'name',
-    description: 'description',
-    maxScore: 'maxScore',
-    weight: 'weight',
-    isRequired: 'isRequired',
-    gradingSystemId: 'gradingSystemId'
-  };
-
-  export type GradingFieldScalarFieldEnum = (typeof GradingFieldScalarFieldEnum)[keyof typeof GradingFieldScalarFieldEnum]
 
 
   export const CourseLecturerScalarFieldEnum: {
@@ -21972,7 +20848,7 @@ export namespace Prisma {
     size: 'size',
     path: 'path',
     category: 'category',
-    lecturerId: 'lecturerId'
+    userId: 'userId'
   };
 
   export type FileScalarFieldEnum = (typeof FileScalarFieldEnum)[keyof typeof FileScalarFieldEnum]
@@ -21999,19 +20875,19 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-  export const JsonNullValueInput: {
-    JsonNull: typeof JsonNull
-  };
-
-  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
-
-
   export const NullableJsonNullValueInput: {
     DbNull: typeof DbNull,
     JsonNull: typeof JsonNull
   };
 
   export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+  export const JsonNullValueInput: {
+    JsonNull: typeof JsonNull
+  };
+
+  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
   export const NullsOrder: {
@@ -22136,6 +21012,23 @@ export namespace Prisma {
   export type CourseSessionOrderByRelevanceFieldEnum = (typeof CourseSessionOrderByRelevanceFieldEnum)[keyof typeof CourseSessionOrderByRelevanceFieldEnum]
 
 
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+  export const QueryMode: {
+    default: 'default',
+    insensitive: 'insensitive'
+  };
+
+  export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
   export const GradingSystemOrderByRelevanceFieldEnum: {
     id: 'id',
     name: 'name',
@@ -22143,16 +21036,6 @@ export namespace Prisma {
   };
 
   export type GradingSystemOrderByRelevanceFieldEnum = (typeof GradingSystemOrderByRelevanceFieldEnum)[keyof typeof GradingSystemOrderByRelevanceFieldEnum]
-
-
-  export const GradingFieldOrderByRelevanceFieldEnum: {
-    id: 'id',
-    name: 'name',
-    description: 'description',
-    gradingSystemId: 'gradingSystemId'
-  };
-
-  export type GradingFieldOrderByRelevanceFieldEnum = (typeof GradingFieldOrderByRelevanceFieldEnum)[keyof typeof GradingFieldOrderByRelevanceFieldEnum]
 
 
   export const CourseLecturerOrderByRelevanceFieldEnum: {
@@ -22182,23 +21065,6 @@ export namespace Prisma {
   export type EnrollmentOrderByRelevanceFieldEnum = (typeof EnrollmentOrderByRelevanceFieldEnum)[keyof typeof EnrollmentOrderByRelevanceFieldEnum]
 
 
-  export const JsonNullValueFilter: {
-    DbNull: typeof DbNull,
-    JsonNull: typeof JsonNull,
-    AnyNull: typeof AnyNull
-  };
-
-  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-  export const QueryMode: {
-    default: 'default',
-    insensitive: 'insensitive'
-  };
-
-  export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
-
-
   export const ResultOrderByRelevanceFieldEnum: {
     id: 'id',
     enrollmentId: 'enrollmentId'
@@ -22212,7 +21078,7 @@ export namespace Prisma {
     filename: 'filename',
     mimetype: 'mimetype',
     path: 'path',
-    lecturerId: 'lecturerId'
+    userId: 'userId'
   };
 
   export type FileOrderByRelevanceFieldEnum = (typeof FileOrderByRelevanceFieldEnum)[keyof typeof FileOrderByRelevanceFieldEnum]
@@ -22312,20 +21178,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Float'
-   */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'EnrollmentStatus'
-   */
-  export type EnumEnrollmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EnrollmentStatus'>
-    
-
-
-  /**
    * Reference to a field of type 'Json'
    */
   export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -22340,6 +21192,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'EnrollmentStatus'
+   */
+  export type EnumEnrollmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EnrollmentStatus'>
+    
+
+
+  /**
    * Reference to a field of type 'ResultType'
    */
   export type EnumResultTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ResultType'>
@@ -22350,6 +21209,13 @@ export namespace Prisma {
    * Reference to a field of type 'FileCategory'
    */
   export type EnumFileCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FileCategory'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
     
   /**
    * Deep Input Types
@@ -22371,6 +21237,7 @@ export namespace Prisma {
     lecturer?: XOR<LecturerNullableScalarRelationFilter, LecturerWhereInput> | null
     student?: XOR<StudentNullableScalarRelationFilter, StudentWhereInput> | null
     tokenData?: XOR<TokenDataNullableScalarRelationFilter, TokenDataWhereInput> | null
+    files?: FileListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -22385,6 +21252,7 @@ export namespace Prisma {
     lecturer?: LecturerOrderByWithRelationInput
     student?: StudentOrderByWithRelationInput
     tokenData?: TokenDataOrderByWithRelationInput
+    files?: FileOrderByRelationAggregateInput
     _relevance?: UserOrderByRelevanceInput
   }
 
@@ -22403,6 +21271,7 @@ export namespace Prisma {
     lecturer?: XOR<LecturerNullableScalarRelationFilter, LecturerWhereInput> | null
     student?: XOR<StudentNullableScalarRelationFilter, StudentWhereInput> | null
     tokenData?: XOR<TokenDataNullableScalarRelationFilter, TokenDataWhereInput> | null
+    files?: FileListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -22578,7 +21447,6 @@ export namespace Prisma {
     department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
     designations?: LecturerDesignationListRelationFilter
     coursesLectured?: CourseLecturerListRelationFilter
-    files?: FileListRelationFilter
   }
 
   export type LecturerOrderByWithRelationInput = {
@@ -22598,7 +21466,6 @@ export namespace Prisma {
     department?: DepartmentOrderByWithRelationInput
     designations?: LecturerDesignationOrderByRelationAggregateInput
     coursesLectured?: CourseLecturerOrderByRelationAggregateInput
-    files?: FileOrderByRelationAggregateInput
     _relevance?: LecturerOrderByRelevanceInput
   }
 
@@ -22622,7 +21489,6 @@ export namespace Prisma {
     department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
     designations?: LecturerDesignationListRelationFilter
     coursesLectured?: CourseLecturerListRelationFilter
-    files?: FileListRelationFilter
   }, "id" | "phone" | "userId">
 
   export type LecturerOrderByWithAggregationInput = {
@@ -23223,9 +22089,8 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableFilter<"GradingSystem"> | Date | string | null
     name?: StringFilter<"GradingSystem"> | string
     description?: StringNullableFilter<"GradingSystem"> | string | null
-    isDefault?: BoolFilter<"GradingSystem"> | boolean
+    config?: JsonNullableFilter<"GradingSystem">
     courseSessions?: CourseSessionListRelationFilter
-    fields?: GradingFieldListRelationFilter
   }
 
   export type GradingSystemOrderByWithRelationInput = {
@@ -23235,9 +22100,8 @@ export namespace Prisma {
     deletedAt?: SortOrderInput | SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
-    isDefault?: SortOrder
+    config?: SortOrderInput | SortOrder
     courseSessions?: CourseSessionOrderByRelationAggregateInput
-    fields?: GradingFieldOrderByRelationAggregateInput
     _relevance?: GradingSystemOrderByRelevanceInput
   }
 
@@ -23251,9 +22115,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"GradingSystem"> | Date | string
     deletedAt?: DateTimeNullableFilter<"GradingSystem"> | Date | string | null
     description?: StringNullableFilter<"GradingSystem"> | string | null
-    isDefault?: BoolFilter<"GradingSystem"> | boolean
+    config?: JsonNullableFilter<"GradingSystem">
     courseSessions?: CourseSessionListRelationFilter
-    fields?: GradingFieldListRelationFilter
   }, "id" | "name">
 
   export type GradingSystemOrderByWithAggregationInput = {
@@ -23263,7 +22126,7 @@ export namespace Prisma {
     deletedAt?: SortOrderInput | SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
-    isDefault?: SortOrder
+    config?: SortOrderInput | SortOrder
     _count?: GradingSystemCountOrderByAggregateInput
     _max?: GradingSystemMaxOrderByAggregateInput
     _min?: GradingSystemMinOrderByAggregateInput
@@ -23279,86 +22142,7 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableWithAggregatesFilter<"GradingSystem"> | Date | string | null
     name?: StringWithAggregatesFilter<"GradingSystem"> | string
     description?: StringNullableWithAggregatesFilter<"GradingSystem"> | string | null
-    isDefault?: BoolWithAggregatesFilter<"GradingSystem"> | boolean
-  }
-
-  export type GradingFieldWhereInput = {
-    AND?: GradingFieldWhereInput | GradingFieldWhereInput[]
-    OR?: GradingFieldWhereInput[]
-    NOT?: GradingFieldWhereInput | GradingFieldWhereInput[]
-    id?: StringFilter<"GradingField"> | string
-    createdAt?: DateTimeFilter<"GradingField"> | Date | string
-    updatedAt?: DateTimeFilter<"GradingField"> | Date | string
-    name?: StringFilter<"GradingField"> | string
-    description?: StringNullableFilter<"GradingField"> | string | null
-    maxScore?: FloatFilter<"GradingField"> | number
-    weight?: FloatNullableFilter<"GradingField"> | number | null
-    isRequired?: BoolFilter<"GradingField"> | boolean
-    gradingSystemId?: StringFilter<"GradingField"> | string
-    gradingSystem?: XOR<GradingSystemScalarRelationFilter, GradingSystemWhereInput>
-  }
-
-  export type GradingFieldOrderByWithRelationInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    name?: SortOrder
-    description?: SortOrderInput | SortOrder
-    maxScore?: SortOrder
-    weight?: SortOrderInput | SortOrder
-    isRequired?: SortOrder
-    gradingSystemId?: SortOrder
-    gradingSystem?: GradingSystemOrderByWithRelationInput
-    _relevance?: GradingFieldOrderByRelevanceInput
-  }
-
-  export type GradingFieldWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    gradingSystemId_name?: GradingFieldGradingSystemIdNameCompoundUniqueInput
-    AND?: GradingFieldWhereInput | GradingFieldWhereInput[]
-    OR?: GradingFieldWhereInput[]
-    NOT?: GradingFieldWhereInput | GradingFieldWhereInput[]
-    createdAt?: DateTimeFilter<"GradingField"> | Date | string
-    updatedAt?: DateTimeFilter<"GradingField"> | Date | string
-    name?: StringFilter<"GradingField"> | string
-    description?: StringNullableFilter<"GradingField"> | string | null
-    maxScore?: FloatFilter<"GradingField"> | number
-    weight?: FloatNullableFilter<"GradingField"> | number | null
-    isRequired?: BoolFilter<"GradingField"> | boolean
-    gradingSystemId?: StringFilter<"GradingField"> | string
-    gradingSystem?: XOR<GradingSystemScalarRelationFilter, GradingSystemWhereInput>
-  }, "id" | "gradingSystemId_name">
-
-  export type GradingFieldOrderByWithAggregationInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    name?: SortOrder
-    description?: SortOrderInput | SortOrder
-    maxScore?: SortOrder
-    weight?: SortOrderInput | SortOrder
-    isRequired?: SortOrder
-    gradingSystemId?: SortOrder
-    _count?: GradingFieldCountOrderByAggregateInput
-    _avg?: GradingFieldAvgOrderByAggregateInput
-    _max?: GradingFieldMaxOrderByAggregateInput
-    _min?: GradingFieldMinOrderByAggregateInput
-    _sum?: GradingFieldSumOrderByAggregateInput
-  }
-
-  export type GradingFieldScalarWhereWithAggregatesInput = {
-    AND?: GradingFieldScalarWhereWithAggregatesInput | GradingFieldScalarWhereWithAggregatesInput[]
-    OR?: GradingFieldScalarWhereWithAggregatesInput[]
-    NOT?: GradingFieldScalarWhereWithAggregatesInput | GradingFieldScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"GradingField"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"GradingField"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"GradingField"> | Date | string
-    name?: StringWithAggregatesFilter<"GradingField"> | string
-    description?: StringNullableWithAggregatesFilter<"GradingField"> | string | null
-    maxScore?: FloatWithAggregatesFilter<"GradingField"> | number
-    weight?: FloatNullableWithAggregatesFilter<"GradingField"> | number | null
-    isRequired?: BoolWithAggregatesFilter<"GradingField"> | boolean
-    gradingSystemId?: StringWithAggregatesFilter<"GradingField"> | string
+    config?: JsonNullableWithAggregatesFilter<"GradingSystem">
   }
 
   export type CourseLecturerWhereInput = {
@@ -23632,8 +22416,8 @@ export namespace Prisma {
     size?: IntFilter<"File"> | number
     path?: StringFilter<"File"> | string
     category?: EnumFileCategoryFilter<"File"> | $Enums.FileCategory
-    lecturerId?: StringFilter<"File"> | string
-    lecturer?: XOR<LecturerScalarRelationFilter, LecturerWhereInput>
+    userId?: StringFilter<"File"> | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type FileOrderByWithRelationInput = {
@@ -23644,8 +22428,8 @@ export namespace Prisma {
     size?: SortOrder
     path?: SortOrder
     category?: SortOrder
-    lecturerId?: SortOrder
-    lecturer?: LecturerOrderByWithRelationInput
+    userId?: SortOrder
+    user?: UserOrderByWithRelationInput
     _relevance?: FileOrderByRelevanceInput
   }
 
@@ -23660,8 +22444,8 @@ export namespace Prisma {
     size?: IntFilter<"File"> | number
     path?: StringFilter<"File"> | string
     category?: EnumFileCategoryFilter<"File"> | $Enums.FileCategory
-    lecturerId?: StringFilter<"File"> | string
-    lecturer?: XOR<LecturerScalarRelationFilter, LecturerWhereInput>
+    userId?: StringFilter<"File"> | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
   export type FileOrderByWithAggregationInput = {
@@ -23672,7 +22456,7 @@ export namespace Prisma {
     size?: SortOrder
     path?: SortOrder
     category?: SortOrder
-    lecturerId?: SortOrder
+    userId?: SortOrder
     _count?: FileCountOrderByAggregateInput
     _avg?: FileAvgOrderByAggregateInput
     _max?: FileMaxOrderByAggregateInput
@@ -23691,7 +22475,7 @@ export namespace Prisma {
     size?: IntWithAggregatesFilter<"File"> | number
     path?: StringWithAggregatesFilter<"File"> | string
     category?: EnumFileCategoryWithAggregatesFilter<"File"> | $Enums.FileCategory
-    lecturerId?: StringWithAggregatesFilter<"File"> | string
+    userId?: StringWithAggregatesFilter<"File"> | string
   }
 
   export type AuditLogWhereInput = {
@@ -23769,6 +22553,7 @@ export namespace Prisma {
     lecturer?: LecturerCreateNestedOneWithoutUserInput
     student?: StudentCreateNestedOneWithoutUserInput
     tokenData?: TokenDataCreateNestedOneWithoutUserInput
+    files?: FileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -23783,6 +22568,7 @@ export namespace Prisma {
     lecturer?: LecturerUncheckedCreateNestedOneWithoutUserInput
     student?: StudentUncheckedCreateNestedOneWithoutUserInput
     tokenData?: TokenDataUncheckedCreateNestedOneWithoutUserInput
+    files?: FileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -23797,6 +22583,7 @@ export namespace Prisma {
     lecturer?: LecturerUpdateOneWithoutUserNestedInput
     student?: StudentUpdateOneWithoutUserNestedInput
     tokenData?: TokenDataUpdateOneWithoutUserNestedInput
+    files?: FileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -23811,6 +22598,7 @@ export namespace Prisma {
     lecturer?: LecturerUncheckedUpdateOneWithoutUserNestedInput
     student?: StudentUncheckedUpdateOneWithoutUserNestedInput
     tokenData?: TokenDataUncheckedUpdateOneWithoutUserNestedInput
+    files?: FileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -23989,7 +22777,6 @@ export namespace Prisma {
     department: DepartmentCreateNestedOneWithoutLecturersInput
     designations?: LecturerDesignationCreateNestedManyWithoutLecturerInput
     coursesLectured?: CourseLecturerCreateNestedManyWithoutLecturerInput
-    files?: FileCreateNestedManyWithoutLecturerInput
   }
 
   export type LecturerUncheckedCreateInput = {
@@ -24007,7 +22794,6 @@ export namespace Prisma {
     departmentId: string
     designations?: LecturerDesignationUncheckedCreateNestedManyWithoutLecturerInput
     coursesLectured?: CourseLecturerUncheckedCreateNestedManyWithoutLecturerInput
-    files?: FileUncheckedCreateNestedManyWithoutLecturerInput
   }
 
   export type LecturerUpdateInput = {
@@ -24025,7 +22811,6 @@ export namespace Prisma {
     department?: DepartmentUpdateOneRequiredWithoutLecturersNestedInput
     designations?: LecturerDesignationUpdateManyWithoutLecturerNestedInput
     coursesLectured?: CourseLecturerUpdateManyWithoutLecturerNestedInput
-    files?: FileUpdateManyWithoutLecturerNestedInput
   }
 
   export type LecturerUncheckedUpdateInput = {
@@ -24043,7 +22828,6 @@ export namespace Prisma {
     departmentId?: StringFieldUpdateOperationsInput | string
     designations?: LecturerDesignationUncheckedUpdateManyWithoutLecturerNestedInput
     coursesLectured?: CourseLecturerUncheckedUpdateManyWithoutLecturerNestedInput
-    files?: FileUncheckedUpdateManyWithoutLecturerNestedInput
   }
 
   export type LecturerCreateManyInput = {
@@ -24692,9 +23476,8 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     name: string
     description?: string | null
-    isDefault?: boolean
+    config?: NullableJsonNullValueInput | InputJsonValue
     courseSessions?: CourseSessionCreateNestedManyWithoutGradingSystemInput
-    fields?: GradingFieldCreateNestedManyWithoutGradingSystemInput
   }
 
   export type GradingSystemUncheckedCreateInput = {
@@ -24704,9 +23487,8 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     name: string
     description?: string | null
-    isDefault?: boolean
+    config?: NullableJsonNullValueInput | InputJsonValue
     courseSessions?: CourseSessionUncheckedCreateNestedManyWithoutGradingSystemInput
-    fields?: GradingFieldUncheckedCreateNestedManyWithoutGradingSystemInput
   }
 
   export type GradingSystemUpdateInput = {
@@ -24716,9 +23498,8 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    config?: NullableJsonNullValueInput | InputJsonValue
     courseSessions?: CourseSessionUpdateManyWithoutGradingSystemNestedInput
-    fields?: GradingFieldUpdateManyWithoutGradingSystemNestedInput
   }
 
   export type GradingSystemUncheckedUpdateInput = {
@@ -24728,9 +23509,8 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    config?: NullableJsonNullValueInput | InputJsonValue
     courseSessions?: CourseSessionUncheckedUpdateManyWithoutGradingSystemNestedInput
-    fields?: GradingFieldUncheckedUpdateManyWithoutGradingSystemNestedInput
   }
 
   export type GradingSystemCreateManyInput = {
@@ -24740,7 +23520,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     name: string
     description?: string | null
-    isDefault?: boolean
+    config?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type GradingSystemUpdateManyMutationInput = {
@@ -24750,7 +23530,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    config?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type GradingSystemUncheckedUpdateManyInput = {
@@ -24760,90 +23540,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    isDefault?: BoolFieldUpdateOperationsInput | boolean
-  }
-
-  export type GradingFieldCreateInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    description?: string | null
-    maxScore: number
-    weight?: number | null
-    isRequired?: boolean
-    gradingSystem: GradingSystemCreateNestedOneWithoutFieldsInput
-  }
-
-  export type GradingFieldUncheckedCreateInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    description?: string | null
-    maxScore: number
-    weight?: number | null
-    isRequired?: boolean
-    gradingSystemId: string
-  }
-
-  export type GradingFieldUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    maxScore?: FloatFieldUpdateOperationsInput | number
-    weight?: NullableFloatFieldUpdateOperationsInput | number | null
-    isRequired?: BoolFieldUpdateOperationsInput | boolean
-    gradingSystem?: GradingSystemUpdateOneRequiredWithoutFieldsNestedInput
-  }
-
-  export type GradingFieldUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    maxScore?: FloatFieldUpdateOperationsInput | number
-    weight?: NullableFloatFieldUpdateOperationsInput | number | null
-    isRequired?: BoolFieldUpdateOperationsInput | boolean
-    gradingSystemId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type GradingFieldCreateManyInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    description?: string | null
-    maxScore: number
-    weight?: number | null
-    isRequired?: boolean
-    gradingSystemId: string
-  }
-
-  export type GradingFieldUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    maxScore?: FloatFieldUpdateOperationsInput | number
-    weight?: NullableFloatFieldUpdateOperationsInput | number | null
-    isRequired?: BoolFieldUpdateOperationsInput | boolean
-  }
-
-  export type GradingFieldUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    maxScore?: FloatFieldUpdateOperationsInput | number
-    weight?: NullableFloatFieldUpdateOperationsInput | number | null
-    isRequired?: BoolFieldUpdateOperationsInput | boolean
-    gradingSystemId?: StringFieldUpdateOperationsInput | string
+    config?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CourseLecturerCreateInput = {
@@ -25103,7 +23800,7 @@ export namespace Prisma {
     size: number
     path: string
     category: $Enums.FileCategory
-    lecturer: LecturerCreateNestedOneWithoutFilesInput
+    user: UserCreateNestedOneWithoutFilesInput
   }
 
   export type FileUncheckedCreateInput = {
@@ -25114,7 +23811,7 @@ export namespace Prisma {
     size: number
     path: string
     category: $Enums.FileCategory
-    lecturerId: string
+    userId: string
   }
 
   export type FileUpdateInput = {
@@ -25125,7 +23822,7 @@ export namespace Prisma {
     size?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
     category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
-    lecturer?: LecturerUpdateOneRequiredWithoutFilesNestedInput
+    user?: UserUpdateOneRequiredWithoutFilesNestedInput
   }
 
   export type FileUncheckedUpdateInput = {
@@ -25136,7 +23833,7 @@ export namespace Prisma {
     size?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
     category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
-    lecturerId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type FileCreateManyInput = {
@@ -25147,7 +23844,7 @@ export namespace Prisma {
     size: number
     path: string
     category: $Enums.FileCategory
-    lecturerId: string
+    userId: string
   }
 
   export type FileUpdateManyMutationInput = {
@@ -25168,7 +23865,7 @@ export namespace Prisma {
     size?: IntFieldUpdateOperationsInput | number
     path?: StringFieldUpdateOperationsInput | string
     category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
-    lecturerId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type AuditLogCreateInput = {
@@ -25320,9 +24017,19 @@ export namespace Prisma {
     isNot?: TokenDataWhereInput | null
   }
 
+  export type FileListRelationFilter = {
+    every?: FileWhereInput
+    some?: FileWhereInput
+    none?: FileWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
+  }
+
+  export type FileOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type UserOrderByRelevanceInput = {
@@ -25543,21 +24250,11 @@ export namespace Prisma {
     none?: CourseLecturerWhereInput
   }
 
-  export type FileListRelationFilter = {
-    every?: FileWhereInput
-    some?: FileWhereInput
-    none?: FileWhereInput
-  }
-
   export type LecturerDesignationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type CourseLecturerOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type FileOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -26126,15 +24823,28 @@ export namespace Prisma {
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
   }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
 
-  export type GradingFieldListRelationFilter = {
-    every?: GradingFieldWhereInput
-    some?: GradingFieldWhereInput
-    none?: GradingFieldWhereInput
-  }
-
-  export type GradingFieldOrderByRelationAggregateInput = {
-    _count?: SortOrder
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type GradingSystemOrderByRelevanceInput = {
@@ -26150,7 +24860,7 @@ export namespace Prisma {
     deletedAt?: SortOrder
     name?: SortOrder
     description?: SortOrder
-    isDefault?: SortOrder
+    config?: SortOrder
   }
 
   export type GradingSystemMaxOrderByAggregateInput = {
@@ -26160,7 +24870,6 @@ export namespace Prisma {
     deletedAt?: SortOrder
     name?: SortOrder
     description?: SortOrder
-    isDefault?: SortOrder
   }
 
   export type GradingSystemMinOrderByAggregateInput = {
@@ -26170,118 +24879,32 @@ export namespace Prisma {
     deletedAt?: SortOrder
     name?: SortOrder
     description?: SortOrder
-    isDefault?: SortOrder
   }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
 
-  export type FloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
-  export type FloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type GradingFieldOrderByRelevanceInput = {
-    fields: GradingFieldOrderByRelevanceFieldEnum | GradingFieldOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
-  }
-
-  export type GradingFieldGradingSystemIdNameCompoundUniqueInput = {
-    gradingSystemId: string
-    name: string
-  }
-
-  export type GradingFieldCountOrderByAggregateInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    maxScore?: SortOrder
-    weight?: SortOrder
-    isRequired?: SortOrder
-    gradingSystemId?: SortOrder
-  }
-
-  export type GradingFieldAvgOrderByAggregateInput = {
-    maxScore?: SortOrder
-    weight?: SortOrder
-  }
-
-  export type GradingFieldMaxOrderByAggregateInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    maxScore?: SortOrder
-    weight?: SortOrder
-    isRequired?: SortOrder
-    gradingSystemId?: SortOrder
-  }
-
-  export type GradingFieldMinOrderByAggregateInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    maxScore?: SortOrder
-    weight?: SortOrder
-    isRequired?: SortOrder
-    gradingSystemId?: SortOrder
-  }
-
-  export type GradingFieldSumOrderByAggregateInput = {
-    maxScore?: SortOrder
-    weight?: SortOrder
-  }
-
-  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
     _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedFloatNullableFilter<$PrismaModel>
-    _min?: NestedFloatNullableFilter<$PrismaModel>
-    _max?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type CourseSessionScalarRelationFilter = {
@@ -26569,7 +25192,7 @@ export namespace Prisma {
     size?: SortOrder
     path?: SortOrder
     category?: SortOrder
-    lecturerId?: SortOrder
+    userId?: SortOrder
   }
 
   export type FileAvgOrderByAggregateInput = {
@@ -26584,7 +25207,7 @@ export namespace Prisma {
     size?: SortOrder
     path?: SortOrder
     category?: SortOrder
-    lecturerId?: SortOrder
+    userId?: SortOrder
   }
 
   export type FileMinOrderByAggregateInput = {
@@ -26595,7 +25218,7 @@ export namespace Prisma {
     size?: SortOrder
     path?: SortOrder
     category?: SortOrder
-    lecturerId?: SortOrder
+    userId?: SortOrder
   }
 
   export type FileSumOrderByAggregateInput = {
@@ -26610,29 +25233,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumFileCategoryFilter<$PrismaModel>
     _max?: NestedEnumFileCategoryFilter<$PrismaModel>
-  }
-  export type JsonNullableFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue
-    lte?: InputJsonValue
-    gt?: InputJsonValue
-    gte?: InputJsonValue
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type AuditLogOrderByRelevanceInput = {
@@ -26668,32 +25268,6 @@ export namespace Prisma {
     entity?: SortOrder
     entityId?: SortOrder
   }
-  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue
-    lte?: InputJsonValue
-    gt?: InputJsonValue
-    gte?: InputJsonValue
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedJsonNullableFilter<$PrismaModel>
-    _max?: NestedJsonNullableFilter<$PrismaModel>
-  }
 
   export type AdminCreateNestedOneWithoutUserInput = {
     create?: XOR<AdminCreateWithoutUserInput, AdminUncheckedCreateWithoutUserInput>
@@ -26719,6 +25293,13 @@ export namespace Prisma {
     connect?: TokenDataWhereUniqueInput
   }
 
+  export type FileCreateNestedManyWithoutUserInput = {
+    create?: XOR<FileCreateWithoutUserInput, FileUncheckedCreateWithoutUserInput> | FileCreateWithoutUserInput[] | FileUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutUserInput | FileCreateOrConnectWithoutUserInput[]
+    createMany?: FileCreateManyUserInputEnvelope
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+  }
+
   export type AdminUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<AdminCreateWithoutUserInput, AdminUncheckedCreateWithoutUserInput>
     connectOrCreate?: AdminCreateOrConnectWithoutUserInput
@@ -26741,6 +25322,13 @@ export namespace Prisma {
     create?: XOR<TokenDataCreateWithoutUserInput, TokenDataUncheckedCreateWithoutUserInput>
     connectOrCreate?: TokenDataCreateOrConnectWithoutUserInput
     connect?: TokenDataWhereUniqueInput
+  }
+
+  export type FileUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<FileCreateWithoutUserInput, FileUncheckedCreateWithoutUserInput> | FileCreateWithoutUserInput[] | FileUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutUserInput | FileCreateOrConnectWithoutUserInput[]
+    createMany?: FileCreateManyUserInputEnvelope
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -26803,6 +25391,20 @@ export namespace Prisma {
     update?: XOR<XOR<TokenDataUpdateToOneWithWhereWithoutUserInput, TokenDataUpdateWithoutUserInput>, TokenDataUncheckedUpdateWithoutUserInput>
   }
 
+  export type FileUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FileCreateWithoutUserInput, FileUncheckedCreateWithoutUserInput> | FileCreateWithoutUserInput[] | FileUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutUserInput | FileCreateOrConnectWithoutUserInput[]
+    upsert?: FileUpsertWithWhereUniqueWithoutUserInput | FileUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FileCreateManyUserInputEnvelope
+    set?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    update?: FileUpdateWithWhereUniqueWithoutUserInput | FileUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FileUpdateManyWithWhereWithoutUserInput | FileUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
+  }
+
   export type AdminUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<AdminCreateWithoutUserInput, AdminUncheckedCreateWithoutUserInput>
     connectOrCreate?: AdminCreateOrConnectWithoutUserInput
@@ -26841,6 +25443,20 @@ export namespace Prisma {
     delete?: TokenDataWhereInput | boolean
     connect?: TokenDataWhereUniqueInput
     update?: XOR<XOR<TokenDataUpdateToOneWithWhereWithoutUserInput, TokenDataUpdateWithoutUserInput>, TokenDataUncheckedUpdateWithoutUserInput>
+  }
+
+  export type FileUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FileCreateWithoutUserInput, FileUncheckedCreateWithoutUserInput> | FileCreateWithoutUserInput[] | FileUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FileCreateOrConnectWithoutUserInput | FileCreateOrConnectWithoutUserInput[]
+    upsert?: FileUpsertWithWhereUniqueWithoutUserInput | FileUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FileCreateManyUserInputEnvelope
+    set?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
+    update?: FileUpdateWithWhereUniqueWithoutUserInput | FileUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FileUpdateManyWithWhereWithoutUserInput | FileUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutTokenDataInput = {
@@ -26901,13 +25517,6 @@ export namespace Prisma {
     connect?: CourseLecturerWhereUniqueInput | CourseLecturerWhereUniqueInput[]
   }
 
-  export type FileCreateNestedManyWithoutLecturerInput = {
-    create?: XOR<FileCreateWithoutLecturerInput, FileUncheckedCreateWithoutLecturerInput> | FileCreateWithoutLecturerInput[] | FileUncheckedCreateWithoutLecturerInput[]
-    connectOrCreate?: FileCreateOrConnectWithoutLecturerInput | FileCreateOrConnectWithoutLecturerInput[]
-    createMany?: FileCreateManyLecturerInputEnvelope
-    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
-  }
-
   export type LecturerDesignationUncheckedCreateNestedManyWithoutLecturerInput = {
     create?: XOR<LecturerDesignationCreateWithoutLecturerInput, LecturerDesignationUncheckedCreateWithoutLecturerInput> | LecturerDesignationCreateWithoutLecturerInput[] | LecturerDesignationUncheckedCreateWithoutLecturerInput[]
     connectOrCreate?: LecturerDesignationCreateOrConnectWithoutLecturerInput | LecturerDesignationCreateOrConnectWithoutLecturerInput[]
@@ -26920,13 +25529,6 @@ export namespace Prisma {
     connectOrCreate?: CourseLecturerCreateOrConnectWithoutLecturerInput | CourseLecturerCreateOrConnectWithoutLecturerInput[]
     createMany?: CourseLecturerCreateManyLecturerInputEnvelope
     connect?: CourseLecturerWhereUniqueInput | CourseLecturerWhereUniqueInput[]
-  }
-
-  export type FileUncheckedCreateNestedManyWithoutLecturerInput = {
-    create?: XOR<FileCreateWithoutLecturerInput, FileUncheckedCreateWithoutLecturerInput> | FileCreateWithoutLecturerInput[] | FileUncheckedCreateWithoutLecturerInput[]
-    connectOrCreate?: FileCreateOrConnectWithoutLecturerInput | FileCreateOrConnectWithoutLecturerInput[]
-    createMany?: FileCreateManyLecturerInputEnvelope
-    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
   }
 
   export type UserUpdateOneRequiredWithoutLecturerNestedInput = {
@@ -26973,20 +25575,6 @@ export namespace Prisma {
     deleteMany?: CourseLecturerScalarWhereInput | CourseLecturerScalarWhereInput[]
   }
 
-  export type FileUpdateManyWithoutLecturerNestedInput = {
-    create?: XOR<FileCreateWithoutLecturerInput, FileUncheckedCreateWithoutLecturerInput> | FileCreateWithoutLecturerInput[] | FileUncheckedCreateWithoutLecturerInput[]
-    connectOrCreate?: FileCreateOrConnectWithoutLecturerInput | FileCreateOrConnectWithoutLecturerInput[]
-    upsert?: FileUpsertWithWhereUniqueWithoutLecturerInput | FileUpsertWithWhereUniqueWithoutLecturerInput[]
-    createMany?: FileCreateManyLecturerInputEnvelope
-    set?: FileWhereUniqueInput | FileWhereUniqueInput[]
-    disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
-    delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
-    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
-    update?: FileUpdateWithWhereUniqueWithoutLecturerInput | FileUpdateWithWhereUniqueWithoutLecturerInput[]
-    updateMany?: FileUpdateManyWithWhereWithoutLecturerInput | FileUpdateManyWithWhereWithoutLecturerInput[]
-    deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
-  }
-
   export type LecturerDesignationUncheckedUpdateManyWithoutLecturerNestedInput = {
     create?: XOR<LecturerDesignationCreateWithoutLecturerInput, LecturerDesignationUncheckedCreateWithoutLecturerInput> | LecturerDesignationCreateWithoutLecturerInput[] | LecturerDesignationUncheckedCreateWithoutLecturerInput[]
     connectOrCreate?: LecturerDesignationCreateOrConnectWithoutLecturerInput | LecturerDesignationCreateOrConnectWithoutLecturerInput[]
@@ -27013,20 +25601,6 @@ export namespace Prisma {
     update?: CourseLecturerUpdateWithWhereUniqueWithoutLecturerInput | CourseLecturerUpdateWithWhereUniqueWithoutLecturerInput[]
     updateMany?: CourseLecturerUpdateManyWithWhereWithoutLecturerInput | CourseLecturerUpdateManyWithWhereWithoutLecturerInput[]
     deleteMany?: CourseLecturerScalarWhereInput | CourseLecturerScalarWhereInput[]
-  }
-
-  export type FileUncheckedUpdateManyWithoutLecturerNestedInput = {
-    create?: XOR<FileCreateWithoutLecturerInput, FileUncheckedCreateWithoutLecturerInput> | FileCreateWithoutLecturerInput[] | FileUncheckedCreateWithoutLecturerInput[]
-    connectOrCreate?: FileCreateOrConnectWithoutLecturerInput | FileCreateOrConnectWithoutLecturerInput[]
-    upsert?: FileUpsertWithWhereUniqueWithoutLecturerInput | FileUpsertWithWhereUniqueWithoutLecturerInput[]
-    createMany?: FileCreateManyLecturerInputEnvelope
-    set?: FileWhereUniqueInput | FileWhereUniqueInput[]
-    disconnect?: FileWhereUniqueInput | FileWhereUniqueInput[]
-    delete?: FileWhereUniqueInput | FileWhereUniqueInput[]
-    connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
-    update?: FileUpdateWithWhereUniqueWithoutLecturerInput | FileUpdateWithWhereUniqueWithoutLecturerInput[]
-    updateMany?: FileUpdateManyWithWhereWithoutLecturerInput | FileUpdateManyWithWhereWithoutLecturerInput[]
-    deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
   }
 
   export type LecturerCreateNestedOneWithoutDesignationsInput = {
@@ -27644,25 +26218,11 @@ export namespace Prisma {
     connect?: CourseSessionWhereUniqueInput | CourseSessionWhereUniqueInput[]
   }
 
-  export type GradingFieldCreateNestedManyWithoutGradingSystemInput = {
-    create?: XOR<GradingFieldCreateWithoutGradingSystemInput, GradingFieldUncheckedCreateWithoutGradingSystemInput> | GradingFieldCreateWithoutGradingSystemInput[] | GradingFieldUncheckedCreateWithoutGradingSystemInput[]
-    connectOrCreate?: GradingFieldCreateOrConnectWithoutGradingSystemInput | GradingFieldCreateOrConnectWithoutGradingSystemInput[]
-    createMany?: GradingFieldCreateManyGradingSystemInputEnvelope
-    connect?: GradingFieldWhereUniqueInput | GradingFieldWhereUniqueInput[]
-  }
-
   export type CourseSessionUncheckedCreateNestedManyWithoutGradingSystemInput = {
     create?: XOR<CourseSessionCreateWithoutGradingSystemInput, CourseSessionUncheckedCreateWithoutGradingSystemInput> | CourseSessionCreateWithoutGradingSystemInput[] | CourseSessionUncheckedCreateWithoutGradingSystemInput[]
     connectOrCreate?: CourseSessionCreateOrConnectWithoutGradingSystemInput | CourseSessionCreateOrConnectWithoutGradingSystemInput[]
     createMany?: CourseSessionCreateManyGradingSystemInputEnvelope
     connect?: CourseSessionWhereUniqueInput | CourseSessionWhereUniqueInput[]
-  }
-
-  export type GradingFieldUncheckedCreateNestedManyWithoutGradingSystemInput = {
-    create?: XOR<GradingFieldCreateWithoutGradingSystemInput, GradingFieldUncheckedCreateWithoutGradingSystemInput> | GradingFieldCreateWithoutGradingSystemInput[] | GradingFieldUncheckedCreateWithoutGradingSystemInput[]
-    connectOrCreate?: GradingFieldCreateOrConnectWithoutGradingSystemInput | GradingFieldCreateOrConnectWithoutGradingSystemInput[]
-    createMany?: GradingFieldCreateManyGradingSystemInputEnvelope
-    connect?: GradingFieldWhereUniqueInput | GradingFieldWhereUniqueInput[]
   }
 
   export type CourseSessionUpdateManyWithoutGradingSystemNestedInput = {
@@ -27679,20 +26239,6 @@ export namespace Prisma {
     deleteMany?: CourseSessionScalarWhereInput | CourseSessionScalarWhereInput[]
   }
 
-  export type GradingFieldUpdateManyWithoutGradingSystemNestedInput = {
-    create?: XOR<GradingFieldCreateWithoutGradingSystemInput, GradingFieldUncheckedCreateWithoutGradingSystemInput> | GradingFieldCreateWithoutGradingSystemInput[] | GradingFieldUncheckedCreateWithoutGradingSystemInput[]
-    connectOrCreate?: GradingFieldCreateOrConnectWithoutGradingSystemInput | GradingFieldCreateOrConnectWithoutGradingSystemInput[]
-    upsert?: GradingFieldUpsertWithWhereUniqueWithoutGradingSystemInput | GradingFieldUpsertWithWhereUniqueWithoutGradingSystemInput[]
-    createMany?: GradingFieldCreateManyGradingSystemInputEnvelope
-    set?: GradingFieldWhereUniqueInput | GradingFieldWhereUniqueInput[]
-    disconnect?: GradingFieldWhereUniqueInput | GradingFieldWhereUniqueInput[]
-    delete?: GradingFieldWhereUniqueInput | GradingFieldWhereUniqueInput[]
-    connect?: GradingFieldWhereUniqueInput | GradingFieldWhereUniqueInput[]
-    update?: GradingFieldUpdateWithWhereUniqueWithoutGradingSystemInput | GradingFieldUpdateWithWhereUniqueWithoutGradingSystemInput[]
-    updateMany?: GradingFieldUpdateManyWithWhereWithoutGradingSystemInput | GradingFieldUpdateManyWithWhereWithoutGradingSystemInput[]
-    deleteMany?: GradingFieldScalarWhereInput | GradingFieldScalarWhereInput[]
-  }
-
   export type CourseSessionUncheckedUpdateManyWithoutGradingSystemNestedInput = {
     create?: XOR<CourseSessionCreateWithoutGradingSystemInput, CourseSessionUncheckedCreateWithoutGradingSystemInput> | CourseSessionCreateWithoutGradingSystemInput[] | CourseSessionUncheckedCreateWithoutGradingSystemInput[]
     connectOrCreate?: CourseSessionCreateOrConnectWithoutGradingSystemInput | CourseSessionCreateOrConnectWithoutGradingSystemInput[]
@@ -27705,50 +26251,6 @@ export namespace Prisma {
     update?: CourseSessionUpdateWithWhereUniqueWithoutGradingSystemInput | CourseSessionUpdateWithWhereUniqueWithoutGradingSystemInput[]
     updateMany?: CourseSessionUpdateManyWithWhereWithoutGradingSystemInput | CourseSessionUpdateManyWithWhereWithoutGradingSystemInput[]
     deleteMany?: CourseSessionScalarWhereInput | CourseSessionScalarWhereInput[]
-  }
-
-  export type GradingFieldUncheckedUpdateManyWithoutGradingSystemNestedInput = {
-    create?: XOR<GradingFieldCreateWithoutGradingSystemInput, GradingFieldUncheckedCreateWithoutGradingSystemInput> | GradingFieldCreateWithoutGradingSystemInput[] | GradingFieldUncheckedCreateWithoutGradingSystemInput[]
-    connectOrCreate?: GradingFieldCreateOrConnectWithoutGradingSystemInput | GradingFieldCreateOrConnectWithoutGradingSystemInput[]
-    upsert?: GradingFieldUpsertWithWhereUniqueWithoutGradingSystemInput | GradingFieldUpsertWithWhereUniqueWithoutGradingSystemInput[]
-    createMany?: GradingFieldCreateManyGradingSystemInputEnvelope
-    set?: GradingFieldWhereUniqueInput | GradingFieldWhereUniqueInput[]
-    disconnect?: GradingFieldWhereUniqueInput | GradingFieldWhereUniqueInput[]
-    delete?: GradingFieldWhereUniqueInput | GradingFieldWhereUniqueInput[]
-    connect?: GradingFieldWhereUniqueInput | GradingFieldWhereUniqueInput[]
-    update?: GradingFieldUpdateWithWhereUniqueWithoutGradingSystemInput | GradingFieldUpdateWithWhereUniqueWithoutGradingSystemInput[]
-    updateMany?: GradingFieldUpdateManyWithWhereWithoutGradingSystemInput | GradingFieldUpdateManyWithWhereWithoutGradingSystemInput[]
-    deleteMany?: GradingFieldScalarWhereInput | GradingFieldScalarWhereInput[]
-  }
-
-  export type GradingSystemCreateNestedOneWithoutFieldsInput = {
-    create?: XOR<GradingSystemCreateWithoutFieldsInput, GradingSystemUncheckedCreateWithoutFieldsInput>
-    connectOrCreate?: GradingSystemCreateOrConnectWithoutFieldsInput
-    connect?: GradingSystemWhereUniqueInput
-  }
-
-  export type FloatFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
-  export type NullableFloatFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
-  export type GradingSystemUpdateOneRequiredWithoutFieldsNestedInput = {
-    create?: XOR<GradingSystemCreateWithoutFieldsInput, GradingSystemUncheckedCreateWithoutFieldsInput>
-    connectOrCreate?: GradingSystemCreateOrConnectWithoutFieldsInput
-    upsert?: GradingSystemUpsertWithoutFieldsInput
-    connect?: GradingSystemWhereUniqueInput
-    update?: XOR<XOR<GradingSystemUpdateToOneWithWhereWithoutFieldsInput, GradingSystemUpdateWithoutFieldsInput>, GradingSystemUncheckedUpdateWithoutFieldsInput>
   }
 
   export type CourseSessionCreateNestedOneWithoutLecturersInput = {
@@ -27899,22 +26401,22 @@ export namespace Prisma {
     update?: XOR<XOR<EnrollmentUpdateToOneWithWhereWithoutResultsInput, EnrollmentUpdateWithoutResultsInput>, EnrollmentUncheckedUpdateWithoutResultsInput>
   }
 
-  export type LecturerCreateNestedOneWithoutFilesInput = {
-    create?: XOR<LecturerCreateWithoutFilesInput, LecturerUncheckedCreateWithoutFilesInput>
-    connectOrCreate?: LecturerCreateOrConnectWithoutFilesInput
-    connect?: LecturerWhereUniqueInput
+  export type UserCreateNestedOneWithoutFilesInput = {
+    create?: XOR<UserCreateWithoutFilesInput, UserUncheckedCreateWithoutFilesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFilesInput
+    connect?: UserWhereUniqueInput
   }
 
   export type EnumFileCategoryFieldUpdateOperationsInput = {
     set?: $Enums.FileCategory
   }
 
-  export type LecturerUpdateOneRequiredWithoutFilesNestedInput = {
-    create?: XOR<LecturerCreateWithoutFilesInput, LecturerUncheckedCreateWithoutFilesInput>
-    connectOrCreate?: LecturerCreateOrConnectWithoutFilesInput
-    upsert?: LecturerUpsertWithoutFilesInput
-    connect?: LecturerWhereUniqueInput
-    update?: XOR<XOR<LecturerUpdateToOneWithWhereWithoutFilesInput, LecturerUpdateWithoutFilesInput>, LecturerUncheckedUpdateWithoutFilesInput>
+  export type UserUpdateOneRequiredWithoutFilesNestedInput = {
+    create?: XOR<UserCreateWithoutFilesInput, UserUncheckedCreateWithoutFilesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFilesInput
+    upsert?: UserUpsertWithoutFilesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFilesInput, UserUpdateWithoutFilesInput>, UserUncheckedUpdateWithoutFilesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -28213,48 +26715,28 @@ export namespace Prisma {
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
 
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedFloatNullableFilter<$PrismaModel>
-    _min?: NestedFloatNullableFilter<$PrismaModel>
-    _max?: NestedFloatNullableFilter<$PrismaModel>
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type NestedEnumEnrollmentStatusFilter<$PrismaModel = never> = {
@@ -28330,29 +26812,6 @@ export namespace Prisma {
     _min?: NestedEnumFileCategoryFilter<$PrismaModel>
     _max?: NestedEnumFileCategoryFilter<$PrismaModel>
   }
-  export type NestedJsonNullableFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
-
-  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue
-    lte?: InputJsonValue
-    gt?: InputJsonValue
-    gte?: InputJsonValue
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type AdminCreateWithoutUserInput = {
     id?: string
@@ -28391,7 +26850,6 @@ export namespace Prisma {
     department: DepartmentCreateNestedOneWithoutLecturersInput
     designations?: LecturerDesignationCreateNestedManyWithoutLecturerInput
     coursesLectured?: CourseLecturerCreateNestedManyWithoutLecturerInput
-    files?: FileCreateNestedManyWithoutLecturerInput
   }
 
   export type LecturerUncheckedCreateWithoutUserInput = {
@@ -28408,7 +26866,6 @@ export namespace Prisma {
     departmentId: string
     designations?: LecturerDesignationUncheckedCreateNestedManyWithoutLecturerInput
     coursesLectured?: CourseLecturerUncheckedCreateNestedManyWithoutLecturerInput
-    files?: FileUncheckedCreateNestedManyWithoutLecturerInput
   }
 
   export type LecturerCreateOrConnectWithoutUserInput = {
@@ -28478,6 +26935,36 @@ export namespace Prisma {
     create: XOR<TokenDataCreateWithoutUserInput, TokenDataUncheckedCreateWithoutUserInput>
   }
 
+  export type FileCreateWithoutUserInput = {
+    id?: string
+    createdAt?: Date | string
+    filename: string
+    mimetype: string
+    size: number
+    path: string
+    category: $Enums.FileCategory
+  }
+
+  export type FileUncheckedCreateWithoutUserInput = {
+    id?: string
+    createdAt?: Date | string
+    filename: string
+    mimetype: string
+    size: number
+    path: string
+    category: $Enums.FileCategory
+  }
+
+  export type FileCreateOrConnectWithoutUserInput = {
+    where: FileWhereUniqueInput
+    create: XOR<FileCreateWithoutUserInput, FileUncheckedCreateWithoutUserInput>
+  }
+
+  export type FileCreateManyUserInputEnvelope = {
+    data: FileCreateManyUserInput | FileCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AdminUpsertWithoutUserInput = {
     update: XOR<AdminUpdateWithoutUserInput, AdminUncheckedUpdateWithoutUserInput>
     create: XOR<AdminCreateWithoutUserInput, AdminUncheckedCreateWithoutUserInput>
@@ -28532,7 +27019,6 @@ export namespace Prisma {
     department?: DepartmentUpdateOneRequiredWithoutLecturersNestedInput
     designations?: LecturerDesignationUpdateManyWithoutLecturerNestedInput
     coursesLectured?: CourseLecturerUpdateManyWithoutLecturerNestedInput
-    files?: FileUpdateManyWithoutLecturerNestedInput
   }
 
   export type LecturerUncheckedUpdateWithoutUserInput = {
@@ -28549,7 +27035,6 @@ export namespace Prisma {
     departmentId?: StringFieldUpdateOperationsInput | string
     designations?: LecturerDesignationUncheckedUpdateManyWithoutLecturerNestedInput
     coursesLectured?: CourseLecturerUncheckedUpdateManyWithoutLecturerNestedInput
-    files?: FileUncheckedUpdateManyWithoutLecturerNestedInput
   }
 
   export type StudentUpsertWithoutUserInput = {
@@ -28626,6 +27111,36 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type FileUpsertWithWhereUniqueWithoutUserInput = {
+    where: FileWhereUniqueInput
+    update: XOR<FileUpdateWithoutUserInput, FileUncheckedUpdateWithoutUserInput>
+    create: XOR<FileCreateWithoutUserInput, FileUncheckedCreateWithoutUserInput>
+  }
+
+  export type FileUpdateWithWhereUniqueWithoutUserInput = {
+    where: FileWhereUniqueInput
+    data: XOR<FileUpdateWithoutUserInput, FileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type FileUpdateManyWithWhereWithoutUserInput = {
+    where: FileScalarWhereInput
+    data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type FileScalarWhereInput = {
+    AND?: FileScalarWhereInput | FileScalarWhereInput[]
+    OR?: FileScalarWhereInput[]
+    NOT?: FileScalarWhereInput | FileScalarWhereInput[]
+    id?: StringFilter<"File"> | string
+    createdAt?: DateTimeFilter<"File"> | Date | string
+    filename?: StringFilter<"File"> | string
+    mimetype?: StringFilter<"File"> | string
+    size?: IntFilter<"File"> | number
+    path?: StringFilter<"File"> | string
+    category?: EnumFileCategoryFilter<"File"> | $Enums.FileCategory
+    userId?: StringFilter<"File"> | string
+  }
+
   export type UserCreateWithoutTokenDataInput = {
     id?: string
     createdAt?: Date | string
@@ -28637,6 +27152,7 @@ export namespace Prisma {
     admin?: AdminCreateNestedOneWithoutUserInput
     lecturer?: LecturerCreateNestedOneWithoutUserInput
     student?: StudentCreateNestedOneWithoutUserInput
+    files?: FileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTokenDataInput = {
@@ -28650,6 +27166,7 @@ export namespace Prisma {
     admin?: AdminUncheckedCreateNestedOneWithoutUserInput
     lecturer?: LecturerUncheckedCreateNestedOneWithoutUserInput
     student?: StudentUncheckedCreateNestedOneWithoutUserInput
+    files?: FileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTokenDataInput = {
@@ -28679,6 +27196,7 @@ export namespace Prisma {
     admin?: AdminUpdateOneWithoutUserNestedInput
     lecturer?: LecturerUpdateOneWithoutUserNestedInput
     student?: StudentUpdateOneWithoutUserNestedInput
+    files?: FileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTokenDataInput = {
@@ -28692,6 +27210,7 @@ export namespace Prisma {
     admin?: AdminUncheckedUpdateOneWithoutUserNestedInput
     lecturer?: LecturerUncheckedUpdateOneWithoutUserNestedInput
     student?: StudentUncheckedUpdateOneWithoutUserNestedInput
+    files?: FileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAdminInput = {
@@ -28705,6 +27224,7 @@ export namespace Prisma {
     lecturer?: LecturerCreateNestedOneWithoutUserInput
     student?: StudentCreateNestedOneWithoutUserInput
     tokenData?: TokenDataCreateNestedOneWithoutUserInput
+    files?: FileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAdminInput = {
@@ -28718,6 +27238,7 @@ export namespace Prisma {
     lecturer?: LecturerUncheckedCreateNestedOneWithoutUserInput
     student?: StudentUncheckedCreateNestedOneWithoutUserInput
     tokenData?: TokenDataUncheckedCreateNestedOneWithoutUserInput
+    files?: FileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAdminInput = {
@@ -28747,6 +27268,7 @@ export namespace Prisma {
     lecturer?: LecturerUpdateOneWithoutUserNestedInput
     student?: StudentUpdateOneWithoutUserNestedInput
     tokenData?: TokenDataUpdateOneWithoutUserNestedInput
+    files?: FileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAdminInput = {
@@ -28760,6 +27282,7 @@ export namespace Prisma {
     lecturer?: LecturerUncheckedUpdateOneWithoutUserNestedInput
     student?: StudentUncheckedUpdateOneWithoutUserNestedInput
     tokenData?: TokenDataUncheckedUpdateOneWithoutUserNestedInput
+    files?: FileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutLecturerInput = {
@@ -28773,6 +27296,7 @@ export namespace Prisma {
     admin?: AdminCreateNestedOneWithoutUserInput
     student?: StudentCreateNestedOneWithoutUserInput
     tokenData?: TokenDataCreateNestedOneWithoutUserInput
+    files?: FileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLecturerInput = {
@@ -28786,6 +27310,7 @@ export namespace Prisma {
     admin?: AdminUncheckedCreateNestedOneWithoutUserInput
     student?: StudentUncheckedCreateNestedOneWithoutUserInput
     tokenData?: TokenDataUncheckedCreateNestedOneWithoutUserInput
+    files?: FileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLecturerInput = {
@@ -28876,36 +27401,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type FileCreateWithoutLecturerInput = {
-    id?: string
-    createdAt?: Date | string
-    filename: string
-    mimetype: string
-    size: number
-    path: string
-    category: $Enums.FileCategory
-  }
-
-  export type FileUncheckedCreateWithoutLecturerInput = {
-    id?: string
-    createdAt?: Date | string
-    filename: string
-    mimetype: string
-    size: number
-    path: string
-    category: $Enums.FileCategory
-  }
-
-  export type FileCreateOrConnectWithoutLecturerInput = {
-    where: FileWhereUniqueInput
-    create: XOR<FileCreateWithoutLecturerInput, FileUncheckedCreateWithoutLecturerInput>
-  }
-
-  export type FileCreateManyLecturerInputEnvelope = {
-    data: FileCreateManyLecturerInput | FileCreateManyLecturerInput[]
-    skipDuplicates?: boolean
-  }
-
   export type UserUpsertWithoutLecturerInput = {
     update: XOR<UserUpdateWithoutLecturerInput, UserUncheckedUpdateWithoutLecturerInput>
     create: XOR<UserCreateWithoutLecturerInput, UserUncheckedCreateWithoutLecturerInput>
@@ -28928,6 +27423,7 @@ export namespace Prisma {
     admin?: AdminUpdateOneWithoutUserNestedInput
     student?: StudentUpdateOneWithoutUserNestedInput
     tokenData?: TokenDataUpdateOneWithoutUserNestedInput
+    files?: FileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLecturerInput = {
@@ -28941,6 +27437,7 @@ export namespace Prisma {
     admin?: AdminUncheckedUpdateOneWithoutUserNestedInput
     student?: StudentUncheckedUpdateOneWithoutUserNestedInput
     tokenData?: TokenDataUncheckedUpdateOneWithoutUserNestedInput
+    files?: FileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DepartmentUpsertWithoutLecturersInput = {
@@ -29037,36 +27534,6 @@ export namespace Prisma {
     lecturerId?: StringFilter<"CourseLecturer"> | string
   }
 
-  export type FileUpsertWithWhereUniqueWithoutLecturerInput = {
-    where: FileWhereUniqueInput
-    update: XOR<FileUpdateWithoutLecturerInput, FileUncheckedUpdateWithoutLecturerInput>
-    create: XOR<FileCreateWithoutLecturerInput, FileUncheckedCreateWithoutLecturerInput>
-  }
-
-  export type FileUpdateWithWhereUniqueWithoutLecturerInput = {
-    where: FileWhereUniqueInput
-    data: XOR<FileUpdateWithoutLecturerInput, FileUncheckedUpdateWithoutLecturerInput>
-  }
-
-  export type FileUpdateManyWithWhereWithoutLecturerInput = {
-    where: FileScalarWhereInput
-    data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyWithoutLecturerInput>
-  }
-
-  export type FileScalarWhereInput = {
-    AND?: FileScalarWhereInput | FileScalarWhereInput[]
-    OR?: FileScalarWhereInput[]
-    NOT?: FileScalarWhereInput | FileScalarWhereInput[]
-    id?: StringFilter<"File"> | string
-    createdAt?: DateTimeFilter<"File"> | Date | string
-    filename?: StringFilter<"File"> | string
-    mimetype?: StringFilter<"File"> | string
-    size?: IntFilter<"File"> | number
-    path?: StringFilter<"File"> | string
-    category?: EnumFileCategoryFilter<"File"> | $Enums.FileCategory
-    lecturerId?: StringFilter<"File"> | string
-  }
-
   export type LecturerCreateWithoutDesignationsInput = {
     id?: string
     createdAt?: Date | string
@@ -29081,7 +27548,6 @@ export namespace Prisma {
     user: UserCreateNestedOneWithoutLecturerInput
     department: DepartmentCreateNestedOneWithoutLecturersInput
     coursesLectured?: CourseLecturerCreateNestedManyWithoutLecturerInput
-    files?: FileCreateNestedManyWithoutLecturerInput
   }
 
   export type LecturerUncheckedCreateWithoutDesignationsInput = {
@@ -29098,7 +27564,6 @@ export namespace Prisma {
     userId: string
     departmentId: string
     coursesLectured?: CourseLecturerUncheckedCreateNestedManyWithoutLecturerInput
-    files?: FileUncheckedCreateNestedManyWithoutLecturerInput
   }
 
   export type LecturerCreateOrConnectWithoutDesignationsInput = {
@@ -29131,7 +27596,6 @@ export namespace Prisma {
     user?: UserUpdateOneRequiredWithoutLecturerNestedInput
     department?: DepartmentUpdateOneRequiredWithoutLecturersNestedInput
     coursesLectured?: CourseLecturerUpdateManyWithoutLecturerNestedInput
-    files?: FileUpdateManyWithoutLecturerNestedInput
   }
 
   export type LecturerUncheckedUpdateWithoutDesignationsInput = {
@@ -29148,7 +27612,6 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     departmentId?: StringFieldUpdateOperationsInput | string
     coursesLectured?: CourseLecturerUncheckedUpdateManyWithoutLecturerNestedInput
-    files?: FileUncheckedUpdateManyWithoutLecturerNestedInput
   }
 
   export type UserCreateWithoutStudentInput = {
@@ -29162,6 +27625,7 @@ export namespace Prisma {
     admin?: AdminCreateNestedOneWithoutUserInput
     lecturer?: LecturerCreateNestedOneWithoutUserInput
     tokenData?: TokenDataCreateNestedOneWithoutUserInput
+    files?: FileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutStudentInput = {
@@ -29175,6 +27639,7 @@ export namespace Prisma {
     admin?: AdminUncheckedCreateNestedOneWithoutUserInput
     lecturer?: LecturerUncheckedCreateNestedOneWithoutUserInput
     tokenData?: TokenDataUncheckedCreateNestedOneWithoutUserInput
+    files?: FileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutStudentInput = {
@@ -29265,6 +27730,7 @@ export namespace Prisma {
     admin?: AdminUpdateOneWithoutUserNestedInput
     lecturer?: LecturerUpdateOneWithoutUserNestedInput
     tokenData?: TokenDataUpdateOneWithoutUserNestedInput
+    files?: FileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStudentInput = {
@@ -29278,6 +27744,7 @@ export namespace Prisma {
     admin?: AdminUncheckedUpdateOneWithoutUserNestedInput
     lecturer?: LecturerUncheckedUpdateOneWithoutUserNestedInput
     tokenData?: TokenDataUncheckedUpdateOneWithoutUserNestedInput
+    files?: FileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DepartmentUpsertWithoutStudentsInput = {
@@ -29450,7 +27917,6 @@ export namespace Prisma {
     user: UserCreateNestedOneWithoutLecturerInput
     designations?: LecturerDesignationCreateNestedManyWithoutLecturerInput
     coursesLectured?: CourseLecturerCreateNestedManyWithoutLecturerInput
-    files?: FileCreateNestedManyWithoutLecturerInput
   }
 
   export type LecturerUncheckedCreateWithoutDepartmentInput = {
@@ -29467,7 +27933,6 @@ export namespace Prisma {
     userId: string
     designations?: LecturerDesignationUncheckedCreateNestedManyWithoutLecturerInput
     coursesLectured?: CourseLecturerUncheckedCreateNestedManyWithoutLecturerInput
-    files?: FileUncheckedCreateNestedManyWithoutLecturerInput
   }
 
   export type LecturerCreateOrConnectWithoutDepartmentInput = {
@@ -29984,8 +28449,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     name: string
     description?: string | null
-    isDefault?: boolean
-    fields?: GradingFieldCreateNestedManyWithoutGradingSystemInput
+    config?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type GradingSystemUncheckedCreateWithoutCourseSessionsInput = {
@@ -29995,8 +28459,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     name: string
     description?: string | null
-    isDefault?: boolean
-    fields?: GradingFieldUncheckedCreateNestedManyWithoutGradingSystemInput
+    config?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type GradingSystemCreateOrConnectWithoutCourseSessionsInput = {
@@ -30162,8 +28625,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    isDefault?: BoolFieldUpdateOperationsInput | boolean
-    fields?: GradingFieldUpdateManyWithoutGradingSystemNestedInput
+    config?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type GradingSystemUncheckedUpdateWithoutCourseSessionsInput = {
@@ -30173,8 +28635,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    isDefault?: BoolFieldUpdateOperationsInput | boolean
-    fields?: GradingFieldUncheckedUpdateManyWithoutGradingSystemNestedInput
+    config?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type SessionUpsertWithoutCourseSessionsInput = {
@@ -30294,38 +28755,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type GradingFieldCreateWithoutGradingSystemInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    description?: string | null
-    maxScore: number
-    weight?: number | null
-    isRequired?: boolean
-  }
-
-  export type GradingFieldUncheckedCreateWithoutGradingSystemInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    description?: string | null
-    maxScore: number
-    weight?: number | null
-    isRequired?: boolean
-  }
-
-  export type GradingFieldCreateOrConnectWithoutGradingSystemInput = {
-    where: GradingFieldWhereUniqueInput
-    create: XOR<GradingFieldCreateWithoutGradingSystemInput, GradingFieldUncheckedCreateWithoutGradingSystemInput>
-  }
-
-  export type GradingFieldCreateManyGradingSystemInputEnvelope = {
-    data: GradingFieldCreateManyGradingSystemInput | GradingFieldCreateManyGradingSystemInput[]
-    skipDuplicates?: boolean
-  }
-
   export type CourseSessionUpsertWithWhereUniqueWithoutGradingSystemInput = {
     where: CourseSessionWhereUniqueInput
     update: XOR<CourseSessionUpdateWithoutGradingSystemInput, CourseSessionUncheckedUpdateWithoutGradingSystemInput>
@@ -30340,97 +28769,6 @@ export namespace Prisma {
   export type CourseSessionUpdateManyWithWhereWithoutGradingSystemInput = {
     where: CourseSessionScalarWhereInput
     data: XOR<CourseSessionUpdateManyMutationInput, CourseSessionUncheckedUpdateManyWithoutGradingSystemInput>
-  }
-
-  export type GradingFieldUpsertWithWhereUniqueWithoutGradingSystemInput = {
-    where: GradingFieldWhereUniqueInput
-    update: XOR<GradingFieldUpdateWithoutGradingSystemInput, GradingFieldUncheckedUpdateWithoutGradingSystemInput>
-    create: XOR<GradingFieldCreateWithoutGradingSystemInput, GradingFieldUncheckedCreateWithoutGradingSystemInput>
-  }
-
-  export type GradingFieldUpdateWithWhereUniqueWithoutGradingSystemInput = {
-    where: GradingFieldWhereUniqueInput
-    data: XOR<GradingFieldUpdateWithoutGradingSystemInput, GradingFieldUncheckedUpdateWithoutGradingSystemInput>
-  }
-
-  export type GradingFieldUpdateManyWithWhereWithoutGradingSystemInput = {
-    where: GradingFieldScalarWhereInput
-    data: XOR<GradingFieldUpdateManyMutationInput, GradingFieldUncheckedUpdateManyWithoutGradingSystemInput>
-  }
-
-  export type GradingFieldScalarWhereInput = {
-    AND?: GradingFieldScalarWhereInput | GradingFieldScalarWhereInput[]
-    OR?: GradingFieldScalarWhereInput[]
-    NOT?: GradingFieldScalarWhereInput | GradingFieldScalarWhereInput[]
-    id?: StringFilter<"GradingField"> | string
-    createdAt?: DateTimeFilter<"GradingField"> | Date | string
-    updatedAt?: DateTimeFilter<"GradingField"> | Date | string
-    name?: StringFilter<"GradingField"> | string
-    description?: StringNullableFilter<"GradingField"> | string | null
-    maxScore?: FloatFilter<"GradingField"> | number
-    weight?: FloatNullableFilter<"GradingField"> | number | null
-    isRequired?: BoolFilter<"GradingField"> | boolean
-    gradingSystemId?: StringFilter<"GradingField"> | string
-  }
-
-  export type GradingSystemCreateWithoutFieldsInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    deletedAt?: Date | string | null
-    name: string
-    description?: string | null
-    isDefault?: boolean
-    courseSessions?: CourseSessionCreateNestedManyWithoutGradingSystemInput
-  }
-
-  export type GradingSystemUncheckedCreateWithoutFieldsInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    deletedAt?: Date | string | null
-    name: string
-    description?: string | null
-    isDefault?: boolean
-    courseSessions?: CourseSessionUncheckedCreateNestedManyWithoutGradingSystemInput
-  }
-
-  export type GradingSystemCreateOrConnectWithoutFieldsInput = {
-    where: GradingSystemWhereUniqueInput
-    create: XOR<GradingSystemCreateWithoutFieldsInput, GradingSystemUncheckedCreateWithoutFieldsInput>
-  }
-
-  export type GradingSystemUpsertWithoutFieldsInput = {
-    update: XOR<GradingSystemUpdateWithoutFieldsInput, GradingSystemUncheckedUpdateWithoutFieldsInput>
-    create: XOR<GradingSystemCreateWithoutFieldsInput, GradingSystemUncheckedCreateWithoutFieldsInput>
-    where?: GradingSystemWhereInput
-  }
-
-  export type GradingSystemUpdateToOneWithWhereWithoutFieldsInput = {
-    where?: GradingSystemWhereInput
-    data: XOR<GradingSystemUpdateWithoutFieldsInput, GradingSystemUncheckedUpdateWithoutFieldsInput>
-  }
-
-  export type GradingSystemUpdateWithoutFieldsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    isDefault?: BoolFieldUpdateOperationsInput | boolean
-    courseSessions?: CourseSessionUpdateManyWithoutGradingSystemNestedInput
-  }
-
-  export type GradingSystemUncheckedUpdateWithoutFieldsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    isDefault?: BoolFieldUpdateOperationsInput | boolean
-    courseSessions?: CourseSessionUncheckedUpdateManyWithoutGradingSystemNestedInput
   }
 
   export type CourseSessionCreateWithoutLecturersInput = {
@@ -30482,7 +28820,6 @@ export namespace Prisma {
     user: UserCreateNestedOneWithoutLecturerInput
     department: DepartmentCreateNestedOneWithoutLecturersInput
     designations?: LecturerDesignationCreateNestedManyWithoutLecturerInput
-    files?: FileCreateNestedManyWithoutLecturerInput
   }
 
   export type LecturerUncheckedCreateWithoutCoursesLecturedInput = {
@@ -30499,7 +28836,6 @@ export namespace Prisma {
     userId: string
     departmentId: string
     designations?: LecturerDesignationUncheckedCreateNestedManyWithoutLecturerInput
-    files?: FileUncheckedCreateNestedManyWithoutLecturerInput
   }
 
   export type LecturerCreateOrConnectWithoutCoursesLecturedInput = {
@@ -30573,7 +28909,6 @@ export namespace Prisma {
     user?: UserUpdateOneRequiredWithoutLecturerNestedInput
     department?: DepartmentUpdateOneRequiredWithoutLecturersNestedInput
     designations?: LecturerDesignationUpdateManyWithoutLecturerNestedInput
-    files?: FileUpdateManyWithoutLecturerNestedInput
   }
 
   export type LecturerUncheckedUpdateWithoutCoursesLecturedInput = {
@@ -30590,7 +28925,6 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     departmentId?: StringFieldUpdateOperationsInput | string
     designations?: LecturerDesignationUncheckedUpdateManyWithoutLecturerNestedInput
-    files?: FileUncheckedUpdateManyWithoutLecturerNestedInput
   }
 
   export type DepartmentCreateWithoutCourseDeptsAndLevelsInput = {
@@ -31011,88 +29345,116 @@ export namespace Prisma {
     courseSessionId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type LecturerCreateWithoutFilesInput = {
+  export type UserCreateWithoutFilesInput = {
     id?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
-    firstName: string
-    lastName: string
-    otherName?: string | null
-    phone?: string | null
-    title?: string | null
-    qualification?: string | null
-    user: UserCreateNestedOneWithoutLecturerInput
-    department: DepartmentCreateNestedOneWithoutLecturersInput
-    designations?: LecturerDesignationCreateNestedManyWithoutLecturerInput
-    coursesLectured?: CourseLecturerCreateNestedManyWithoutLecturerInput
+    email: string
+    password?: string | null
+    role: $Enums.UserRole
+    admin?: AdminCreateNestedOneWithoutUserInput
+    lecturer?: LecturerCreateNestedOneWithoutUserInput
+    student?: StudentCreateNestedOneWithoutUserInput
+    tokenData?: TokenDataCreateNestedOneWithoutUserInput
   }
 
-  export type LecturerUncheckedCreateWithoutFilesInput = {
+  export type UserUncheckedCreateWithoutFilesInput = {
     id?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
-    firstName: string
-    lastName: string
-    otherName?: string | null
-    phone?: string | null
-    title?: string | null
-    qualification?: string | null
-    userId: string
-    departmentId: string
-    designations?: LecturerDesignationUncheckedCreateNestedManyWithoutLecturerInput
-    coursesLectured?: CourseLecturerUncheckedCreateNestedManyWithoutLecturerInput
+    email: string
+    password?: string | null
+    role: $Enums.UserRole
+    admin?: AdminUncheckedCreateNestedOneWithoutUserInput
+    lecturer?: LecturerUncheckedCreateNestedOneWithoutUserInput
+    student?: StudentUncheckedCreateNestedOneWithoutUserInput
+    tokenData?: TokenDataUncheckedCreateNestedOneWithoutUserInput
   }
 
-  export type LecturerCreateOrConnectWithoutFilesInput = {
-    where: LecturerWhereUniqueInput
-    create: XOR<LecturerCreateWithoutFilesInput, LecturerUncheckedCreateWithoutFilesInput>
+  export type UserCreateOrConnectWithoutFilesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutFilesInput, UserUncheckedCreateWithoutFilesInput>
   }
 
-  export type LecturerUpsertWithoutFilesInput = {
-    update: XOR<LecturerUpdateWithoutFilesInput, LecturerUncheckedUpdateWithoutFilesInput>
-    create: XOR<LecturerCreateWithoutFilesInput, LecturerUncheckedCreateWithoutFilesInput>
-    where?: LecturerWhereInput
+  export type UserUpsertWithoutFilesInput = {
+    update: XOR<UserUpdateWithoutFilesInput, UserUncheckedUpdateWithoutFilesInput>
+    create: XOR<UserCreateWithoutFilesInput, UserUncheckedCreateWithoutFilesInput>
+    where?: UserWhereInput
   }
 
-  export type LecturerUpdateToOneWithWhereWithoutFilesInput = {
-    where?: LecturerWhereInput
-    data: XOR<LecturerUpdateWithoutFilesInput, LecturerUncheckedUpdateWithoutFilesInput>
+  export type UserUpdateToOneWithWhereWithoutFilesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutFilesInput, UserUncheckedUpdateWithoutFilesInput>
   }
 
-  export type LecturerUpdateWithoutFilesInput = {
+  export type UserUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    otherName?: NullableStringFieldUpdateOperationsInput | string | null
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    qualification?: NullableStringFieldUpdateOperationsInput | string | null
-    user?: UserUpdateOneRequiredWithoutLecturerNestedInput
-    department?: DepartmentUpdateOneRequiredWithoutLecturersNestedInput
-    designations?: LecturerDesignationUpdateManyWithoutLecturerNestedInput
-    coursesLectured?: CourseLecturerUpdateManyWithoutLecturerNestedInput
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    admin?: AdminUpdateOneWithoutUserNestedInput
+    lecturer?: LecturerUpdateOneWithoutUserNestedInput
+    student?: StudentUpdateOneWithoutUserNestedInput
+    tokenData?: TokenDataUpdateOneWithoutUserNestedInput
   }
 
-  export type LecturerUncheckedUpdateWithoutFilesInput = {
+  export type UserUncheckedUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: StringFieldUpdateOperationsInput | string
-    otherName?: NullableStringFieldUpdateOperationsInput | string | null
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    qualification?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
-    departmentId?: StringFieldUpdateOperationsInput | string
-    designations?: LecturerDesignationUncheckedUpdateManyWithoutLecturerNestedInput
-    coursesLectured?: CourseLecturerUncheckedUpdateManyWithoutLecturerNestedInput
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    admin?: AdminUncheckedUpdateOneWithoutUserNestedInput
+    lecturer?: LecturerUncheckedUpdateOneWithoutUserNestedInput
+    student?: StudentUncheckedUpdateOneWithoutUserNestedInput
+    tokenData?: TokenDataUncheckedUpdateOneWithoutUserNestedInput
+  }
+
+  export type FileCreateManyUserInput = {
+    id?: string
+    createdAt?: Date | string
+    filename: string
+    mimetype: string
+    size: number
+    path: string
+    category: $Enums.FileCategory
+  }
+
+  export type FileUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    filename?: StringFieldUpdateOperationsInput | string
+    mimetype?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
+  }
+
+  export type FileUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    filename?: StringFieldUpdateOperationsInput | string
+    mimetype?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
+  }
+
+  export type FileUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    filename?: StringFieldUpdateOperationsInput | string
+    mimetype?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    path?: StringFieldUpdateOperationsInput | string
+    category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
   }
 
   export type LecturerDesignationCreateManyLecturerInput = {
@@ -31108,16 +29470,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     isCoordinator?: boolean
     courseSessionId: string
-  }
-
-  export type FileCreateManyLecturerInput = {
-    id?: string
-    createdAt?: Date | string
-    filename: string
-    mimetype: string
-    size: number
-    path: string
-    category: $Enums.FileCategory
   }
 
   export type LecturerDesignationUpdateWithoutLecturerInput = {
@@ -31163,36 +29515,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isCoordinator?: BoolFieldUpdateOperationsInput | boolean
     courseSessionId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type FileUpdateWithoutLecturerInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    filename?: StringFieldUpdateOperationsInput | string
-    mimetype?: StringFieldUpdateOperationsInput | string
-    size?: IntFieldUpdateOperationsInput | number
-    path?: StringFieldUpdateOperationsInput | string
-    category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
-  }
-
-  export type FileUncheckedUpdateWithoutLecturerInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    filename?: StringFieldUpdateOperationsInput | string
-    mimetype?: StringFieldUpdateOperationsInput | string
-    size?: IntFieldUpdateOperationsInput | number
-    path?: StringFieldUpdateOperationsInput | string
-    category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
-  }
-
-  export type FileUncheckedUpdateManyWithoutLecturerInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    filename?: StringFieldUpdateOperationsInput | string
-    mimetype?: StringFieldUpdateOperationsInput | string
-    size?: IntFieldUpdateOperationsInput | number
-    path?: StringFieldUpdateOperationsInput | string
-    category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
   }
 
   export type EnrollmentCreateManyStudentInput = {
@@ -31342,7 +29664,6 @@ export namespace Prisma {
     user?: UserUpdateOneRequiredWithoutLecturerNestedInput
     designations?: LecturerDesignationUpdateManyWithoutLecturerNestedInput
     coursesLectured?: CourseLecturerUpdateManyWithoutLecturerNestedInput
-    files?: FileUpdateManyWithoutLecturerNestedInput
   }
 
   export type LecturerUncheckedUpdateWithoutDepartmentInput = {
@@ -31359,7 +29680,6 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     designations?: LecturerDesignationUncheckedUpdateManyWithoutLecturerNestedInput
     coursesLectured?: CourseLecturerUncheckedUpdateManyWithoutLecturerNestedInput
-    files?: FileUncheckedUpdateManyWithoutLecturerNestedInput
   }
 
   export type LecturerUncheckedUpdateManyWithoutDepartmentInput = {
@@ -31709,17 +30029,6 @@ export namespace Prisma {
     sessionId: string
   }
 
-  export type GradingFieldCreateManyGradingSystemInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    description?: string | null
-    maxScore: number
-    weight?: number | null
-    isRequired?: boolean
-  }
-
   export type CourseSessionUpdateWithoutGradingSystemInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31760,39 +30069,6 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     courseId?: StringFieldUpdateOperationsInput | string
     sessionId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type GradingFieldUpdateWithoutGradingSystemInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    maxScore?: FloatFieldUpdateOperationsInput | number
-    weight?: NullableFloatFieldUpdateOperationsInput | number | null
-    isRequired?: BoolFieldUpdateOperationsInput | boolean
-  }
-
-  export type GradingFieldUncheckedUpdateWithoutGradingSystemInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    maxScore?: FloatFieldUpdateOperationsInput | number
-    weight?: NullableFloatFieldUpdateOperationsInput | number | null
-    isRequired?: BoolFieldUpdateOperationsInput | boolean
-  }
-
-  export type GradingFieldUncheckedUpdateManyWithoutGradingSystemInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    maxScore?: FloatFieldUpdateOperationsInput | number
-    weight?: NullableFloatFieldUpdateOperationsInput | number | null
-    isRequired?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ResultCreateManyEnrollmentInput = {

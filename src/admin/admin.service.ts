@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AddAdminBody, UpdateAdminBody } from './admin.schema';
-import { TokenType, UserRole } from '@prisma/client';
+import { TokenType, UserRole } from 'prisma/client/database';
 import { env } from 'src/lib/environment';
 import { generateAccountActivationToken } from 'src/lib/tokens';
 

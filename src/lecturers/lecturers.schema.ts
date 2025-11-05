@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EnrollmentStatus, Level, ResultType, Semester } from '@prisma/client';
+import { EnrollmentStatus, Level, ResultType, Semester } from 'prisma/client/database';
 import {
   IsEmail,
   IsNotEmpty,

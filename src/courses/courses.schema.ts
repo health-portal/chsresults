@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Semester } from '@prisma/client';
+import { Semester } from 'prisma/client/database';
 import { Transform } from 'class-transformer';
 import {
   IsEnum,

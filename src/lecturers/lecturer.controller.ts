@@ -16,8 +16,8 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LecturerService } from './lecturer.service';
 import { User } from 'src/auth/user.decorator';
-import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
-import { UserRole } from '@prisma/client';
+import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
+import { UserRole } from 'prisma/client/database';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { LecturerData } from 'src/auth/auth.schema';
 import type { JwtPayload } from 'src/auth/auth.schema';
@@ -44,7 +44,7 @@ import {
 @ApiTags('Lecturer')
 @ApiBearerAuth('accessToken')
 @Controller('lecturer')
-@AuthRole(UserRole.LECTURER)
+@AuthRoles([UserRole.LECTURER])
 @UseGuards(JwtAuthGuard, UserRoleGuard)
 export class LecturerController {
   constructor(private readonly lecturerService: LecturerService) {}

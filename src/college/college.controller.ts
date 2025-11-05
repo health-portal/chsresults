@@ -15,8 +15,8 @@ import {
   DepartmentRes,
   FacultyRes,
 } from './college.schema';
-import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
-import { UserRole } from '@prisma/client';
+import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
+import { UserRole } from 'prisma/client/database';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import {
   ApiBearerAuth,
@@ -31,7 +31,7 @@ import {
 @ApiTags('College', 'Admin')
 @ApiBearerAuth('accessToken')
 @Controller('college')
-@AuthRole(UserRole.ADMIN)
+@AuthRoles([UserRole.ADMIN])
 @UseGuards(JwtAuthGuard, UserRoleGuard)
 export class CollegeController {
   constructor(private readonly collegeService: CollegeService) {}

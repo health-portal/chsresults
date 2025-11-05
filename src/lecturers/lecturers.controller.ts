@@ -32,14 +32,14 @@ import {
   ApiBearerAuth,
   ApiTags,
 } from '@nestjs/swagger';
-import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
+import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { UserRole } from '@prisma/client';
+import { UserRole } from 'prisma/client/database';
 
 @ApiTags('Lecturers', 'Admin')
 @ApiBearerAuth('accessToken')
 @Controller('lecturers')
-@AuthRole(UserRole.ADMIN)
+@AuthRoles([UserRole.ADMIN])
 @UseGuards(JwtAuthGuard, UserRoleGuard)
 export class LecturersController {
   constructor(private readonly lecturersService: LecturersService) {}

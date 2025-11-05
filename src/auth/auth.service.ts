@@ -17,7 +17,7 @@ import {
 import * as argon2 from 'argon2';
 import { isEmail } from 'class-validator';
 import { JwtService } from '@nestjs/jwt';
-import { TokenType, UserRole } from '@prisma/client';
+import { TokenType, UserRole } from 'prisma/client/database';
 import { env } from 'src/lib/environment';
 import { generateResetPasswordToken } from 'src/lib/tokens';
 

@@ -11,8 +11,8 @@ import { StudentService } from './student.service';
 import { User } from 'src/auth/user.decorator';
 import type { JwtPayload, StudentData } from 'src/auth/auth.schema';
 import { ChangePasswordBody } from 'src/auth/auth.schema';
-import { UserRole } from '@prisma/client';
-import { AuthRole, UserRoleGuard } from 'src/auth/role.guard';
+import { UserRole } from 'prisma/client/database';
+import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import {
   ApiBadRequestResponse,
@@ -29,7 +29,7 @@ import { StudentProfileRes } from './students.schema';
 @ApiTags('Student')
 @ApiBearerAuth('accessToken')
 @Controller('student')
-@AuthRole(UserRole.STUDENT)
+@AuthRoles([UserRole.STUDENT])
 @UseGuards(JwtAuthGuard, UserRoleGuard)
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}

@@ -251,19 +251,7 @@ exports.Prisma.GradingSystemScalarFieldEnum = {
   deletedAt: 'deletedAt',
   name: 'name',
   description: 'description',
-  isDefault: 'isDefault'
-};
-
-exports.Prisma.GradingFieldScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  description: 'description',
-  maxScore: 'maxScore',
-  weight: 'weight',
-  isRequired: 'isRequired',
-  gradingSystemId: 'gradingSystemId'
+  config: 'config'
 };
 
 exports.Prisma.CourseLecturerScalarFieldEnum = {
@@ -310,7 +298,7 @@ exports.Prisma.FileScalarFieldEnum = {
   size: 'size',
   path: 'path',
   category: 'category',
-  lecturerId: 'lecturerId'
+  userId: 'userId'
 };
 
 exports.Prisma.AuditLogScalarFieldEnum = {
@@ -328,12 +316,12 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
-exports.Prisma.JsonNullValueInput = {
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull
 };
 
-exports.Prisma.NullableJsonNullValueInput = {
-  DbNull: Prisma.DbNull,
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
@@ -423,17 +411,21 @@ exports.Prisma.CourseSessionOrderByRelevanceFieldEnum = {
   sessionId: 'sessionId'
 };
 
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
 exports.Prisma.GradingSystemOrderByRelevanceFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description'
-};
-
-exports.Prisma.GradingFieldOrderByRelevanceFieldEnum = {
-  id: 'id',
-  name: 'name',
-  description: 'description',
-  gradingSystemId: 'gradingSystemId'
 };
 
 exports.Prisma.CourseLecturerOrderByRelevanceFieldEnum = {
@@ -454,17 +446,6 @@ exports.Prisma.EnrollmentOrderByRelevanceFieldEnum = {
   courseSessionId: 'courseSessionId'
 };
 
-exports.Prisma.JsonNullValueFilter = {
-  DbNull: Prisma.DbNull,
-  JsonNull: Prisma.JsonNull,
-  AnyNull: Prisma.AnyNull
-};
-
-exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-};
-
 exports.Prisma.ResultOrderByRelevanceFieldEnum = {
   id: 'id',
   enrollmentId: 'enrollmentId'
@@ -475,7 +456,7 @@ exports.Prisma.FileOrderByRelevanceFieldEnum = {
   filename: 'filename',
   mimetype: 'mimetype',
   path: 'path',
-  lecturerId: 'lecturerId'
+  userId: 'userId'
 };
 
 exports.Prisma.AuditLogOrderByRelevanceFieldEnum = {
@@ -546,8 +527,10 @@ exports.ResultType = exports.$Enums.ResultType = {
 
 exports.FileCategory = exports.$Enums.FileCategory = {
   RESULTS: 'RESULTS',
-  USER_DATA: 'USER_DATA',
-  OTHER: 'OTHER'
+  LECTURERS: 'LECTURERS',
+  COURSES: 'COURSES',
+  STUDENTS: 'STUDENTS',
+  REGISTRATIONS: 'REGISTRATIONS'
 };
 
 exports.Prisma.ModelName = {
@@ -563,7 +546,6 @@ exports.Prisma.ModelName = {
   Course: 'Course',
   CourseSession: 'CourseSession',
   GradingSystem: 'GradingSystem',
-  GradingField: 'GradingField',
   CourseLecturer: 'CourseLecturer',
   CourseSesnDeptAndLevel: 'CourseSesnDeptAndLevel',
   Enrollment: 'Enrollment',
