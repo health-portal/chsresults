@@ -6,10 +6,14 @@ import {
   UpdateCourseBody,
 } from './courses.schema';
 import { parseCsv } from 'src/lib/csv';
+import { S3Service } from 'src/s3/s3.service';
 
 @Injectable()
 export class CoursesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly s3Service: S3Service,
+  ) {}
 
   async createCourse({
     code,
@@ -29,6 +33,15 @@ export class CoursesService {
         units,
       },
     });
+  }
+
+  async getCreateCoursesUrls(filename: string) {
+    const [uploadUrl, downloadUrl] = await Promise.all([
+      this.s3Service.generateUploadUrl(filename),
+      this.s3Service.generateDownloadUrl(filename),
+    ]);
+
+    return { uploadUrl, downloadUrl };
   }
 
   async createCourses(file: Express.Multer.File) {

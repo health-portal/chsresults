@@ -1,11 +1,26 @@
 import { env } from 'src/lib/environment';
 
 export enum QueueTable {
-  EMAIL_SENDING = 'email-sending',
-  FILE_PROCESSING = 'file-processing',
+  HI_PRIORITY_EMAILS = 'hi-priority-emails',
+  LO_PRIORITY_EMAILS = 'lo-priority-emails',
+  FILES = 'files',
 }
 
 // Email Templates
+export enum EmailSubject {
+  ACTIVATE_ACCOUNT = 'Activate Your Account',
+  RESET_PASSWORD = 'Reset Your Password',
+  RESULT_UPLOAD = 'Your Result Was Uploaded',
+  APPROVAL_REQUEST = 'Request for Approval',
+  APPROVAL_SUCCESS = 'Approval Successful',
+}
+
+export interface SendEmailBody {
+  toEmail: string;
+  subject: EmailSubject;
+  content: string;
+}
+
 export interface SetPasswordSchema {
   name: string;
   isActivateAccount: boolean;

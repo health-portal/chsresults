@@ -3,5 +3,6 @@ import { MessageQueueService } from './message-queue.service';
 
 @Module({
   providers: [MessageQueueService],
+  exports: [MessageQueueService],
 })
 export class MessageQueueModule {}

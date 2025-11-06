@@ -5,11 +5,9 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseFilePipeBuilder,
   ParseUUIDPipe,
   Patch,
   Post,
-  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -22,7 +20,6 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { LecturerData } from 'src/auth/auth.schema';
 import type { JwtPayload } from 'src/auth/auth.schema';
 import {
-  RegisterStudentsRes,
   CourseSessionRes,
   EditResultBody,
   RegisterStudentBody,
@@ -33,7 +30,6 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
-  ApiConsumes,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -86,29 +82,19 @@ export class LecturerController {
   }
 
   @ApiOperation({ summary: 'Register students in a course session' })
-  @ApiConsumes('multipart/form-data')
-  @ApiOkResponse({ type: RegisterStudentsRes })
   @ApiForbiddenResponse({
     description:
       'You are not authorized to register students in this course session.',
   })
   @Post('courses-sessions/:courseSessionId/students/batch')
-  @UseInterceptors(FileInterceptor('file'))
-  async registerStudents(
+  async getRegisterStudentsUrl(
     @User() user: JwtPayload,
     @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addMaxSizeValidator({ maxSize: 5 * 1024 })
-        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
-    )
-    file: Express.Multer.File,
   ) {
     const lecturerId = this.getLecturerId(user);
-    return await this.lecturerService.registerStudents(
+    return await this.lecturerService.getRegisterStudentsUrl(
       lecturerId,
       courseSessionId,
-      file,
     );
   }
 
@@ -120,16 +106,14 @@ export class LecturerController {
   })
   @Post('courses-sessions/:courseSessionId/students')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadResults(
+  async getUploadResultsUrl(
     @User() user: JwtPayload,
     @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
-    @UploadedFile() file: Express.Multer.File,
   ) {
     const lecturerId = this.getLecturerId(user);
-    return await this.lecturerService.uploadResults(
+    return await this.lecturerService.getUploadResultsUrl(
       lecturerId,
       courseSessionId,
-      file,
     );
   }
 

@@ -10,8 +10,9 @@ export class MessageQueueService
 {
   async onModuleInit() {
     await this.$connect();
-    await pgmq.createQueue(this, QueueTable.EMAIL_SENDING);
-    await pgmq.createQueue(this, QueueTable.FILE_PROCESSING);
+    await Promise.all(
+      Object.values(QueueTable).map((table) => pgmq.createQueue(this, table)),
+    );
   }
 
   async onModuleDestroy() {

@@ -90,8 +90,6 @@ model User {
     student   Student?
     tokenData TokenData?
 
-    files File[]
-
     @@index([role])
     @@index([deletedAt])
     @@map("users")
@@ -403,25 +401,6 @@ model Result {
     @@unique([enrollmentId, type], name: "uniqueResult")
     @@index([enrollmentId])
     @@map("results")
-}
-
-model File {
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-
-    filename String
-    mimetype String
-    size     Int
-    path     String
-    category FileCategory
-
-    userId String
-    user   User   @relation(fields: [userId], references: [id])
-
-    @@index([userId])
-    @@index([category])
-    @@index([createdAt])
-    @@map("files")
 }
 
 model AuditLog {

@@ -3,25 +3,19 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   Param,
-  ParseFilePipeBuilder,
   ParseUUIDPipe,
   Patch,
   Post,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import {
   CreateStudentBody,
-  CreateStudentsRes,
   StudentProfileRes,
   UpdateStudentBody,
 } from './students.schema';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { UserRole } from 'prisma/client/database';
 import { StudentsService } from './students.service';
 import {
@@ -29,14 +23,12 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
-  ApiConsumes,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
-  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 
 @ApiTags('Students', 'Admin')
@@ -57,20 +49,9 @@ export class StudentsController {
   }
 
   @ApiOperation({ summary: 'Create multiple students from a file' })
-  @ApiConsumes('multipart/form-data')
-  @ApiCreatedResponse({ type: CreateStudentsRes })
-  @ApiUnprocessableEntityResponse({ description: 'Invalid file data or size' })
   @Post('batch')
-  @UseInterceptors(FileInterceptor('file'))
-  async createStudents(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addMaxSizeValidator({ maxSize: 5 * 1024 })
-        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
-    )
-    file: Express.Multer.File,
-  ) {
-    return await this.studentsService.createStudents(file);
+  async getCreateStudentsUrl() {
+    return await this.studentsService.getCreateStudentsUrl();
   }
 
   @ApiOperation({ summary: 'Get all students' })

@@ -7,7 +7,7 @@ import { PrismaExceptionFilter } from './prisma/prisma-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalFilters(new PrismaExceptionFilter());
+  app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -15,7 +15,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  app.enableCors();
+  app.useGlobalFilters(new PrismaExceptionFilter());
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('CoHS Results Portal API')

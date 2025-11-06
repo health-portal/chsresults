@@ -3,34 +3,27 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   Param,
-  ParseFilePipeBuilder,
   Patch,
   Post,
-  UploadedFile,
+  Query,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { CoursesService } from './courses.service';
 import {
   CourseRes,
   CreateCourseBody,
-  CreateCoursesRes,
   UpdateCourseBody,
 } from './courses.schema';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiConflictResponse,
-  ApiConsumes,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { UserRole } from 'prisma/client/database';
 import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
@@ -54,22 +47,9 @@ export class CoursesController {
   }
 
   @ApiOperation({ summary: 'Create multiple courses from a file' })
-  @ApiConsumes('multipart/form-data')
-  @ApiCreatedResponse({ type: [CreateCoursesRes] })
-  @ApiUnprocessableEntityResponse({
-    description: 'Invalid file format or size',
-  })
   @Post('batch')
-  @UseInterceptors(FileInterceptor('file'))
-  async createCourses(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addMaxSizeValidator({ maxSize: 5 * 1024 })
-        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
-    )
-    file: Express.Multer.File,
-  ) {
-    return await this.coursesService.createCourses(file);
+  async getCreateCoursesUrls(@Query('filename') filename: string) {
+    return await this.coursesService.getCreateCoursesUrls(filename);
   }
 
   @ApiOperation({ summary: 'Get all courses' })

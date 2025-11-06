@@ -1,11 +1,12 @@
 generator mqClient {
     provider        = "prisma-client-js"
     previewFeatures = ["postgresqlExtensions"]
-    output = "./client/message-queue"
+    output          = "./client/message-queue"
 }
 
 datasource mq {
     provider   = "postgresql"
     url        = env("MESSAGE_QUEUE_DATABASE_URL")
+    // directUrl  = env("MESSAGE_QUEUE_DATABASE_DIRECT_URL")
     extensions = [pgmq]
 }

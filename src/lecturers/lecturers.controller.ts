@@ -3,32 +3,26 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   Param,
-  ParseFilePipeBuilder,
   ParseUUIDPipe,
   Patch,
   Post,
-  UploadedFile,
   UseGuards,
 } from '@nestjs/common';
 import { LecturersService } from './lecturers.service';
 import {
   CreateLecturerBody,
-  CreateLecturersRes,
   UpdateLecturerBody,
   LecturerProfileRes,
 } from './lecturers.schema';
 import {
   ApiBadRequestResponse,
   ApiBody,
-  ApiConsumes,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiNotFoundResponse,
   ApiOperation,
   ApiConflictResponse,
-  ApiUnprocessableEntityResponse,
   ApiBearerAuth,
   ApiTags,
 } from '@nestjs/swagger';
@@ -55,19 +49,9 @@ export class LecturersController {
   }
 
   @ApiOperation({ summary: 'Create multiple lecturers from a file' })
-  @ApiConsumes('multipart/form-data')
-  @ApiCreatedResponse({ type: CreateLecturersRes })
-  @ApiUnprocessableEntityResponse({ description: 'Invalid file data or size' })
   @Post('batch')
-  async createLecturers(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addMaxSizeValidator({ maxSize: 5 * 1024 })
-        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
-    )
-    file: Express.Multer.File,
-  ) {
-    await this.lecturersService.createLecturers(file);
+  async getCreateLecturersUrl() {
+    return await this.lecturersService.getCreateLecturersUrl();
   }
 
   @ApiOperation({ summary: 'Get all lecturers' })
