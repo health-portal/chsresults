@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { User } from 'src/auth/user.decorator';
-import type { JwtPayload, StudentData } from 'src/auth/auth.schema';
+import type { UserPayload, StudentData } from 'src/auth/auth.schema';
 import { ChangePasswordBody } from 'src/auth/auth.schema';
 import { UserRole } from 'prisma/client/database';
 import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
@@ -40,7 +40,7 @@ export class StudentController {
   @ApiBadRequestResponse({ description: 'Invalid credentials' })
   @Post('change-password')
   async changePassword(
-    @User() user: JwtPayload,
+    @User() user: UserPayload,
     @Body() body: ChangePasswordBody,
   ) {
     const studentData = user.userData as StudentData;
@@ -53,7 +53,7 @@ export class StudentController {
   @ApiOperation({ summary: "List all student's enrollments" })
   @ApiOkResponse({ type: [EnrollmentRes] })
   @Get('enrollments')
-  async listEnrollments(@User() user: JwtPayload) {
+  async listEnrollments(@User() user: UserPayload) {
     const studentData = user.userData as StudentData;
     return await this.studentService.listEnrollments(studentData.studentId);
   }
@@ -63,7 +63,7 @@ export class StudentController {
   @ApiNotFoundResponse({ description: 'Enrollment not found' })
   @Get('enrollments/:enrollmentId')
   async listEnrollment(
-    @User() user: JwtPayload,
+    @User() user: UserPayload,
     @Param('enrollmentId', ParseUUIDPipe) enrollmentId: string,
   ) {
     const studentData = user.userData as StudentData;
@@ -76,7 +76,7 @@ export class StudentController {
   @ApiOperation({ summary: 'Get student profile' })
   @ApiOkResponse({ type: StudentProfileRes })
   @Get('profile')
-  async getProfile(@User() user: JwtPayload) {
+  async getProfile(@User() user: UserPayload) {
     const studentData = user.userData as StudentData;
     return await this.studentService.getProfile(studentData.studentId);
   }

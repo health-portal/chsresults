@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { JwtPayload } from './auth.schema';
+import { UserPayload } from './auth.schema';
 import { UserRole } from 'prisma/client/database';
 
 export const AuthRoles = Reflector.createDecorator<UserRole[]>();
@@ -18,7 +18,7 @@ export class UserRoleGuard implements CanActivate {
     if (!roles) return true;
 
     const request: Request = context.switchToHttp().getRequest();
-    const user = request.user as JwtPayload;
+    const user = request.user as UserPayload;
 
     return roles.includes(user.userRole);
   }

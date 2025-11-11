@@ -13,7 +13,7 @@ import {
 import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
 import { UserRole } from 'prisma/client/database';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { AdminData, type JwtPayload } from 'src/auth/auth.schema';
+import { AdminData, type UserPayload } from 'src/auth/auth.schema';
 
 @ApiTags('Admin')
 @ApiBearerAuth('accessToken')
@@ -48,7 +48,10 @@ export class AdminController {
   @ApiOperation({ summary: 'Update admin profile' })
   @ApiOkResponse({ type: AdminProfileRes })
   @Patch('profile')
-  async updateProfile(@User() user: JwtPayload, @Body() body: UpdateAdminBody) {
+  async updateProfile(
+    @User() user: UserPayload,
+    @Body() body: UpdateAdminBody,
+  ) {
     const { adminId } = user.userData as AdminData;
     return await this.adminService.updateProfile(adminId, body);
   }

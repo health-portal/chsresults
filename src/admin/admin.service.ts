@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AddAdminBody, UpdateAdminBody } from './admin.schema';
-import { TokenType, UserRole } from 'prisma/client/database';
-import { env } from 'src/lib/environment';
-import { generateAccountActivationToken } from 'src/lib/tokens';
+import { UserRole } from 'prisma/client/database';
+import { TokensService } from 'src/tokens/tokens.service';
 
 @Injectable()
 export class AdminService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly tokensService: TokensService,
+  ) {}
 
   async addAdmin({ email, name }: AddAdminBody) {
     const createdUser = await this.prisma.user.create({
@@ -18,28 +20,13 @@ export class AdminService {
       },
     });
 
-    const { tokenString, expiresAt } = generateAccountActivationToken();
-    await this.prisma.tokenData.upsert({
-      where: { userId: createdUser.id },
-      update: {
-        tokenString,
-        tokenType: TokenType.ACCOUNT_ACTIVATION,
-        expiresAt,
-      },
-      create: {
-        tokenString,
-        tokenType: TokenType.ACCOUNT_ACTIVATION,
-        expiresAt,
-        userId: createdUser.id,
-      },
+    const url = await this.tokensService.genActivateAccountUrl({
+      email: createdUser.email,
+      role: UserRole.ADMIN,
+      sub: createdUser.id,
     });
 
-    // TODO: Send account activation email
-    const addAdminUrl = new URL(env.FRONTEND_BASE_URL + '/auth/activate');
-    addAdminUrl.searchParams.set('email', email);
-    addAdminUrl.searchParams.set('role', UserRole.ADMIN);
-    addAdminUrl.searchParams.set('token', tokenString);
-    console.log(addAdminUrl);
+    return { message: 'Admin added successfully', url };
   }
 
   async getAdmins() {

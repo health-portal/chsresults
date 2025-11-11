@@ -14,11 +14,6 @@ enum UserRole {
     STUDENT
 }
 
-enum TokenType {
-    PASSWORD_RESET
-    ACCOUNT_ACTIVATION
-}
-
 enum Gender {
     MALE
     FEMALE
@@ -88,29 +83,11 @@ model User {
     admin     Admin?
     lecturer  Lecturer?
     student   Student?
-    tokenData TokenData?
     files     File[]
 
     @@index([role])
     @@index([deletedAt])
     @@map("users")
-}
-
-model TokenData {
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-
-    tokenString String    @unique
-    tokenType   TokenType
-    expiresAt   DateTime
-
-    userId String @unique
-    user   User   @relation(fields: [userId], references: [id])
-
-    @@index([tokenType])
-    @@index([expiresAt])
-    @@index([tokenString])
-    @@map("token_data")
 }
 
 model Admin {

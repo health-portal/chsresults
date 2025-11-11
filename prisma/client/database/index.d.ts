@@ -19,11 +19,6 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
- * Model TokenData
- * 
- */
-export type TokenData = $Result.DefaultSelection<Prisma.$TokenDataPayload>
-/**
  * Model Admin
  * 
  */
@@ -117,14 +112,6 @@ export namespace $Enums {
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
 
 
-export const TokenType: {
-  PASSWORD_RESET: 'PASSWORD_RESET',
-  ACCOUNT_ACTIVATION: 'ACCOUNT_ACTIVATION'
-};
-
-export type TokenType = (typeof TokenType)[keyof typeof TokenType]
-
-
 export const Gender: {
   MALE: 'MALE',
   FEMALE: 'FEMALE'
@@ -209,10 +196,6 @@ export type ResultType = (typeof ResultType)[keyof typeof ResultType]
 export type UserRole = $Enums.UserRole
 
 export const UserRole: typeof $Enums.UserRole
-
-export type TokenType = $Enums.TokenType
-
-export const TokenType: typeof $Enums.TokenType
 
 export type Gender = $Enums.Gender
 
@@ -373,16 +356,6 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.tokenData`: Exposes CRUD operations for the **TokenData** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more TokenData
-    * const tokenData = await prisma.tokenData.findMany()
-    * ```
-    */
-  get tokenData(): Prisma.TokenDataDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.admin`: Exposes CRUD operations for the **Admin** model.
@@ -985,7 +958,6 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
-    TokenData: 'TokenData',
     Admin: 'Admin',
     Lecturer: 'Lecturer',
     LecturerDesignation: 'LecturerDesignation',
@@ -1020,7 +992,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "tokenData" | "admin" | "lecturer" | "lecturerDesignation" | "student" | "faculty" | "department" | "session" | "course" | "courseSession" | "gradingSystem" | "courseLecturer" | "courseSesnDeptAndLevel" | "enrollment" | "result" | "file" | "auditLog"
+      modelProps: "user" | "admin" | "lecturer" | "lecturerDesignation" | "student" | "faculty" | "department" | "session" | "course" | "courseSession" | "gradingSystem" | "courseLecturer" | "courseSesnDeptAndLevel" | "enrollment" | "result" | "file" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1087,72 +1059,6 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
-          }
-        }
-      }
-      TokenData: {
-        payload: Prisma.$TokenDataPayload<ExtArgs>
-        fields: Prisma.TokenDataFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.TokenDataFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TokenDataPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.TokenDataFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TokenDataPayload>
-          }
-          findFirst: {
-            args: Prisma.TokenDataFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TokenDataPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.TokenDataFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TokenDataPayload>
-          }
-          findMany: {
-            args: Prisma.TokenDataFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TokenDataPayload>[]
-          }
-          create: {
-            args: Prisma.TokenDataCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TokenDataPayload>
-          }
-          createMany: {
-            args: Prisma.TokenDataCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          delete: {
-            args: Prisma.TokenDataDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TokenDataPayload>
-          }
-          update: {
-            args: Prisma.TokenDataUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TokenDataPayload>
-          }
-          deleteMany: {
-            args: Prisma.TokenDataDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.TokenDataUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.TokenDataUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TokenDataPayload>
-          }
-          aggregate: {
-            args: Prisma.TokenDataAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateTokenData>
-          }
-          groupBy: {
-            args: Prisma.TokenDataGroupByArgs<ExtArgs>
-            result: $Utils.Optional<TokenDataGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.TokenDataCountArgs<ExtArgs>
-            result: $Utils.Optional<TokenDataCountAggregateOutputType> | number
           }
         }
       }
@@ -2309,7 +2215,6 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     user?: UserOmit
-    tokenData?: TokenDataOmit
     admin?: AdminOmit
     lecturer?: LecturerOmit
     lecturerDesignation?: LecturerDesignationOmit
@@ -2952,7 +2857,6 @@ export namespace Prisma {
     admin?: boolean | User$adminArgs<ExtArgs>
     lecturer?: boolean | User$lecturerArgs<ExtArgs>
     student?: boolean | User$studentArgs<ExtArgs>
-    tokenData?: boolean | User$tokenDataArgs<ExtArgs>
     files?: boolean | User$filesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -2974,7 +2878,6 @@ export namespace Prisma {
     admin?: boolean | User$adminArgs<ExtArgs>
     lecturer?: boolean | User$lecturerArgs<ExtArgs>
     student?: boolean | User$studentArgs<ExtArgs>
-    tokenData?: boolean | User$tokenDataArgs<ExtArgs>
     files?: boolean | User$filesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -2985,7 +2888,6 @@ export namespace Prisma {
       admin: Prisma.$AdminPayload<ExtArgs> | null
       lecturer: Prisma.$LecturerPayload<ExtArgs> | null
       student: Prisma.$StudentPayload<ExtArgs> | null
-      tokenData: Prisma.$TokenDataPayload<ExtArgs> | null
       files: Prisma.$FilePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -3339,7 +3241,6 @@ export namespace Prisma {
     admin<T extends User$adminArgs<ExtArgs> = {}>(args?: Subset<T, User$adminArgs<ExtArgs>>): Prisma__AdminClient<$Result.GetResult<Prisma.$AdminPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     lecturer<T extends User$lecturerArgs<ExtArgs> = {}>(args?: Subset<T, User$lecturerArgs<ExtArgs>>): Prisma__LecturerClient<$Result.GetResult<Prisma.$LecturerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     student<T extends User$studentArgs<ExtArgs> = {}>(args?: Subset<T, User$studentArgs<ExtArgs>>): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    tokenData<T extends User$tokenDataArgs<ExtArgs> = {}>(args?: Subset<T, User$tokenDataArgs<ExtArgs>>): Prisma__TokenDataClient<$Result.GetResult<Prisma.$TokenDataPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     files<T extends User$filesArgs<ExtArgs> = {}>(args?: Subset<T, User$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3777,25 +3678,6 @@ export namespace Prisma {
   }
 
   /**
-   * User.tokenData
-   */
-  export type User$tokenDataArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TokenData
-     */
-    select?: TokenDataSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TokenData
-     */
-    omit?: TokenDataOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TokenDataInclude<ExtArgs> | null
-    where?: TokenDataWhereInput
-  }
-
-  /**
    * User.files
    */
   export type User$filesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3835,946 +3717,6 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model TokenData
-   */
-
-  export type AggregateTokenData = {
-    _count: TokenDataCountAggregateOutputType | null
-    _min: TokenDataMinAggregateOutputType | null
-    _max: TokenDataMaxAggregateOutputType | null
-  }
-
-  export type TokenDataMinAggregateOutputType = {
-    id: string | null
-    createdAt: Date | null
-    tokenString: string | null
-    tokenType: $Enums.TokenType | null
-    expiresAt: Date | null
-    userId: string | null
-  }
-
-  export type TokenDataMaxAggregateOutputType = {
-    id: string | null
-    createdAt: Date | null
-    tokenString: string | null
-    tokenType: $Enums.TokenType | null
-    expiresAt: Date | null
-    userId: string | null
-  }
-
-  export type TokenDataCountAggregateOutputType = {
-    id: number
-    createdAt: number
-    tokenString: number
-    tokenType: number
-    expiresAt: number
-    userId: number
-    _all: number
-  }
-
-
-  export type TokenDataMinAggregateInputType = {
-    id?: true
-    createdAt?: true
-    tokenString?: true
-    tokenType?: true
-    expiresAt?: true
-    userId?: true
-  }
-
-  export type TokenDataMaxAggregateInputType = {
-    id?: true
-    createdAt?: true
-    tokenString?: true
-    tokenType?: true
-    expiresAt?: true
-    userId?: true
-  }
-
-  export type TokenDataCountAggregateInputType = {
-    id?: true
-    createdAt?: true
-    tokenString?: true
-    tokenType?: true
-    expiresAt?: true
-    userId?: true
-    _all?: true
-  }
-
-  export type TokenDataAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which TokenData to aggregate.
-     */
-    where?: TokenDataWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of TokenData to fetch.
-     */
-    orderBy?: TokenDataOrderByWithRelationInput | TokenDataOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: TokenDataWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` TokenData from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` TokenData.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned TokenData
-    **/
-    _count?: true | TokenDataCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: TokenDataMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: TokenDataMaxAggregateInputType
-  }
-
-  export type GetTokenDataAggregateType<T extends TokenDataAggregateArgs> = {
-        [P in keyof T & keyof AggregateTokenData]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateTokenData[P]>
-      : GetScalarType<T[P], AggregateTokenData[P]>
-  }
-
-
-
-
-  export type TokenDataGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: TokenDataWhereInput
-    orderBy?: TokenDataOrderByWithAggregationInput | TokenDataOrderByWithAggregationInput[]
-    by: TokenDataScalarFieldEnum[] | TokenDataScalarFieldEnum
-    having?: TokenDataScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: TokenDataCountAggregateInputType | true
-    _min?: TokenDataMinAggregateInputType
-    _max?: TokenDataMaxAggregateInputType
-  }
-
-  export type TokenDataGroupByOutputType = {
-    id: string
-    createdAt: Date
-    tokenString: string
-    tokenType: $Enums.TokenType
-    expiresAt: Date
-    userId: string
-    _count: TokenDataCountAggregateOutputType | null
-    _min: TokenDataMinAggregateOutputType | null
-    _max: TokenDataMaxAggregateOutputType | null
-  }
-
-  type GetTokenDataGroupByPayload<T extends TokenDataGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<TokenDataGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof TokenDataGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], TokenDataGroupByOutputType[P]>
-            : GetScalarType<T[P], TokenDataGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type TokenDataSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    createdAt?: boolean
-    tokenString?: boolean
-    tokenType?: boolean
-    expiresAt?: boolean
-    userId?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["tokenData"]>
-
-
-
-  export type TokenDataSelectScalar = {
-    id?: boolean
-    createdAt?: boolean
-    tokenString?: boolean
-    tokenType?: boolean
-    expiresAt?: boolean
-    userId?: boolean
-  }
-
-  export type TokenDataOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "tokenString" | "tokenType" | "expiresAt" | "userId", ExtArgs["result"]["tokenData"]>
-  export type TokenDataInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-
-  export type $TokenDataPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "TokenData"
-    objects: {
-      user: Prisma.$UserPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      createdAt: Date
-      tokenString: string
-      tokenType: $Enums.TokenType
-      expiresAt: Date
-      userId: string
-    }, ExtArgs["result"]["tokenData"]>
-    composites: {}
-  }
-
-  type TokenDataGetPayload<S extends boolean | null | undefined | TokenDataDefaultArgs> = $Result.GetResult<Prisma.$TokenDataPayload, S>
-
-  type TokenDataCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<TokenDataFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: TokenDataCountAggregateInputType | true
-    }
-
-  export interface TokenDataDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TokenData'], meta: { name: 'TokenData' } }
-    /**
-     * Find zero or one TokenData that matches the filter.
-     * @param {TokenDataFindUniqueArgs} args - Arguments to find a TokenData
-     * @example
-     * // Get one TokenData
-     * const tokenData = await prisma.tokenData.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends TokenDataFindUniqueArgs>(args: SelectSubset<T, TokenDataFindUniqueArgs<ExtArgs>>): Prisma__TokenDataClient<$Result.GetResult<Prisma.$TokenDataPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one TokenData that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {TokenDataFindUniqueOrThrowArgs} args - Arguments to find a TokenData
-     * @example
-     * // Get one TokenData
-     * const tokenData = await prisma.tokenData.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends TokenDataFindUniqueOrThrowArgs>(args: SelectSubset<T, TokenDataFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TokenDataClient<$Result.GetResult<Prisma.$TokenDataPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first TokenData that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TokenDataFindFirstArgs} args - Arguments to find a TokenData
-     * @example
-     * // Get one TokenData
-     * const tokenData = await prisma.tokenData.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends TokenDataFindFirstArgs>(args?: SelectSubset<T, TokenDataFindFirstArgs<ExtArgs>>): Prisma__TokenDataClient<$Result.GetResult<Prisma.$TokenDataPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first TokenData that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TokenDataFindFirstOrThrowArgs} args - Arguments to find a TokenData
-     * @example
-     * // Get one TokenData
-     * const tokenData = await prisma.tokenData.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends TokenDataFindFirstOrThrowArgs>(args?: SelectSubset<T, TokenDataFindFirstOrThrowArgs<ExtArgs>>): Prisma__TokenDataClient<$Result.GetResult<Prisma.$TokenDataPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more TokenData that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TokenDataFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all TokenData
-     * const tokenData = await prisma.tokenData.findMany()
-     * 
-     * // Get first 10 TokenData
-     * const tokenData = await prisma.tokenData.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const tokenDataWithIdOnly = await prisma.tokenData.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends TokenDataFindManyArgs>(args?: SelectSubset<T, TokenDataFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TokenDataPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a TokenData.
-     * @param {TokenDataCreateArgs} args - Arguments to create a TokenData.
-     * @example
-     * // Create one TokenData
-     * const TokenData = await prisma.tokenData.create({
-     *   data: {
-     *     // ... data to create a TokenData
-     *   }
-     * })
-     * 
-     */
-    create<T extends TokenDataCreateArgs>(args: SelectSubset<T, TokenDataCreateArgs<ExtArgs>>): Prisma__TokenDataClient<$Result.GetResult<Prisma.$TokenDataPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many TokenData.
-     * @param {TokenDataCreateManyArgs} args - Arguments to create many TokenData.
-     * @example
-     * // Create many TokenData
-     * const tokenData = await prisma.tokenData.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends TokenDataCreateManyArgs>(args?: SelectSubset<T, TokenDataCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a TokenData.
-     * @param {TokenDataDeleteArgs} args - Arguments to delete one TokenData.
-     * @example
-     * // Delete one TokenData
-     * const TokenData = await prisma.tokenData.delete({
-     *   where: {
-     *     // ... filter to delete one TokenData
-     *   }
-     * })
-     * 
-     */
-    delete<T extends TokenDataDeleteArgs>(args: SelectSubset<T, TokenDataDeleteArgs<ExtArgs>>): Prisma__TokenDataClient<$Result.GetResult<Prisma.$TokenDataPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one TokenData.
-     * @param {TokenDataUpdateArgs} args - Arguments to update one TokenData.
-     * @example
-     * // Update one TokenData
-     * const tokenData = await prisma.tokenData.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends TokenDataUpdateArgs>(args: SelectSubset<T, TokenDataUpdateArgs<ExtArgs>>): Prisma__TokenDataClient<$Result.GetResult<Prisma.$TokenDataPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more TokenData.
-     * @param {TokenDataDeleteManyArgs} args - Arguments to filter TokenData to delete.
-     * @example
-     * // Delete a few TokenData
-     * const { count } = await prisma.tokenData.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends TokenDataDeleteManyArgs>(args?: SelectSubset<T, TokenDataDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more TokenData.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TokenDataUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many TokenData
-     * const tokenData = await prisma.tokenData.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends TokenDataUpdateManyArgs>(args: SelectSubset<T, TokenDataUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one TokenData.
-     * @param {TokenDataUpsertArgs} args - Arguments to update or create a TokenData.
-     * @example
-     * // Update or create a TokenData
-     * const tokenData = await prisma.tokenData.upsert({
-     *   create: {
-     *     // ... data to create a TokenData
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the TokenData we want to update
-     *   }
-     * })
-     */
-    upsert<T extends TokenDataUpsertArgs>(args: SelectSubset<T, TokenDataUpsertArgs<ExtArgs>>): Prisma__TokenDataClient<$Result.GetResult<Prisma.$TokenDataPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of TokenData.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TokenDataCountArgs} args - Arguments to filter TokenData to count.
-     * @example
-     * // Count the number of TokenData
-     * const count = await prisma.tokenData.count({
-     *   where: {
-     *     // ... the filter for the TokenData we want to count
-     *   }
-     * })
-    **/
-    count<T extends TokenDataCountArgs>(
-      args?: Subset<T, TokenDataCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], TokenDataCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a TokenData.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TokenDataAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends TokenDataAggregateArgs>(args: Subset<T, TokenDataAggregateArgs>): Prisma.PrismaPromise<GetTokenDataAggregateType<T>>
-
-    /**
-     * Group by TokenData.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TokenDataGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends TokenDataGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: TokenDataGroupByArgs['orderBy'] }
-        : { orderBy?: TokenDataGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, TokenDataGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTokenDataGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the TokenData model
-   */
-  readonly fields: TokenDataFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for TokenData.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__TokenDataClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the TokenData model
-   */
-  interface TokenDataFieldRefs {
-    readonly id: FieldRef<"TokenData", 'String'>
-    readonly createdAt: FieldRef<"TokenData", 'DateTime'>
-    readonly tokenString: FieldRef<"TokenData", 'String'>
-    readonly tokenType: FieldRef<"TokenData", 'TokenType'>
-    readonly expiresAt: FieldRef<"TokenData", 'DateTime'>
-    readonly userId: FieldRef<"TokenData", 'String'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * TokenData findUnique
-   */
-  export type TokenDataFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TokenData
-     */
-    select?: TokenDataSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TokenData
-     */
-    omit?: TokenDataOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TokenDataInclude<ExtArgs> | null
-    /**
-     * Filter, which TokenData to fetch.
-     */
-    where: TokenDataWhereUniqueInput
-  }
-
-  /**
-   * TokenData findUniqueOrThrow
-   */
-  export type TokenDataFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TokenData
-     */
-    select?: TokenDataSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TokenData
-     */
-    omit?: TokenDataOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TokenDataInclude<ExtArgs> | null
-    /**
-     * Filter, which TokenData to fetch.
-     */
-    where: TokenDataWhereUniqueInput
-  }
-
-  /**
-   * TokenData findFirst
-   */
-  export type TokenDataFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TokenData
-     */
-    select?: TokenDataSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TokenData
-     */
-    omit?: TokenDataOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TokenDataInclude<ExtArgs> | null
-    /**
-     * Filter, which TokenData to fetch.
-     */
-    where?: TokenDataWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of TokenData to fetch.
-     */
-    orderBy?: TokenDataOrderByWithRelationInput | TokenDataOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for TokenData.
-     */
-    cursor?: TokenDataWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` TokenData from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` TokenData.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of TokenData.
-     */
-    distinct?: TokenDataScalarFieldEnum | TokenDataScalarFieldEnum[]
-  }
-
-  /**
-   * TokenData findFirstOrThrow
-   */
-  export type TokenDataFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TokenData
-     */
-    select?: TokenDataSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TokenData
-     */
-    omit?: TokenDataOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TokenDataInclude<ExtArgs> | null
-    /**
-     * Filter, which TokenData to fetch.
-     */
-    where?: TokenDataWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of TokenData to fetch.
-     */
-    orderBy?: TokenDataOrderByWithRelationInput | TokenDataOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for TokenData.
-     */
-    cursor?: TokenDataWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` TokenData from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` TokenData.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of TokenData.
-     */
-    distinct?: TokenDataScalarFieldEnum | TokenDataScalarFieldEnum[]
-  }
-
-  /**
-   * TokenData findMany
-   */
-  export type TokenDataFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TokenData
-     */
-    select?: TokenDataSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TokenData
-     */
-    omit?: TokenDataOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TokenDataInclude<ExtArgs> | null
-    /**
-     * Filter, which TokenData to fetch.
-     */
-    where?: TokenDataWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of TokenData to fetch.
-     */
-    orderBy?: TokenDataOrderByWithRelationInput | TokenDataOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing TokenData.
-     */
-    cursor?: TokenDataWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` TokenData from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` TokenData.
-     */
-    skip?: number
-    distinct?: TokenDataScalarFieldEnum | TokenDataScalarFieldEnum[]
-  }
-
-  /**
-   * TokenData create
-   */
-  export type TokenDataCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TokenData
-     */
-    select?: TokenDataSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TokenData
-     */
-    omit?: TokenDataOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TokenDataInclude<ExtArgs> | null
-    /**
-     * The data needed to create a TokenData.
-     */
-    data: XOR<TokenDataCreateInput, TokenDataUncheckedCreateInput>
-  }
-
-  /**
-   * TokenData createMany
-   */
-  export type TokenDataCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many TokenData.
-     */
-    data: TokenDataCreateManyInput | TokenDataCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * TokenData update
-   */
-  export type TokenDataUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TokenData
-     */
-    select?: TokenDataSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TokenData
-     */
-    omit?: TokenDataOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TokenDataInclude<ExtArgs> | null
-    /**
-     * The data needed to update a TokenData.
-     */
-    data: XOR<TokenDataUpdateInput, TokenDataUncheckedUpdateInput>
-    /**
-     * Choose, which TokenData to update.
-     */
-    where: TokenDataWhereUniqueInput
-  }
-
-  /**
-   * TokenData updateMany
-   */
-  export type TokenDataUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update TokenData.
-     */
-    data: XOR<TokenDataUpdateManyMutationInput, TokenDataUncheckedUpdateManyInput>
-    /**
-     * Filter which TokenData to update
-     */
-    where?: TokenDataWhereInput
-    /**
-     * Limit how many TokenData to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * TokenData upsert
-   */
-  export type TokenDataUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TokenData
-     */
-    select?: TokenDataSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TokenData
-     */
-    omit?: TokenDataOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TokenDataInclude<ExtArgs> | null
-    /**
-     * The filter to search for the TokenData to update in case it exists.
-     */
-    where: TokenDataWhereUniqueInput
-    /**
-     * In case the TokenData found by the `where` argument doesn't exist, create a new TokenData with this data.
-     */
-    create: XOR<TokenDataCreateInput, TokenDataUncheckedCreateInput>
-    /**
-     * In case the TokenData was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<TokenDataUpdateInput, TokenDataUncheckedUpdateInput>
-  }
-
-  /**
-   * TokenData delete
-   */
-  export type TokenDataDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TokenData
-     */
-    select?: TokenDataSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TokenData
-     */
-    omit?: TokenDataOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TokenDataInclude<ExtArgs> | null
-    /**
-     * Filter which TokenData to delete.
-     */
-    where: TokenDataWhereUniqueInput
-  }
-
-  /**
-   * TokenData deleteMany
-   */
-  export type TokenDataDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which TokenData to delete
-     */
-    where?: TokenDataWhereInput
-    /**
-     * Limit how many TokenData to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * TokenData without action
-   */
-  export type TokenDataDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TokenData
-     */
-    select?: TokenDataSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TokenData
-     */
-    omit?: TokenDataOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TokenDataInclude<ExtArgs> | null
   }
 
 
@@ -20601,18 +19543,6 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-  export const TokenDataScalarFieldEnum: {
-    id: 'id',
-    createdAt: 'createdAt',
-    tokenString: 'tokenString',
-    tokenType: 'tokenType',
-    expiresAt: 'expiresAt',
-    userId: 'userId'
-  };
-
-  export type TokenDataScalarFieldEnum = (typeof TokenDataScalarFieldEnum)[keyof typeof TokenDataScalarFieldEnum]
-
-
   export const AdminScalarFieldEnum: {
     id: 'id',
     createdAt: 'createdAt',
@@ -20873,15 +19803,6 @@ export namespace Prisma {
   export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
 
 
-  export const TokenDataOrderByRelevanceFieldEnum: {
-    id: 'id',
-    tokenString: 'tokenString',
-    userId: 'userId'
-  };
-
-  export type TokenDataOrderByRelevanceFieldEnum = (typeof TokenDataOrderByRelevanceFieldEnum)[keyof typeof TokenDataOrderByRelevanceFieldEnum]
-
-
   export const AdminOrderByRelevanceFieldEnum: {
     id: 'id',
     name: 'name',
@@ -21086,13 +20007,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'TokenType'
-   */
-  export type EnumTokenTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TokenType'>
-    
-
-
-  /**
    * Reference to a field of type 'LecturerRole'
    */
   export type EnumLecturerRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LecturerRole'>
@@ -21207,7 +20121,6 @@ export namespace Prisma {
     admin?: XOR<AdminNullableScalarRelationFilter, AdminWhereInput> | null
     lecturer?: XOR<LecturerNullableScalarRelationFilter, LecturerWhereInput> | null
     student?: XOR<StudentNullableScalarRelationFilter, StudentWhereInput> | null
-    tokenData?: XOR<TokenDataNullableScalarRelationFilter, TokenDataWhereInput> | null
     files?: FileListRelationFilter
   }
 
@@ -21222,7 +20135,6 @@ export namespace Prisma {
     admin?: AdminOrderByWithRelationInput
     lecturer?: LecturerOrderByWithRelationInput
     student?: StudentOrderByWithRelationInput
-    tokenData?: TokenDataOrderByWithRelationInput
     files?: FileOrderByRelationAggregateInput
     _relevance?: UserOrderByRelevanceInput
   }
@@ -21241,7 +20153,6 @@ export namespace Prisma {
     admin?: XOR<AdminNullableScalarRelationFilter, AdminWhereInput> | null
     lecturer?: XOR<LecturerNullableScalarRelationFilter, LecturerWhereInput> | null
     student?: XOR<StudentNullableScalarRelationFilter, StudentWhereInput> | null
-    tokenData?: XOR<TokenDataNullableScalarRelationFilter, TokenDataWhereInput> | null
     files?: FileListRelationFilter
   }, "id" | "email">
 
@@ -21269,67 +20180,6 @@ export namespace Prisma {
     email?: StringWithAggregatesFilter<"User"> | string
     password?: StringNullableWithAggregatesFilter<"User"> | string | null
     role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
-  }
-
-  export type TokenDataWhereInput = {
-    AND?: TokenDataWhereInput | TokenDataWhereInput[]
-    OR?: TokenDataWhereInput[]
-    NOT?: TokenDataWhereInput | TokenDataWhereInput[]
-    id?: StringFilter<"TokenData"> | string
-    createdAt?: DateTimeFilter<"TokenData"> | Date | string
-    tokenString?: StringFilter<"TokenData"> | string
-    tokenType?: EnumTokenTypeFilter<"TokenData"> | $Enums.TokenType
-    expiresAt?: DateTimeFilter<"TokenData"> | Date | string
-    userId?: StringFilter<"TokenData"> | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }
-
-  export type TokenDataOrderByWithRelationInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    tokenString?: SortOrder
-    tokenType?: SortOrder
-    expiresAt?: SortOrder
-    userId?: SortOrder
-    user?: UserOrderByWithRelationInput
-    _relevance?: TokenDataOrderByRelevanceInput
-  }
-
-  export type TokenDataWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    tokenString?: string
-    userId?: string
-    AND?: TokenDataWhereInput | TokenDataWhereInput[]
-    OR?: TokenDataWhereInput[]
-    NOT?: TokenDataWhereInput | TokenDataWhereInput[]
-    createdAt?: DateTimeFilter<"TokenData"> | Date | string
-    tokenType?: EnumTokenTypeFilter<"TokenData"> | $Enums.TokenType
-    expiresAt?: DateTimeFilter<"TokenData"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id" | "tokenString" | "userId">
-
-  export type TokenDataOrderByWithAggregationInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    tokenString?: SortOrder
-    tokenType?: SortOrder
-    expiresAt?: SortOrder
-    userId?: SortOrder
-    _count?: TokenDataCountOrderByAggregateInput
-    _max?: TokenDataMaxOrderByAggregateInput
-    _min?: TokenDataMinOrderByAggregateInput
-  }
-
-  export type TokenDataScalarWhereWithAggregatesInput = {
-    AND?: TokenDataScalarWhereWithAggregatesInput | TokenDataScalarWhereWithAggregatesInput[]
-    OR?: TokenDataScalarWhereWithAggregatesInput[]
-    NOT?: TokenDataScalarWhereWithAggregatesInput | TokenDataScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"TokenData"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"TokenData"> | Date | string
-    tokenString?: StringWithAggregatesFilter<"TokenData"> | string
-    tokenType?: EnumTokenTypeWithAggregatesFilter<"TokenData"> | $Enums.TokenType
-    expiresAt?: DateTimeWithAggregatesFilter<"TokenData"> | Date | string
-    userId?: StringWithAggregatesFilter<"TokenData"> | string
   }
 
   export type AdminWhereInput = {
@@ -22521,7 +21371,6 @@ export namespace Prisma {
     admin?: AdminCreateNestedOneWithoutUserInput
     lecturer?: LecturerCreateNestedOneWithoutUserInput
     student?: StudentCreateNestedOneWithoutUserInput
-    tokenData?: TokenDataCreateNestedOneWithoutUserInput
     files?: FileCreateNestedManyWithoutUserInput
   }
 
@@ -22536,7 +21385,6 @@ export namespace Prisma {
     admin?: AdminUncheckedCreateNestedOneWithoutUserInput
     lecturer?: LecturerUncheckedCreateNestedOneWithoutUserInput
     student?: StudentUncheckedCreateNestedOneWithoutUserInput
-    tokenData?: TokenDataUncheckedCreateNestedOneWithoutUserInput
     files?: FileUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -22551,7 +21399,6 @@ export namespace Prisma {
     admin?: AdminUpdateOneWithoutUserNestedInput
     lecturer?: LecturerUpdateOneWithoutUserNestedInput
     student?: StudentUpdateOneWithoutUserNestedInput
-    tokenData?: TokenDataUpdateOneWithoutUserNestedInput
     files?: FileUpdateManyWithoutUserNestedInput
   }
 
@@ -22566,7 +21413,6 @@ export namespace Prisma {
     admin?: AdminUncheckedUpdateOneWithoutUserNestedInput
     lecturer?: LecturerUncheckedUpdateOneWithoutUserNestedInput
     student?: StudentUncheckedUpdateOneWithoutUserNestedInput
-    tokenData?: TokenDataUncheckedUpdateOneWithoutUserNestedInput
     files?: FileUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -22598,68 +21444,6 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-  }
-
-  export type TokenDataCreateInput = {
-    id?: string
-    createdAt?: Date | string
-    tokenString: string
-    tokenType: $Enums.TokenType
-    expiresAt: Date | string
-    user: UserCreateNestedOneWithoutTokenDataInput
-  }
-
-  export type TokenDataUncheckedCreateInput = {
-    id?: string
-    createdAt?: Date | string
-    tokenString: string
-    tokenType: $Enums.TokenType
-    expiresAt: Date | string
-    userId: string
-  }
-
-  export type TokenDataUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    tokenString?: StringFieldUpdateOperationsInput | string
-    tokenType?: EnumTokenTypeFieldUpdateOperationsInput | $Enums.TokenType
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutTokenDataNestedInput
-  }
-
-  export type TokenDataUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    tokenString?: StringFieldUpdateOperationsInput | string
-    tokenType?: EnumTokenTypeFieldUpdateOperationsInput | $Enums.TokenType
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type TokenDataCreateManyInput = {
-    id?: string
-    createdAt?: Date | string
-    tokenString: string
-    tokenType: $Enums.TokenType
-    expiresAt: Date | string
-    userId: string
-  }
-
-  export type TokenDataUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    tokenString?: StringFieldUpdateOperationsInput | string
-    tokenType?: EnumTokenTypeFieldUpdateOperationsInput | $Enums.TokenType
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type TokenDataUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    tokenString?: StringFieldUpdateOperationsInput | string
-    tokenType?: EnumTokenTypeFieldUpdateOperationsInput | $Enums.TokenType
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type AdminCreateInput = {
@@ -23981,11 +22765,6 @@ export namespace Prisma {
     isNot?: StudentWhereInput | null
   }
 
-  export type TokenDataNullableScalarRelationFilter = {
-    is?: TokenDataWhereInput | null
-    isNot?: TokenDataWhereInput | null
-  }
-
   export type FileListRelationFilter = {
     every?: FileWhereInput
     some?: FileWhereInput
@@ -24111,59 +22890,9 @@ export namespace Prisma {
     _max?: NestedEnumUserRoleFilter<$PrismaModel>
   }
 
-  export type EnumTokenTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.TokenType | EnumTokenTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.TokenType[]
-    notIn?: $Enums.TokenType[]
-    not?: NestedEnumTokenTypeFilter<$PrismaModel> | $Enums.TokenType
-  }
-
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
-  }
-
-  export type TokenDataOrderByRelevanceInput = {
-    fields: TokenDataOrderByRelevanceFieldEnum | TokenDataOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
-  }
-
-  export type TokenDataCountOrderByAggregateInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    tokenString?: SortOrder
-    tokenType?: SortOrder
-    expiresAt?: SortOrder
-    userId?: SortOrder
-  }
-
-  export type TokenDataMaxOrderByAggregateInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    tokenString?: SortOrder
-    tokenType?: SortOrder
-    expiresAt?: SortOrder
-    userId?: SortOrder
-  }
-
-  export type TokenDataMinOrderByAggregateInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    tokenString?: SortOrder
-    tokenType?: SortOrder
-    expiresAt?: SortOrder
-    userId?: SortOrder
-  }
-
-  export type EnumTokenTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.TokenType | EnumTokenTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.TokenType[]
-    notIn?: $Enums.TokenType[]
-    not?: NestedEnumTokenTypeWithAggregatesFilter<$PrismaModel> | $Enums.TokenType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumTokenTypeFilter<$PrismaModel>
-    _max?: NestedEnumTokenTypeFilter<$PrismaModel>
   }
 
   export type AdminOrderByRelevanceInput = {
@@ -25265,12 +23994,6 @@ export namespace Prisma {
     connect?: StudentWhereUniqueInput
   }
 
-  export type TokenDataCreateNestedOneWithoutUserInput = {
-    create?: XOR<TokenDataCreateWithoutUserInput, TokenDataUncheckedCreateWithoutUserInput>
-    connectOrCreate?: TokenDataCreateOrConnectWithoutUserInput
-    connect?: TokenDataWhereUniqueInput
-  }
-
   export type FileCreateNestedManyWithoutUserInput = {
     create?: XOR<FileCreateWithoutUserInput, FileUncheckedCreateWithoutUserInput> | FileCreateWithoutUserInput[] | FileUncheckedCreateWithoutUserInput[]
     connectOrCreate?: FileCreateOrConnectWithoutUserInput | FileCreateOrConnectWithoutUserInput[]
@@ -25294,12 +24017,6 @@ export namespace Prisma {
     create?: XOR<StudentCreateWithoutUserInput, StudentUncheckedCreateWithoutUserInput>
     connectOrCreate?: StudentCreateOrConnectWithoutUserInput
     connect?: StudentWhereUniqueInput
-  }
-
-  export type TokenDataUncheckedCreateNestedOneWithoutUserInput = {
-    create?: XOR<TokenDataCreateWithoutUserInput, TokenDataUncheckedCreateWithoutUserInput>
-    connectOrCreate?: TokenDataCreateOrConnectWithoutUserInput
-    connect?: TokenDataWhereUniqueInput
   }
 
   export type FileUncheckedCreateNestedManyWithoutUserInput = {
@@ -25359,16 +24076,6 @@ export namespace Prisma {
     update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutUserInput, StudentUpdateWithoutUserInput>, StudentUncheckedUpdateWithoutUserInput>
   }
 
-  export type TokenDataUpdateOneWithoutUserNestedInput = {
-    create?: XOR<TokenDataCreateWithoutUserInput, TokenDataUncheckedCreateWithoutUserInput>
-    connectOrCreate?: TokenDataCreateOrConnectWithoutUserInput
-    upsert?: TokenDataUpsertWithoutUserInput
-    disconnect?: TokenDataWhereInput | boolean
-    delete?: TokenDataWhereInput | boolean
-    connect?: TokenDataWhereUniqueInput
-    update?: XOR<XOR<TokenDataUpdateToOneWithWhereWithoutUserInput, TokenDataUpdateWithoutUserInput>, TokenDataUncheckedUpdateWithoutUserInput>
-  }
-
   export type FileUpdateManyWithoutUserNestedInput = {
     create?: XOR<FileCreateWithoutUserInput, FileUncheckedCreateWithoutUserInput> | FileCreateWithoutUserInput[] | FileUncheckedCreateWithoutUserInput[]
     connectOrCreate?: FileCreateOrConnectWithoutUserInput | FileCreateOrConnectWithoutUserInput[]
@@ -25413,16 +24120,6 @@ export namespace Prisma {
     update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutUserInput, StudentUpdateWithoutUserInput>, StudentUncheckedUpdateWithoutUserInput>
   }
 
-  export type TokenDataUncheckedUpdateOneWithoutUserNestedInput = {
-    create?: XOR<TokenDataCreateWithoutUserInput, TokenDataUncheckedCreateWithoutUserInput>
-    connectOrCreate?: TokenDataCreateOrConnectWithoutUserInput
-    upsert?: TokenDataUpsertWithoutUserInput
-    disconnect?: TokenDataWhereInput | boolean
-    delete?: TokenDataWhereInput | boolean
-    connect?: TokenDataWhereUniqueInput
-    update?: XOR<XOR<TokenDataUpdateToOneWithWhereWithoutUserInput, TokenDataUpdateWithoutUserInput>, TokenDataUncheckedUpdateWithoutUserInput>
-  }
-
   export type FileUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<FileCreateWithoutUserInput, FileUncheckedCreateWithoutUserInput> | FileCreateWithoutUserInput[] | FileUncheckedCreateWithoutUserInput[]
     connectOrCreate?: FileCreateOrConnectWithoutUserInput | FileCreateOrConnectWithoutUserInput[]
@@ -25435,24 +24132,6 @@ export namespace Prisma {
     update?: FileUpdateWithWhereUniqueWithoutUserInput | FileUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: FileUpdateManyWithWhereWithoutUserInput | FileUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
-  }
-
-  export type UserCreateNestedOneWithoutTokenDataInput = {
-    create?: XOR<UserCreateWithoutTokenDataInput, UserUncheckedCreateWithoutTokenDataInput>
-    connectOrCreate?: UserCreateOrConnectWithoutTokenDataInput
-    connect?: UserWhereUniqueInput
-  }
-
-  export type EnumTokenTypeFieldUpdateOperationsInput = {
-    set?: $Enums.TokenType
-  }
-
-  export type UserUpdateOneRequiredWithoutTokenDataNestedInput = {
-    create?: XOR<UserCreateWithoutTokenDataInput, UserUncheckedCreateWithoutTokenDataInput>
-    connectOrCreate?: UserCreateOrConnectWithoutTokenDataInput
-    upsert?: UserUpsertWithoutTokenDataInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTokenDataInput, UserUpdateWithoutTokenDataInput>, UserUncheckedUpdateWithoutTokenDataInput>
   }
 
   export type UserCreateNestedOneWithoutAdminInput = {
@@ -26556,23 +25235,6 @@ export namespace Prisma {
     _max?: NestedEnumUserRoleFilter<$PrismaModel>
   }
 
-  export type NestedEnumTokenTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.TokenType | EnumTokenTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.TokenType[]
-    notIn?: $Enums.TokenType[]
-    not?: NestedEnumTokenTypeFilter<$PrismaModel> | $Enums.TokenType
-  }
-
-  export type NestedEnumTokenTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.TokenType | EnumTokenTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.TokenType[]
-    notIn?: $Enums.TokenType[]
-    not?: NestedEnumTokenTypeWithAggregatesFilter<$PrismaModel> | $Enums.TokenType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumTokenTypeFilter<$PrismaModel>
-    _max?: NestedEnumTokenTypeFilter<$PrismaModel>
-  }
-
   export type NestedEnumLecturerRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.LecturerRole | EnumLecturerRoleFieldRefInput<$PrismaModel>
     in?: $Enums.LecturerRole[]
@@ -26913,27 +25575,6 @@ export namespace Prisma {
     create: XOR<StudentCreateWithoutUserInput, StudentUncheckedCreateWithoutUserInput>
   }
 
-  export type TokenDataCreateWithoutUserInput = {
-    id?: string
-    createdAt?: Date | string
-    tokenString: string
-    tokenType: $Enums.TokenType
-    expiresAt: Date | string
-  }
-
-  export type TokenDataUncheckedCreateWithoutUserInput = {
-    id?: string
-    createdAt?: Date | string
-    tokenString: string
-    tokenType: $Enums.TokenType
-    expiresAt: Date | string
-  }
-
-  export type TokenDataCreateOrConnectWithoutUserInput = {
-    where: TokenDataWhereUniqueInput
-    create: XOR<TokenDataCreateWithoutUserInput, TokenDataUncheckedCreateWithoutUserInput>
-  }
-
   export type FileCreateWithoutUserInput = {
     id?: string
     createdAt?: Date | string
@@ -27083,33 +25724,6 @@ export namespace Prisma {
     enrollments?: EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
   }
 
-  export type TokenDataUpsertWithoutUserInput = {
-    update: XOR<TokenDataUpdateWithoutUserInput, TokenDataUncheckedUpdateWithoutUserInput>
-    create: XOR<TokenDataCreateWithoutUserInput, TokenDataUncheckedCreateWithoutUserInput>
-    where?: TokenDataWhereInput
-  }
-
-  export type TokenDataUpdateToOneWithWhereWithoutUserInput = {
-    where?: TokenDataWhereInput
-    data: XOR<TokenDataUpdateWithoutUserInput, TokenDataUncheckedUpdateWithoutUserInput>
-  }
-
-  export type TokenDataUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    tokenString?: StringFieldUpdateOperationsInput | string
-    tokenType?: EnumTokenTypeFieldUpdateOperationsInput | $Enums.TokenType
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type TokenDataUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    tokenString?: StringFieldUpdateOperationsInput | string
-    tokenType?: EnumTokenTypeFieldUpdateOperationsInput | $Enums.TokenType
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type FileUpsertWithWhereUniqueWithoutUserInput = {
     where: FileWhereUniqueInput
     update: XOR<FileUpdateWithoutUserInput, FileUncheckedUpdateWithoutUserInput>
@@ -27140,78 +25754,6 @@ export namespace Prisma {
     userId?: StringFilter<"File"> | string
   }
 
-  export type UserCreateWithoutTokenDataInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    deletedAt?: Date | string | null
-    email: string
-    password?: string | null
-    role: $Enums.UserRole
-    admin?: AdminCreateNestedOneWithoutUserInput
-    lecturer?: LecturerCreateNestedOneWithoutUserInput
-    student?: StudentCreateNestedOneWithoutUserInput
-    files?: FileCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutTokenDataInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    deletedAt?: Date | string | null
-    email: string
-    password?: string | null
-    role: $Enums.UserRole
-    admin?: AdminUncheckedCreateNestedOneWithoutUserInput
-    lecturer?: LecturerUncheckedCreateNestedOneWithoutUserInput
-    student?: StudentUncheckedCreateNestedOneWithoutUserInput
-    files?: FileUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutTokenDataInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutTokenDataInput, UserUncheckedCreateWithoutTokenDataInput>
-  }
-
-  export type UserUpsertWithoutTokenDataInput = {
-    update: XOR<UserUpdateWithoutTokenDataInput, UserUncheckedUpdateWithoutTokenDataInput>
-    create: XOR<UserCreateWithoutTokenDataInput, UserUncheckedCreateWithoutTokenDataInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutTokenDataInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutTokenDataInput, UserUncheckedUpdateWithoutTokenDataInput>
-  }
-
-  export type UserUpdateWithoutTokenDataInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    email?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-    admin?: AdminUpdateOneWithoutUserNestedInput
-    lecturer?: LecturerUpdateOneWithoutUserNestedInput
-    student?: StudentUpdateOneWithoutUserNestedInput
-    files?: FileUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutTokenDataInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    email?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-    admin?: AdminUncheckedUpdateOneWithoutUserNestedInput
-    lecturer?: LecturerUncheckedUpdateOneWithoutUserNestedInput
-    student?: StudentUncheckedUpdateOneWithoutUserNestedInput
-    files?: FileUncheckedUpdateManyWithoutUserNestedInput
-  }
-
   export type UserCreateWithoutAdminInput = {
     id?: string
     createdAt?: Date | string
@@ -27222,7 +25764,6 @@ export namespace Prisma {
     role: $Enums.UserRole
     lecturer?: LecturerCreateNestedOneWithoutUserInput
     student?: StudentCreateNestedOneWithoutUserInput
-    tokenData?: TokenDataCreateNestedOneWithoutUserInput
     files?: FileCreateNestedManyWithoutUserInput
   }
 
@@ -27236,7 +25777,6 @@ export namespace Prisma {
     role: $Enums.UserRole
     lecturer?: LecturerUncheckedCreateNestedOneWithoutUserInput
     student?: StudentUncheckedCreateNestedOneWithoutUserInput
-    tokenData?: TokenDataUncheckedCreateNestedOneWithoutUserInput
     files?: FileUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -27266,7 +25806,6 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     lecturer?: LecturerUpdateOneWithoutUserNestedInput
     student?: StudentUpdateOneWithoutUserNestedInput
-    tokenData?: TokenDataUpdateOneWithoutUserNestedInput
     files?: FileUpdateManyWithoutUserNestedInput
   }
 
@@ -27280,7 +25819,6 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     lecturer?: LecturerUncheckedUpdateOneWithoutUserNestedInput
     student?: StudentUncheckedUpdateOneWithoutUserNestedInput
-    tokenData?: TokenDataUncheckedUpdateOneWithoutUserNestedInput
     files?: FileUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -27294,7 +25832,6 @@ export namespace Prisma {
     role: $Enums.UserRole
     admin?: AdminCreateNestedOneWithoutUserInput
     student?: StudentCreateNestedOneWithoutUserInput
-    tokenData?: TokenDataCreateNestedOneWithoutUserInput
     files?: FileCreateNestedManyWithoutUserInput
   }
 
@@ -27308,7 +25845,6 @@ export namespace Prisma {
     role: $Enums.UserRole
     admin?: AdminUncheckedCreateNestedOneWithoutUserInput
     student?: StudentUncheckedCreateNestedOneWithoutUserInput
-    tokenData?: TokenDataUncheckedCreateNestedOneWithoutUserInput
     files?: FileUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -27421,7 +25957,6 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     admin?: AdminUpdateOneWithoutUserNestedInput
     student?: StudentUpdateOneWithoutUserNestedInput
-    tokenData?: TokenDataUpdateOneWithoutUserNestedInput
     files?: FileUpdateManyWithoutUserNestedInput
   }
 
@@ -27435,7 +25970,6 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     admin?: AdminUncheckedUpdateOneWithoutUserNestedInput
     student?: StudentUncheckedUpdateOneWithoutUserNestedInput
-    tokenData?: TokenDataUncheckedUpdateOneWithoutUserNestedInput
     files?: FileUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -27623,7 +26157,6 @@ export namespace Prisma {
     role: $Enums.UserRole
     admin?: AdminCreateNestedOneWithoutUserInput
     lecturer?: LecturerCreateNestedOneWithoutUserInput
-    tokenData?: TokenDataCreateNestedOneWithoutUserInput
     files?: FileCreateNestedManyWithoutUserInput
   }
 
@@ -27637,7 +26170,6 @@ export namespace Prisma {
     role: $Enums.UserRole
     admin?: AdminUncheckedCreateNestedOneWithoutUserInput
     lecturer?: LecturerUncheckedCreateNestedOneWithoutUserInput
-    tokenData?: TokenDataUncheckedCreateNestedOneWithoutUserInput
     files?: FileUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -27728,7 +26260,6 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     admin?: AdminUpdateOneWithoutUserNestedInput
     lecturer?: LecturerUpdateOneWithoutUserNestedInput
-    tokenData?: TokenDataUpdateOneWithoutUserNestedInput
     files?: FileUpdateManyWithoutUserNestedInput
   }
 
@@ -27742,7 +26273,6 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     admin?: AdminUncheckedUpdateOneWithoutUserNestedInput
     lecturer?: LecturerUncheckedUpdateOneWithoutUserNestedInput
-    tokenData?: TokenDataUncheckedUpdateOneWithoutUserNestedInput
     files?: FileUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -29355,7 +27885,6 @@ export namespace Prisma {
     admin?: AdminCreateNestedOneWithoutUserInput
     lecturer?: LecturerCreateNestedOneWithoutUserInput
     student?: StudentCreateNestedOneWithoutUserInput
-    tokenData?: TokenDataCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFilesInput = {
@@ -29369,7 +27898,6 @@ export namespace Prisma {
     admin?: AdminUncheckedCreateNestedOneWithoutUserInput
     lecturer?: LecturerUncheckedCreateNestedOneWithoutUserInput
     student?: StudentUncheckedCreateNestedOneWithoutUserInput
-    tokenData?: TokenDataUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFilesInput = {
@@ -29399,7 +27927,6 @@ export namespace Prisma {
     admin?: AdminUpdateOneWithoutUserNestedInput
     lecturer?: LecturerUpdateOneWithoutUserNestedInput
     student?: StudentUpdateOneWithoutUserNestedInput
-    tokenData?: TokenDataUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFilesInput = {
@@ -29413,7 +27940,6 @@ export namespace Prisma {
     admin?: AdminUncheckedUpdateOneWithoutUserNestedInput
     lecturer?: LecturerUncheckedUpdateOneWithoutUserNestedInput
     student?: StudentUncheckedUpdateOneWithoutUserNestedInput
-    tokenData?: TokenDataUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type FileCreateManyUserInput = {

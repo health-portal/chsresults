@@ -6,6 +6,7 @@ import {
 } from 'class-validator';
 import { LecturerRole, UserRole, Level } from 'prisma/client/database';
 import { ApiProperty } from '@nestjs/swagger';
+import { JwtPayload } from 'jsonwebtoken';
 
 export type AdminData = {
   adminId: string;
@@ -28,26 +29,23 @@ export type StudentData = {
 
 export type UserData = AdminData | LecturerData | StudentData;
 
-export interface JwtPayload {
+export interface UserPayload extends JwtPayload {
   sub: string;
   email: string;
   userRole: UserRole;
   userData: UserData;
 }
 
-export class SetPasswordBody {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  identifier: string;
+export interface TokenPayload {
+  sub: string;
+  email: string;
+  role: UserRole;
+}
 
+export class SetPasswordBody {
   @ApiProperty()
   @IsStrongPassword()
   password: string;
-
-  @ApiProperty({ enum: UserRole })
-  @IsEnum(UserRole)
-  role: UserRole;
 
   @ApiProperty()
   @IsString()

@@ -130,15 +130,6 @@ exports.Prisma.UserScalarFieldEnum = {
   role: 'role'
 };
 
-exports.Prisma.TokenDataScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  tokenString: 'tokenString',
-  tokenType: 'tokenType',
-  expiresAt: 'expiresAt',
-  userId: 'userId'
-};
-
 exports.Prisma.AdminScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
@@ -336,12 +327,6 @@ exports.Prisma.UserOrderByRelevanceFieldEnum = {
   password: 'password'
 };
 
-exports.Prisma.TokenDataOrderByRelevanceFieldEnum = {
-  id: 'id',
-  tokenString: 'tokenString',
-  userId: 'userId'
-};
-
 exports.Prisma.AdminOrderByRelevanceFieldEnum = {
   id: 'id',
   name: 'name',
@@ -470,11 +455,6 @@ exports.UserRole = exports.$Enums.UserRole = {
   STUDENT: 'STUDENT'
 };
 
-exports.TokenType = exports.$Enums.TokenType = {
-  PASSWORD_RESET: 'PASSWORD_RESET',
-  ACCOUNT_ACTIVATION: 'ACCOUNT_ACTIVATION'
-};
-
 exports.LecturerRole = exports.$Enums.LecturerRole = {
   PROVOST: 'PROVOST',
   DEAN: 'DEAN',
@@ -533,7 +513,6 @@ exports.FileCategory = exports.$Enums.FileCategory = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  TokenData: 'TokenData',
   Admin: 'Admin',
   Lecturer: 'Lecturer',
   LecturerDesignation: 'LecturerDesignation',

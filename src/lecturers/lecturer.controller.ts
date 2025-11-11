@@ -16,7 +16,7 @@ import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
 import { UserRole } from 'prisma/client/database';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { LecturerData } from 'src/auth/auth.schema';
-import type { JwtPayload } from 'src/auth/auth.schema';
+import type { UserPayload } from 'src/auth/auth.schema';
 import {
   CourseSessionRes,
   EditResultBody,
@@ -44,7 +44,7 @@ import { UploadFileBody } from 'src/files/files.schema';
 export class LecturerController {
   constructor(private readonly lecturerService: LecturerService) {}
 
-  private getLecturerId(user: JwtPayload) {
+  private getLecturerId(user: UserPayload) {
     const lecturerData = user.userData as LecturerData;
     return lecturerData.lecturerId;
   }
@@ -52,7 +52,7 @@ export class LecturerController {
   @ApiOperation({ summary: 'List courses' })
   @ApiOkResponse({ type: [CourseSessionRes] })
   @Get('courses-sessions')
-  async listCourseSessions(@User() user: JwtPayload) {
+  async listCourseSessions(@User() user: UserPayload) {
     const lecturerId = this.getLecturerId(user);
     return this.lecturerService.listCourseSessions(lecturerId);
   }
@@ -68,7 +68,7 @@ export class LecturerController {
   @Post('courses-sessions/:courseSessionId/students')
   @HttpCode(HttpStatus.OK)
   async registerStudent(
-    @User() user: JwtPayload,
+    @User() user: UserPayload,
     @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
     @Body() body: RegisterStudentBody,
   ) {
@@ -82,7 +82,7 @@ export class LecturerController {
 
   @Post('courses-sessions/:courseSessionId/students/batch')
   async uploadFileForStudentRegistrations(
-    @User() user: JwtPayload,
+    @User() user: UserPayload,
     @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
     @Body() body: UploadFileBody,
   ) {
@@ -97,7 +97,7 @@ export class LecturerController {
 
   @Post('courses-sessions/:courseSessionId/results')
   async uploadFileForStudentResults(
-    @User() user: JwtPayload,
+    @User() user: UserPayload,
     @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
     @Body() body: UploadFileBody,
   ) {
@@ -116,7 +116,7 @@ export class LecturerController {
   @ApiNotFoundResponse({ description: 'Course session or student not found' })
   @Patch('courses-sessions/:courseSessionId/results/:studentId')
   async editResult(
-    @User() user: JwtPayload,
+    @User() user: UserPayload,
     @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
     @Param('studentId', ParseUUIDPipe) studentId: string,
     @Body() body: EditResultBody,
@@ -135,7 +135,7 @@ export class LecturerController {
   @ApiNotFoundResponse({ description: 'Course session not found' })
   @Get('courses-sessions/:courseSessionId/results')
   async viewCourseResults(
-    @User() user: JwtPayload,
+    @User() user: UserPayload,
     @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
   ) {
     const lecturerId = this.getLecturerId(user);
@@ -150,7 +150,7 @@ export class LecturerController {
   @ApiNotFoundResponse({ description: 'Course session not found' })
   @Get('course-sessions/:courseSessionId/students')
   async listCourseStudents(
-    @User() user: JwtPayload,
+    @User() user: UserPayload,
     @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
   ) {
     const lecturerId = this.getLecturerId(user);
@@ -164,7 +164,7 @@ export class LecturerController {
   @ApiOkResponse({ type: LecturerProfileRes })
   @ApiNotFoundResponse({ description: 'Lecturer not found' })
   @Get('profile')
-  async getProfile(@User() user: JwtPayload) {
+  async getProfile(@User() user: UserPayload) {
     const lecturerId = this.getLecturerId(user);
     return await this.lecturerService.getProfile(lecturerId);
   }
