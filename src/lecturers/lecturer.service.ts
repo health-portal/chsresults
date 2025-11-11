@@ -1,18 +1,16 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import {
-  RegisterStudentBody,
-  EditResultBody,
-  RegisterStudentsRes,
-  UploadResultRow,
-  UploadResultsRes,
-} from './lecturers.schema';
+import { RegisterStudentBody, EditResultBody } from './lecturers.schema';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { parseCsv } from 'src/lib/csv';
-import { ResultType } from 'prisma/client/database';
+import { FileCategory, ResultType } from 'prisma/client/database';
+import { UploadFileBody } from 'src/files/files.schema';
+import { MessageQueueService } from 'src/message-queue/message-queue.service';
 
 @Injectable()
 export class LecturerService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly messageQueueService: MessageQueueService,
+  ) {}
 
   private async validateCourseLecturerAccess(
     lecturerId: string,
@@ -69,69 +67,38 @@ export class LecturerService {
     });
   }
 
-  async registerStudents(
+  async uploadFileForStudentRegistrations(
+    userId: string,
     lecturerId: string,
     courseSessionId: string,
-    file: Express.Multer.File,
+    { filename, content }: UploadFileBody,
   ) {
-    await this.validateCourseLecturerAccess(lecturerId, courseSessionId, true);
-    const content = file.buffer.toString('utf-8');
-    const parsedData = await parseCsv(content, RegisterStudentBody);
-    const result: RegisterStudentsRes = {
-      ...parsedData,
-      registeredStudents: [],
-      unregisteredStudents: [],
-    };
-
-    for (const { matricNumber } of parsedData.validRows) {
-      try {
-        await this.prisma.courseSession.update({
-          where: { id: courseSessionId },
-          data: {
-            enrollments: { create: { student: { connect: { matricNumber } } } },
-          },
-        });
-        result.registeredStudents.push(matricNumber);
-      } catch {
-        result.unregisteredStudents.push(matricNumber);
-      }
-    }
-
-    return result;
+    await this.validateCourseLecturerAccess(lecturerId, userId, true);
+    await this.prisma.file.create({
+      data: {
+        filename,
+        content: Buffer.from(JSON.stringify(content), 'utf-8'),
+        category: FileCategory.REGISTRATIONS,
+        userId,
+      },
+    });
   }
 
-  async uploadResults(
+  async uploadFileForStudentResults(
+    userId: string,
     lecturerId: string,
     courseSessionId: string,
-    file: Express.Multer.File,
+    { filename, content }: UploadFileBody,
   ) {
-    await this.validateCourseLecturerAccess(lecturerId, courseSessionId, true);
-    const content = file.buffer.toString('utf-8');
-    const parsedData = await parseCsv(content, UploadResultRow);
-    const result: UploadResultsRes = {
-      ...parsedData,
-      studentsUploadedFor: [],
-      studentsNotFound: [],
-    };
-
-    for (const { matricNumber, scores } of parsedData.validRows) {
-      try {
-        const foundStudent = await this.prisma.student.findUniqueOrThrow({
-          where: { matricNumber },
-        });
-        await this.prisma.enrollment.update({
-          where: {
-            uniqueEnrollment: { courseSessionId, studentId: foundStudent.id },
-          },
-          data: { results: { create: { scores, type: ResultType.INITIAL } } },
-        });
-        result.studentsUploadedFor.push(matricNumber);
-      } catch {
-        result.studentsNotFound.push(matricNumber);
-      }
-    }
-
-    return result;
+    await this.validateCourseLecturerAccess(lecturerId, userId, true);
+    await this.prisma.file.create({
+      data: {
+        filename,
+        content: Buffer.from(JSON.stringify(content), 'utf-8'),
+        category: FileCategory.RESULTS,
+        userId,
+      },
+    });
   }
 
   async editResult(

@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Semester } from 'prisma/client/database';
 import { Transform } from 'class-transformer';
 import {
   IsEnum,
@@ -8,6 +7,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { Semester } from 'prisma/client/database';
 import { DepartmentRes } from 'src/college/college.schema';
 import { ParseCsvData } from 'src/lib/csv';
 
@@ -39,7 +39,7 @@ export class CreateCourseBody {
   })
   units: number;
 
-  @ApiProperty()
+  @ApiProperty({ enum: Semester })
   @IsEnum(Semester)
   semester: Semester;
 }

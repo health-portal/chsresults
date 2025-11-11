@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
@@ -25,11 +24,13 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserRole } from 'prisma/client/database';
 import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UserRole } from 'prisma/client/database';
+import { User } from 'src/auth/user.decorator';
+import { UploadFileBody } from 'src/files/files.schema';
 
-@ApiTags('Courses')
+@ApiTags('Courses', 'Admin')
 @ApiBearerAuth('accessToken')
 @Controller('courses')
 @AuthRoles([UserRole.ADMIN])
@@ -48,8 +49,11 @@ export class CoursesController {
 
   @ApiOperation({ summary: 'Create multiple courses from a file' })
   @Post('batch')
-  async getCreateCoursesUrls(@Query('filename') filename: string) {
-    return await this.coursesService.getCreateCoursesUrls(filename);
+  async uploadFileForCourses(
+    @User('sub') userId: string,
+    @Body() body: UploadFileBody,
+  ) {
+    return await this.coursesService.uploadFileForCourses(userId, body);
   }
 
   @ApiOperation({ summary: 'Get all courses' })

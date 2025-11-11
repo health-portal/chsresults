@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CoursesController } from './courses.controller';
-import { S3Module } from 'src/s3/s3.module';
+import { MessageQueueModule } from 'src/message-queue/message-queue.module';
 
 @Module({
-  imports: [S3Module],
+  imports: [MessageQueueModule],
   controllers: [CoursesController],
   providers: [CoursesService],
 })

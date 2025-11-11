@@ -1,18 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import {
-  CreateCourseBody,
-  CreateCoursesRes,
-  UpdateCourseBody,
-} from './courses.schema';
-import { parseCsv } from 'src/lib/csv';
-import { S3Service } from 'src/s3/s3.service';
+import { CreateCourseBody, UpdateCourseBody } from './courses.schema';
+import { UploadFileBody } from 'src/files/files.schema';
+import { FileCategory } from 'prisma/client/database';
+import { MessageQueueService } from 'src/message-queue/message-queue.service';
+import { QueueTable } from 'src/message-queue/message-queue.schema';
 
 @Injectable()
 export class CoursesService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly s3Service: S3Service,
+    private readonly messageQueueService: MessageQueueService,
   ) {}
 
   async createCourse({
@@ -35,39 +33,23 @@ export class CoursesService {
     });
   }
 
-  async getCreateCoursesUrls(filename: string) {
-    const [uploadUrl, downloadUrl] = await Promise.all([
-      this.s3Service.generateUploadUrl(filename),
-      this.s3Service.generateDownloadUrl(filename),
-    ]);
+  async uploadFileForCourses(
+    userId: string,
+    { filename, content }: UploadFileBody,
+  ) {
+    const createdFile = await this.prisma.file.create({
+      data: {
+        filename,
+        content: Buffer.from(JSON.stringify(content), 'utf-8'),
+        userId,
+        category: FileCategory.COURSES,
+      },
+    });
 
-    return { uploadUrl, downloadUrl };
-  }
-
-  async createCourses(file: Express.Multer.File) {
-    const content = file.buffer.toString('utf-8');
-    const parsedData = await parseCsv(content, CreateCourseBody);
-    const result: CreateCoursesRes = { courses: [], ...parsedData };
-
-    for (const row of parsedData.validRows) {
-      try {
-        await this.prisma.course.create({
-          data: {
-            code: row.code,
-            title: row.title,
-            description: row.description,
-            department: { connect: { name: row.department } },
-            semester: row.semester,
-            units: row.units,
-          },
-        });
-        result.courses.push({ ...row, isCreated: true });
-      } catch {
-        result.courses.push({ ...row, isCreated: false });
-      }
-    }
-
-    return result;
+    await this.messageQueueService.enqueueFile(QueueTable.FILES, {
+      fileId: createdFile.id,
+      fileCategory: FileCategory.COURSES,
+    });
   }
 
   async getCourses() {

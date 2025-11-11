@@ -1,3 +1,4 @@
+import { FileCategory } from 'prisma/client/database';
 import { env } from 'src/lib/environment';
 
 export enum QueueTable {
@@ -5,8 +6,14 @@ export enum QueueTable {
   LO_PRIORITY_EMAILS = 'lo-priority-emails',
   FILES = 'files',
 }
+// Files
+export interface ParseFilePayload {
+  fileId: string;
+  fileCategory: FileCategory;
+  courseSessionId?: string;
+}
 
-// Email Templates
+// Emails
 export enum EmailSubject {
   ACTIVATE_ACCOUNT = 'Activate Your Account',
   RESET_PASSWORD = 'Reset Your Password',
@@ -15,7 +22,7 @@ export enum EmailSubject {
   APPROVAL_SUCCESS = 'Approval Successful',
 }
 
-export interface SendEmailBody {
+export interface SendEmailPayload {
   toEmail: string;
   subject: EmailSubject;
   content: string;

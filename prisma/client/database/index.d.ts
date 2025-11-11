@@ -18718,27 +18718,17 @@ export namespace Prisma {
 
   export type AggregateFile = {
     _count: FileCountAggregateOutputType | null
-    _avg: FileAvgAggregateOutputType | null
-    _sum: FileSumAggregateOutputType | null
     _min: FileMinAggregateOutputType | null
     _max: FileMaxAggregateOutputType | null
-  }
-
-  export type FileAvgAggregateOutputType = {
-    size: number | null
-  }
-
-  export type FileSumAggregateOutputType = {
-    size: number | null
   }
 
   export type FileMinAggregateOutputType = {
     id: string | null
     createdAt: Date | null
+    deletedAt: Date | null
     filename: string | null
-    mimetype: string | null
-    size: number | null
-    path: string | null
+    content: Bytes | null
+    isCompressed: boolean | null
     category: $Enums.FileCategory | null
     userId: string | null
   }
@@ -18746,10 +18736,10 @@ export namespace Prisma {
   export type FileMaxAggregateOutputType = {
     id: string | null
     createdAt: Date | null
+    deletedAt: Date | null
     filename: string | null
-    mimetype: string | null
-    size: number | null
-    path: string | null
+    content: Bytes | null
+    isCompressed: boolean | null
     category: $Enums.FileCategory | null
     userId: string | null
   }
@@ -18757,31 +18747,23 @@ export namespace Prisma {
   export type FileCountAggregateOutputType = {
     id: number
     createdAt: number
+    deletedAt: number
     filename: number
-    mimetype: number
-    size: number
-    path: number
+    content: number
+    isCompressed: number
     category: number
     userId: number
     _all: number
   }
 
 
-  export type FileAvgAggregateInputType = {
-    size?: true
-  }
-
-  export type FileSumAggregateInputType = {
-    size?: true
-  }
-
   export type FileMinAggregateInputType = {
     id?: true
     createdAt?: true
+    deletedAt?: true
     filename?: true
-    mimetype?: true
-    size?: true
-    path?: true
+    content?: true
+    isCompressed?: true
     category?: true
     userId?: true
   }
@@ -18789,10 +18771,10 @@ export namespace Prisma {
   export type FileMaxAggregateInputType = {
     id?: true
     createdAt?: true
+    deletedAt?: true
     filename?: true
-    mimetype?: true
-    size?: true
-    path?: true
+    content?: true
+    isCompressed?: true
     category?: true
     userId?: true
   }
@@ -18800,10 +18782,10 @@ export namespace Prisma {
   export type FileCountAggregateInputType = {
     id?: true
     createdAt?: true
+    deletedAt?: true
     filename?: true
-    mimetype?: true
-    size?: true
-    path?: true
+    content?: true
+    isCompressed?: true
     category?: true
     userId?: true
     _all?: true
@@ -18847,18 +18829,6 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Select which fields to average
-    **/
-    _avg?: FileAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: FileSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
      * Select which fields to find the minimum value
     **/
     _min?: FileMinAggregateInputType
@@ -18889,8 +18859,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: FileCountAggregateInputType | true
-    _avg?: FileAvgAggregateInputType
-    _sum?: FileSumAggregateInputType
     _min?: FileMinAggregateInputType
     _max?: FileMaxAggregateInputType
   }
@@ -18898,15 +18866,13 @@ export namespace Prisma {
   export type FileGroupByOutputType = {
     id: string
     createdAt: Date
+    deletedAt: Date | null
     filename: string
-    mimetype: string
-    size: number
-    path: string
+    content: Bytes
+    isCompressed: boolean
     category: $Enums.FileCategory
     userId: string
     _count: FileCountAggregateOutputType | null
-    _avg: FileAvgAggregateOutputType | null
-    _sum: FileSumAggregateOutputType | null
     _min: FileMinAggregateOutputType | null
     _max: FileMaxAggregateOutputType | null
   }
@@ -18928,10 +18894,10 @@ export namespace Prisma {
   export type FileSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     createdAt?: boolean
+    deletedAt?: boolean
     filename?: boolean
-    mimetype?: boolean
-    size?: boolean
-    path?: boolean
+    content?: boolean
+    isCompressed?: boolean
     category?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -18942,15 +18908,15 @@ export namespace Prisma {
   export type FileSelectScalar = {
     id?: boolean
     createdAt?: boolean
+    deletedAt?: boolean
     filename?: boolean
-    mimetype?: boolean
-    size?: boolean
-    path?: boolean
+    content?: boolean
+    isCompressed?: boolean
     category?: boolean
     userId?: boolean
   }
 
-  export type FileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "filename" | "mimetype" | "size" | "path" | "category" | "userId", ExtArgs["result"]["file"]>
+  export type FileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "deletedAt" | "filename" | "content" | "isCompressed" | "category" | "userId", ExtArgs["result"]["file"]>
   export type FileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -18963,10 +18929,10 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       createdAt: Date
+      deletedAt: Date | null
       filename: string
-      mimetype: string
-      size: number
-      path: string
+      content: Prisma.Bytes
+      isCompressed: boolean
       category: $Enums.FileCategory
       userId: string
     }, ExtArgs["result"]["file"]>
@@ -19341,10 +19307,10 @@ export namespace Prisma {
   interface FileFieldRefs {
     readonly id: FieldRef<"File", 'String'>
     readonly createdAt: FieldRef<"File", 'DateTime'>
+    readonly deletedAt: FieldRef<"File", 'DateTime'>
     readonly filename: FieldRef<"File", 'String'>
-    readonly mimetype: FieldRef<"File", 'String'>
-    readonly size: FieldRef<"File", 'Int'>
-    readonly path: FieldRef<"File", 'String'>
+    readonly content: FieldRef<"File", 'Bytes'>
+    readonly isCompressed: FieldRef<"File", 'Boolean'>
     readonly category: FieldRef<"File", 'FileCategory'>
     readonly userId: FieldRef<"File", 'String'>
   }
@@ -20843,10 +20809,10 @@ export namespace Prisma {
   export const FileScalarFieldEnum: {
     id: 'id',
     createdAt: 'createdAt',
+    deletedAt: 'deletedAt',
     filename: 'filename',
-    mimetype: 'mimetype',
-    size: 'size',
-    path: 'path',
+    content: 'content',
+    isCompressed: 'isCompressed',
     category: 'category',
     userId: 'userId'
   };
@@ -21076,8 +21042,6 @@ export namespace Prisma {
   export const FileOrderByRelevanceFieldEnum: {
     id: 'id',
     filename: 'filename',
-    mimetype: 'mimetype',
-    path: 'path',
     userId: 'userId'
   };
 
@@ -21202,6 +21166,13 @@ export namespace Prisma {
    * Reference to a field of type 'ResultType'
    */
   export type EnumResultTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ResultType'>
+    
+
+
+  /**
+   * Reference to a field of type 'Bytes'
+   */
+  export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
     
 
 
@@ -22411,10 +22382,10 @@ export namespace Prisma {
     NOT?: FileWhereInput | FileWhereInput[]
     id?: StringFilter<"File"> | string
     createdAt?: DateTimeFilter<"File"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"File"> | Date | string | null
     filename?: StringFilter<"File"> | string
-    mimetype?: StringFilter<"File"> | string
-    size?: IntFilter<"File"> | number
-    path?: StringFilter<"File"> | string
+    content?: BytesFilter<"File"> | Bytes
+    isCompressed?: BoolFilter<"File"> | boolean
     category?: EnumFileCategoryFilter<"File"> | $Enums.FileCategory
     userId?: StringFilter<"File"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -22423,10 +22394,10 @@ export namespace Prisma {
   export type FileOrderByWithRelationInput = {
     id?: SortOrder
     createdAt?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     filename?: SortOrder
-    mimetype?: SortOrder
-    size?: SortOrder
-    path?: SortOrder
+    content?: SortOrder
+    isCompressed?: SortOrder
     category?: SortOrder
     userId?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -22439,10 +22410,10 @@ export namespace Prisma {
     OR?: FileWhereInput[]
     NOT?: FileWhereInput | FileWhereInput[]
     createdAt?: DateTimeFilter<"File"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"File"> | Date | string | null
     filename?: StringFilter<"File"> | string
-    mimetype?: StringFilter<"File"> | string
-    size?: IntFilter<"File"> | number
-    path?: StringFilter<"File"> | string
+    content?: BytesFilter<"File"> | Bytes
+    isCompressed?: BoolFilter<"File"> | boolean
     category?: EnumFileCategoryFilter<"File"> | $Enums.FileCategory
     userId?: StringFilter<"File"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -22451,17 +22422,15 @@ export namespace Prisma {
   export type FileOrderByWithAggregationInput = {
     id?: SortOrder
     createdAt?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     filename?: SortOrder
-    mimetype?: SortOrder
-    size?: SortOrder
-    path?: SortOrder
+    content?: SortOrder
+    isCompressed?: SortOrder
     category?: SortOrder
     userId?: SortOrder
     _count?: FileCountOrderByAggregateInput
-    _avg?: FileAvgOrderByAggregateInput
     _max?: FileMaxOrderByAggregateInput
     _min?: FileMinOrderByAggregateInput
-    _sum?: FileSumOrderByAggregateInput
   }
 
   export type FileScalarWhereWithAggregatesInput = {
@@ -22470,10 +22439,10 @@ export namespace Prisma {
     NOT?: FileScalarWhereWithAggregatesInput | FileScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"File"> | string
     createdAt?: DateTimeWithAggregatesFilter<"File"> | Date | string
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"File"> | Date | string | null
     filename?: StringWithAggregatesFilter<"File"> | string
-    mimetype?: StringWithAggregatesFilter<"File"> | string
-    size?: IntWithAggregatesFilter<"File"> | number
-    path?: StringWithAggregatesFilter<"File"> | string
+    content?: BytesWithAggregatesFilter<"File"> | Bytes
+    isCompressed?: BoolWithAggregatesFilter<"File"> | boolean
     category?: EnumFileCategoryWithAggregatesFilter<"File"> | $Enums.FileCategory
     userId?: StringWithAggregatesFilter<"File"> | string
   }
@@ -23795,10 +23764,10 @@ export namespace Prisma {
   export type FileCreateInput = {
     id?: string
     createdAt?: Date | string
+    deletedAt?: Date | string | null
     filename: string
-    mimetype: string
-    size: number
-    path: string
+    content: Bytes
+    isCompressed?: boolean
     category: $Enums.FileCategory
     user: UserCreateNestedOneWithoutFilesInput
   }
@@ -23806,10 +23775,10 @@ export namespace Prisma {
   export type FileUncheckedCreateInput = {
     id?: string
     createdAt?: Date | string
+    deletedAt?: Date | string | null
     filename: string
-    mimetype: string
-    size: number
-    path: string
+    content: Bytes
+    isCompressed?: boolean
     category: $Enums.FileCategory
     userId: string
   }
@@ -23817,10 +23786,10 @@ export namespace Prisma {
   export type FileUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     filename?: StringFieldUpdateOperationsInput | string
-    mimetype?: StringFieldUpdateOperationsInput | string
-    size?: IntFieldUpdateOperationsInput | number
-    path?: StringFieldUpdateOperationsInput | string
+    content?: BytesFieldUpdateOperationsInput | Bytes
+    isCompressed?: BoolFieldUpdateOperationsInput | boolean
     category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
     user?: UserUpdateOneRequiredWithoutFilesNestedInput
   }
@@ -23828,10 +23797,10 @@ export namespace Prisma {
   export type FileUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     filename?: StringFieldUpdateOperationsInput | string
-    mimetype?: StringFieldUpdateOperationsInput | string
-    size?: IntFieldUpdateOperationsInput | number
-    path?: StringFieldUpdateOperationsInput | string
+    content?: BytesFieldUpdateOperationsInput | Bytes
+    isCompressed?: BoolFieldUpdateOperationsInput | boolean
     category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
     userId?: StringFieldUpdateOperationsInput | string
   }
@@ -23839,10 +23808,10 @@ export namespace Prisma {
   export type FileCreateManyInput = {
     id?: string
     createdAt?: Date | string
+    deletedAt?: Date | string | null
     filename: string
-    mimetype: string
-    size: number
-    path: string
+    content: Bytes
+    isCompressed?: boolean
     category: $Enums.FileCategory
     userId: string
   }
@@ -23850,20 +23819,20 @@ export namespace Prisma {
   export type FileUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     filename?: StringFieldUpdateOperationsInput | string
-    mimetype?: StringFieldUpdateOperationsInput | string
-    size?: IntFieldUpdateOperationsInput | number
-    path?: StringFieldUpdateOperationsInput | string
+    content?: BytesFieldUpdateOperationsInput | Bytes
+    isCompressed?: BoolFieldUpdateOperationsInput | boolean
     category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
   }
 
   export type FileUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     filename?: StringFieldUpdateOperationsInput | string
-    mimetype?: StringFieldUpdateOperationsInput | string
-    size?: IntFieldUpdateOperationsInput | number
-    path?: StringFieldUpdateOperationsInput | string
+    content?: BytesFieldUpdateOperationsInput | Bytes
+    isCompressed?: BoolFieldUpdateOperationsInput | boolean
     category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
     userId?: StringFieldUpdateOperationsInput | string
   }
@@ -25171,6 +25140,13 @@ export namespace Prisma {
     _max?: NestedEnumResultTypeFilter<$PrismaModel>
   }
 
+  export type BytesFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel>
+    in?: Bytes[]
+    notIn?: Bytes[]
+    not?: NestedBytesFilter<$PrismaModel> | Bytes
+  }
+
   export type EnumFileCategoryFilter<$PrismaModel = never> = {
     equals?: $Enums.FileCategory | EnumFileCategoryFieldRefInput<$PrismaModel>
     in?: $Enums.FileCategory[]
@@ -25187,25 +25163,21 @@ export namespace Prisma {
   export type FileCountOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
+    deletedAt?: SortOrder
     filename?: SortOrder
-    mimetype?: SortOrder
-    size?: SortOrder
-    path?: SortOrder
+    content?: SortOrder
+    isCompressed?: SortOrder
     category?: SortOrder
     userId?: SortOrder
-  }
-
-  export type FileAvgOrderByAggregateInput = {
-    size?: SortOrder
   }
 
   export type FileMaxOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
+    deletedAt?: SortOrder
     filename?: SortOrder
-    mimetype?: SortOrder
-    size?: SortOrder
-    path?: SortOrder
+    content?: SortOrder
+    isCompressed?: SortOrder
     category?: SortOrder
     userId?: SortOrder
   }
@@ -25213,16 +25185,22 @@ export namespace Prisma {
   export type FileMinOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
+    deletedAt?: SortOrder
     filename?: SortOrder
-    mimetype?: SortOrder
-    size?: SortOrder
-    path?: SortOrder
+    content?: SortOrder
+    isCompressed?: SortOrder
     category?: SortOrder
     userId?: SortOrder
   }
 
-  export type FileSumOrderByAggregateInput = {
-    size?: SortOrder
+  export type BytesWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel>
+    in?: Bytes[]
+    notIn?: Bytes[]
+    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Bytes
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBytesFilter<$PrismaModel>
+    _max?: NestedBytesFilter<$PrismaModel>
   }
 
   export type EnumFileCategoryWithAggregatesFilter<$PrismaModel = never> = {
@@ -26407,6 +26385,10 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type BytesFieldUpdateOperationsInput = {
+    set?: Bytes
+  }
+
   export type EnumFileCategoryFieldUpdateOperationsInput = {
     set?: $Enums.FileCategory
   }
@@ -26796,11 +26778,28 @@ export namespace Prisma {
     _max?: NestedEnumResultTypeFilter<$PrismaModel>
   }
 
+  export type NestedBytesFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel>
+    in?: Bytes[]
+    notIn?: Bytes[]
+    not?: NestedBytesFilter<$PrismaModel> | Bytes
+  }
+
   export type NestedEnumFileCategoryFilter<$PrismaModel = never> = {
     equals?: $Enums.FileCategory | EnumFileCategoryFieldRefInput<$PrismaModel>
     in?: $Enums.FileCategory[]
     notIn?: $Enums.FileCategory[]
     not?: NestedEnumFileCategoryFilter<$PrismaModel> | $Enums.FileCategory
+  }
+
+  export type NestedBytesWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel>
+    in?: Bytes[]
+    notIn?: Bytes[]
+    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Bytes
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBytesFilter<$PrismaModel>
+    _max?: NestedBytesFilter<$PrismaModel>
   }
 
   export type NestedEnumFileCategoryWithAggregatesFilter<$PrismaModel = never> = {
@@ -26938,20 +26937,20 @@ export namespace Prisma {
   export type FileCreateWithoutUserInput = {
     id?: string
     createdAt?: Date | string
+    deletedAt?: Date | string | null
     filename: string
-    mimetype: string
-    size: number
-    path: string
+    content: Bytes
+    isCompressed?: boolean
     category: $Enums.FileCategory
   }
 
   export type FileUncheckedCreateWithoutUserInput = {
     id?: string
     createdAt?: Date | string
+    deletedAt?: Date | string | null
     filename: string
-    mimetype: string
-    size: number
-    path: string
+    content: Bytes
+    isCompressed?: boolean
     category: $Enums.FileCategory
   }
 
@@ -27133,10 +27132,10 @@ export namespace Prisma {
     NOT?: FileScalarWhereInput | FileScalarWhereInput[]
     id?: StringFilter<"File"> | string
     createdAt?: DateTimeFilter<"File"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"File"> | Date | string | null
     filename?: StringFilter<"File"> | string
-    mimetype?: StringFilter<"File"> | string
-    size?: IntFilter<"File"> | number
-    path?: StringFilter<"File"> | string
+    content?: BytesFilter<"File"> | Bytes
+    isCompressed?: BoolFilter<"File"> | boolean
     category?: EnumFileCategoryFilter<"File"> | $Enums.FileCategory
     userId?: StringFilter<"File"> | string
   }
@@ -29420,40 +29419,40 @@ export namespace Prisma {
   export type FileCreateManyUserInput = {
     id?: string
     createdAt?: Date | string
+    deletedAt?: Date | string | null
     filename: string
-    mimetype: string
-    size: number
-    path: string
+    content: Bytes
+    isCompressed?: boolean
     category: $Enums.FileCategory
   }
 
   export type FileUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     filename?: StringFieldUpdateOperationsInput | string
-    mimetype?: StringFieldUpdateOperationsInput | string
-    size?: IntFieldUpdateOperationsInput | number
-    path?: StringFieldUpdateOperationsInput | string
+    content?: BytesFieldUpdateOperationsInput | Bytes
+    isCompressed?: BoolFieldUpdateOperationsInput | boolean
     category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
   }
 
   export type FileUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     filename?: StringFieldUpdateOperationsInput | string
-    mimetype?: StringFieldUpdateOperationsInput | string
-    size?: IntFieldUpdateOperationsInput | number
-    path?: StringFieldUpdateOperationsInput | string
+    content?: BytesFieldUpdateOperationsInput | Bytes
+    isCompressed?: BoolFieldUpdateOperationsInput | boolean
     category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
   }
 
   export type FileUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     filename?: StringFieldUpdateOperationsInput | string
-    mimetype?: StringFieldUpdateOperationsInput | string
-    size?: IntFieldUpdateOperationsInput | number
-    path?: StringFieldUpdateOperationsInput | string
+    content?: BytesFieldUpdateOperationsInput | Bytes
+    isCompressed?: BoolFieldUpdateOperationsInput | boolean
     category?: EnumFileCategoryFieldUpdateOperationsInput | $Enums.FileCategory
   }
 

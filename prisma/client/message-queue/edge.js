@@ -123,14 +123,14 @@ const config = {
     "previewFeatures": [
       "postgresqlExtensions"
     ],
-    "sourceFilePath": "/home/victormomodu/Documents/Programming/software-engineering/chsresults/prisma/message-queue.prisma",
+    "sourceFilePath": "/home/victormomodu/Documents/Programming/software-engineering/chsresults/prisma/schema/message-queue.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
     "rootEnvPath": "../../../.env",
     "schemaEnvPath": "../../../.env"
   },
-  "relativePath": "../..",
+  "relativePath": "../../schema",
   "clientVersion": "6.18.0",
   "engineVersion": "34b5a692b7bd79939a9a2c3ef97d816e749cda2f",
   "datasourceNames": [
@@ -145,8 +145,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator mqClient {\n  provider        = \"prisma-client-js\"\n  previewFeatures = [\"postgresqlExtensions\"]\n  output          = \"./client/message-queue\"\n}\n\ndatasource mq {\n  provider   = \"postgresql\"\n  url        = env(\"MESSAGE_QUEUE_DATABASE_URL\")\n  // directUrl  = env(\"MESSAGE_QUEUE_DATABASE_DIRECT_URL\")\n  extensions = [pgmq]\n}\n",
-  "inlineSchemaHash": "6d294b2ed47e40dbfcbafb7477f89ba306e07e7c6313f6628edccba0aaeaeaa9",
+  "inlineSchema": "generator mqClient {\n  provider        = \"prisma-client-js\"\n  previewFeatures = [\"postgresqlExtensions\"]\n  output          = \"../client/message-queue\"\n}\n\ndatasource mq {\n  provider   = \"postgresql\"\n  url        = env(\"MESSAGE_QUEUE_DATABASE_URL\")\n  extensions = [pgmq]\n}\n",
+  "inlineSchemaHash": "e87c4d4df561dd63f7923d45562855389bc027c50b8359b90c96c75e220abad3",
   "copyEngine": true
 }
 config.dirname = '/'

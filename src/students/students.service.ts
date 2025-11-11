@@ -1,12 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import {
-  CreateStudentBody,
-  CreateStudentsRes,
-  UpdateStudentBody,
-} from './students.schema';
-import { UserRole } from 'prisma/client/database';
-import { parseCsv } from 'src/lib/csv';
+import { CreateStudentBody, UpdateStudentBody } from './students.schema';
+import { FileCategory, UserRole } from 'prisma/client/database';
+import { UploadFileBody } from 'src/files/files.schema';
 
 @Injectable()
 export class StudentsService {
@@ -45,40 +41,18 @@ export class StudentsService {
     });
   }
 
-  async createStudents(file: Express.Multer.File) {
-    const content = file.buffer.toString('utf-8');
-    const parsedData = await parseCsv(content, CreateStudentBody);
-    const result: CreateStudentsRes = { students: [], ...parsedData };
-
-    for (const row of parsedData.validRows) {
-      try {
-        await this.prisma.user.create({
-          data: {
-            email: row.email,
-            role: UserRole.STUDENT,
-            student: {
-              create: {
-                firstName: row.firstName,
-                lastName: row.lastName,
-                otherName: row.otherName,
-                matricNumber: row.matricNumber,
-                department: { connect: { name: row.department } },
-                admissionYear: row.admissionYear,
-                degree: row.degree,
-                gender: row.gender,
-                level: row.level,
-              },
-            },
-          },
-        });
-
-        result.students.push({ ...row, isCreated: true });
-      } catch {
-        result.students.push({ ...row, isCreated: false });
-      }
-    }
-
-    return result;
+  async uploadFileForStudents(
+    userId: string,
+    { filename, content }: UploadFileBody,
+  ) {
+    await this.prisma.file.create({
+      data: {
+        filename,
+        content: Buffer.from(JSON.stringify(content), 'utf-8'),
+        userId,
+        category: FileCategory.STUDENTS,
+      },
+    });
   }
 
   async getStudents() {

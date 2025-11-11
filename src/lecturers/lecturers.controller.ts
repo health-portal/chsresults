@@ -29,6 +29,8 @@ import {
 import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserRole } from 'prisma/client/database';
+import { UploadFileBody } from 'src/files/files.schema';
+import { User } from 'src/auth/user.decorator';
 
 @ApiTags('Lecturers', 'Admin')
 @ApiBearerAuth('accessToken')
@@ -48,10 +50,12 @@ export class LecturersController {
     return await this.lecturersService.createLecturer(body);
   }
 
-  @ApiOperation({ summary: 'Create multiple lecturers from a file' })
   @Post('batch')
-  async getCreateLecturersUrl() {
-    return await this.lecturersService.getCreateLecturersUrl();
+  async uploadFileForLecturers(
+    @User('sub') userId: string,
+    @Body() body: UploadFileBody,
+  ) {
+    return await this.lecturersService.uploadFileForLecturers(userId, body);
   }
 
   @ApiOperation({ summary: 'Get all lecturers' })

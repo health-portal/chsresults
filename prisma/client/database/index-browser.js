@@ -293,10 +293,10 @@ exports.Prisma.ResultScalarFieldEnum = {
 exports.Prisma.FileScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
+  deletedAt: 'deletedAt',
   filename: 'filename',
-  mimetype: 'mimetype',
-  size: 'size',
-  path: 'path',
+  content: 'content',
+  isCompressed: 'isCompressed',
   category: 'category',
   userId: 'userId'
 };
@@ -454,8 +454,6 @@ exports.Prisma.ResultOrderByRelevanceFieldEnum = {
 exports.Prisma.FileOrderByRelevanceFieldEnum = {
   id: 'id',
   filename: 'filename',
-  mimetype: 'mimetype',
-  path: 'path',
   userId: 'userId'
 };
 

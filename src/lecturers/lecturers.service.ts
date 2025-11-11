@@ -1,12 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import {
-  CreateLecturerBody,
-  CreateLecturersRes,
-  UpdateLecturerBody,
-} from './lecturers.schema';
-import { UserRole } from 'prisma/client/database';
-import { parseCsv } from 'src/lib/csv';
+import { CreateLecturerBody, UpdateLecturerBody } from './lecturers.schema';
+import { FileCategory, UserRole } from 'prisma/client/database';
+import { UploadFileBody } from 'src/files/files.schema';
 
 @Injectable()
 export class LecturersService {
@@ -40,37 +36,18 @@ export class LecturersService {
     });
   }
 
-  async createLecturers(file: Express.Multer.File) {
-    const content = file.buffer.toString('utf-8');
-    const parsedData = await parseCsv(content, CreateLecturerBody);
-    const result: CreateLecturersRes = { lecturers: [], ...parsedData };
-
-    for (const row of parsedData.validRows) {
-      try {
-        await this.prisma.user.create({
-          data: {
-            email: row.email,
-            role: UserRole.LECTURER,
-            lecturer: {
-              create: {
-                firstName: row.firstName,
-                lastName: row.lastName,
-                otherName: row.otherName,
-                department: { connect: { name: row.department } },
-                phone: row.phone,
-                title: row.title,
-              },
-            },
-          },
-        });
-
-        result.lecturers.push({ ...row, isCreated: true });
-      } catch {
-        result.lecturers.push({ ...row, isCreated: false });
-      }
-    }
-
-    return result;
+  async uploadFileForLecturers(
+    userId: string,
+    { filename, content }: UploadFileBody,
+  ) {
+    await this.prisma.file.create({
+      data: {
+        filename,
+        content: Buffer.from(JSON.stringify(content), 'utf-8'),
+        userId,
+        category: FileCategory.LECTURERS,
+      },
+    });
   }
 
   async getLecturers() {

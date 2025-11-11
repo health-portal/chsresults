@@ -1,6 +1,6 @@
 generator dbClient {
     provider = "prisma-client-js"
-    output   = "./client/database"
+    output   = "../client/database"
 }
 
 datasource db {
@@ -89,6 +89,7 @@ model User {
     lecturer  Lecturer?
     student   Student?
     tokenData TokenData?
+    files     File[]
 
     @@index([role])
     @@index([deletedAt])
@@ -401,6 +402,22 @@ model Result {
     @@unique([enrollmentId, type], name: "uniqueResult")
     @@index([enrollmentId])
     @@map("results")
+}
+
+model File {
+    id        String    @id @default(uuid())
+    createdAt DateTime  @default(now())
+    deletedAt DateTime?
+
+    filename     String
+    content      Bytes
+    isCompressed Boolean      @default(false)
+    category     FileCategory
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
+
+    @@map("files")
 }
 
 model AuditLog {

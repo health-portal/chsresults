@@ -1,11 +1,9 @@
 import { MessageRecord, pgmq } from 'prisma-pgmq';
 import { PrismaClient as DatabaseClient } from 'prisma/client/database';
 import { PrismaClient as MessageQueueClient } from 'prisma/client/message-queue';
-import { QueueTable, SendEmailBody } from './message-queue.schema';
+import { QueueTable, SendEmailPayload } from './message-queue.schema';
 import { createClient } from 'smtpexpress';
 import { env } from 'src/lib/environment';
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { UploadFileBody } from 'src/files/files.schema';
 
 const VISIBILITY_TIMEOUT = 60;
 const BATCH_SIZE = 5;
@@ -17,7 +15,7 @@ const emailClient = createClient({
   projectSecret: env.SMTPEXPRESS_PROJECT_SECRET,
 });
 
-async function sendEmail({ subject, toEmail, content }: SendEmailBody) {
+async function sendEmail({ subject, toEmail, content }: SendEmailPayload) {
   const { statusCode } = await emailClient.sendApi.sendMail({
     subject,
     message: content,
@@ -51,7 +49,7 @@ async function processEmailQueue() {
   await Promise.all(
     records.map(async (record) => {
       const { subject, toEmail, content } =
-        record.message as unknown as SendEmailBody;
+        record.message as unknown as SendEmailPayload;
       const isSent = await sendEmail({ subject, toEmail, content });
       if (!isSent)
         await pgmq.deleteMessage(
@@ -61,32 +59,4 @@ async function processEmailQueue() {
         );
     }),
   );
-}
-
-async function processFileQueue() {
-  const [record] = await pgmq.read(
-    mqClient,
-    QueueTable.FILES,
-    VISIBILITY_TIMEOUT,
-    1,
-  );
-
-  const s3 = new S3Client({
-    region: 'auto',
-    endpoint: `https://${env.CLOUDFLARE_R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-    credentials: {
-      accessKeyId: env.CLOUDFLARE_R2_ACCESS_KEY_ID,
-      secretAccessKey: env.CLOUDFLARE_R2_SECRET_ACCESS_KEY,
-    },
-  });
-
-  const { path } = record.message as unknown as UploadFileBody;
-  const response = await s3.send(
-    new GetObjectCommand({
-      Bucket: env.CLOUDFLARE_R2_BUCKET,
-      Key: path,
-    }),
-  );
-
-  response.Body;
 }

@@ -12,7 +12,7 @@ import { SessionsModule } from './sessions/sessions.module';
 import { StudentsModule } from './students/students.module';
 import { MessageQueueModule } from './message-queue/message-queue.module';
 import { GradingSystemsModule } from './grading-systems/grading-systems.module';
-import { S3Module } from './s3/s3.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -28,7 +28,7 @@ import { S3Module } from './s3/s3.module';
     StudentsModule,
     MessageQueueModule,
     GradingSystemsModule,
-    S3Module,
+    FilesModule,
   ],
 })
 export class AppModule {}

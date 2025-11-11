@@ -9,9 +9,7 @@ import {
   Patch,
   Post,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { LecturerService } from './lecturer.service';
 import { User } from 'src/auth/user.decorator';
 import { AuthRoles, UserRoleGuard } from 'src/auth/role.guard';
@@ -36,6 +34,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { UploadFileBody } from 'src/files/files.schema';
 
 @ApiTags('Lecturer')
 @ApiBearerAuth('accessToken')
@@ -81,39 +80,33 @@ export class LecturerController {
     );
   }
 
-  @ApiOperation({ summary: 'Register students in a course session' })
-  @ApiForbiddenResponse({
-    description:
-      'You are not authorized to register students in this course session.',
-  })
   @Post('courses-sessions/:courseSessionId/students/batch')
-  async getRegisterStudentsUrl(
+  async uploadFileForStudentRegistrations(
     @User() user: JwtPayload,
     @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
+    @Body() body: UploadFileBody,
   ) {
     const lecturerId = this.getLecturerId(user);
-    return await this.lecturerService.getRegisterStudentsUrl(
+    return await this.lecturerService.uploadFileForStudentRegistrations(
+      user.sub,
       lecturerId,
       courseSessionId,
+      body,
     );
   }
 
-  @ApiOperation({ summary: 'Register a student in a course session' })
-  @ApiOkResponse({ description: 'Student registered successfully' })
-  @ApiForbiddenResponse({
-    description:
-      'You are not authorized to register students in this course session.',
-  })
-  @Post('courses-sessions/:courseSessionId/students')
-  @UseInterceptors(FileInterceptor('file'))
-  async getUploadResultsUrl(
+  @Post('courses-sessions/:courseSessionId/results')
+  async uploadFileForStudentResults(
     @User() user: JwtPayload,
     @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
+    @Body() body: UploadFileBody,
   ) {
     const lecturerId = this.getLecturerId(user);
-    return await this.lecturerService.getUploadResultsUrl(
+    return await this.lecturerService.uploadFileForStudentResults(
+      user.sub,
       lecturerId,
       courseSessionId,
+      body,
     );
   }
 
@@ -121,7 +114,7 @@ export class LecturerController {
   @ApiBody({ type: EditResultBody })
   @ApiOkResponse({ description: 'Result edited successfully' })
   @ApiNotFoundResponse({ description: 'Course session or student not found' })
-  @Patch('courses-sessions/:courseSessionId/scores/:studentId')
+  @Patch('courses-sessions/:courseSessionId/results/:studentId')
   async editResult(
     @User() user: JwtPayload,
     @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,
@@ -137,10 +130,10 @@ export class LecturerController {
     );
   }
 
-  @ApiOperation({ summary: 'View scores for a course session' })
+  @ApiOperation({ summary: 'View results for a course session' })
   @ApiOkResponse({ type: [EnrollmentRes] })
   @ApiNotFoundResponse({ description: 'Course session not found' })
-  @Get('courses-sessions/:courseSessionId/scores')
+  @Get('courses-sessions/:courseSessionId/results')
   async viewCourseResults(
     @User() user: JwtPayload,
     @Param('courseSessionId', ParseUUIDPipe) courseSessionId: string,

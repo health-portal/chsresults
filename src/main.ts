@@ -31,7 +31,7 @@ async function bootstrap() {
     jsonDocumentUrl: 'openapi.json',
   });
 
-  await app.listen(env.PORT);
+  await app.listen(env.PORT, '0.0.0.0');
 }
 
 bootstrap();

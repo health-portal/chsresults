@@ -16,7 +16,6 @@ import {
   StudentProfileRes,
   UpdateStudentBody,
 } from './students.schema';
-import { UserRole } from 'prisma/client/database';
 import { StudentsService } from './students.service';
 import {
   ApiBadRequestResponse,
@@ -30,6 +29,9 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { UserRole } from 'prisma/client/database';
+import { UploadFileBody } from 'src/files/files.schema';
+import { User } from 'src/auth/user.decorator';
 
 @ApiTags('Students', 'Admin')
 @ApiBearerAuth('accessToken')
@@ -48,10 +50,12 @@ export class StudentsController {
     return await this.studentsService.createStudent(body);
   }
 
-  @ApiOperation({ summary: 'Create multiple students from a file' })
   @Post('batch')
-  async getCreateStudentsUrl() {
-    return await this.studentsService.getCreateStudentsUrl();
+  async uploadFileForStudents(
+    @User('sub') userId: string,
+    @Body() body: UploadFileBody,
+  ) {
+    return await this.studentsService.uploadFileForStudents(userId, body);
   }
 
   @ApiOperation({ summary: 'Get all students' })
