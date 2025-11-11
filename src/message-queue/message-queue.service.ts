@@ -31,7 +31,7 @@ export class MessageQueueService
     );
   }
 
-  async enqueueFile(table: QueueTable, payload: ParseFilePayload) {
-    await pgmq.send(this, table, payload as unknown as Task);
+  async enqueueFile(payload: ParseFilePayload) {
+    await pgmq.send(this, QueueTable.FILES, payload as unknown as Task);
   }
 }

@@ -3,12 +3,20 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AddAdminBody, UpdateAdminBody } from './admin.schema';
 import { UserRole } from 'prisma/client/database';
 import { TokensService } from 'src/tokens/tokens.service';
+import {
+  EmailSubject,
+  QueueTable,
+  SendEmailPayload,
+  SetPasswordTemplate,
+} from 'src/message-queue/message-queue.schema';
+import { MessageQueueService } from 'src/message-queue/message-queue.service';
 
 @Injectable()
 export class AdminService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly tokensService: TokensService,
+    private readonly messageQueueService: MessageQueueService,
   ) {}
 
   async addAdmin({ email, name }: AddAdminBody) {
@@ -26,7 +34,19 @@ export class AdminService {
       sub: createdUser.id,
     });
 
-    return { message: 'Admin added successfully', url };
+    const payload: SendEmailPayload = {
+      toEmail: createdUser.email,
+      subject: EmailSubject.RESET_PASSWORD,
+      content: SetPasswordTemplate({
+        isActivateAccount: true,
+        setPasswordLink: url,
+      }),
+    };
+
+    await this.messageQueueService.enqueueEmails(
+      QueueTable.HI_PRIORITY_EMAILS,
+      [payload],
+    );
   }
 
   async getAdmins() {

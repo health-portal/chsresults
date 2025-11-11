@@ -3,10 +3,22 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateLecturerBody, UpdateLecturerBody } from './lecturers.schema';
 import { FileCategory, UserRole } from 'prisma/client/database';
 import { UploadFileBody } from 'src/files/files.schema';
+import { MessageQueueService } from 'src/message-queue/message-queue.service';
+import { TokensService } from 'src/tokens/tokens.service';
+import {
+  EmailSubject,
+  QueueTable,
+  SendEmailPayload,
+  SetPasswordTemplate,
+} from 'src/message-queue/message-queue.schema';
 
 @Injectable()
 export class LecturersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly messageQueueService: MessageQueueService,
+    private readonly tokensService: TokensService,
+  ) {}
 
   async createLecturer({
     email,
@@ -17,7 +29,7 @@ export class LecturersService {
     phone,
     title,
   }: CreateLecturerBody) {
-    await this.prisma.user.create({
+    const createdUser = await this.prisma.user.create({
       data: {
         email,
         role: UserRole.LECTURER,
@@ -32,8 +44,27 @@ export class LecturersService {
           },
         },
       },
-      include: { lecturer: true },
     });
+
+    const url = await this.tokensService.genActivateAccountUrl({
+      email: createdUser.email,
+      role: UserRole.LECTURER,
+      sub: createdUser.id,
+    });
+
+    const payload: SendEmailPayload = {
+      toEmail: createdUser.email,
+      content: SetPasswordTemplate({
+        isActivateAccount: true,
+        setPasswordLink: url,
+      }),
+      subject: EmailSubject.ACTIVATE_ACCOUNT,
+    };
+
+    await this.messageQueueService.enqueueEmails(
+      QueueTable.HI_PRIORITY_EMAILS,
+      [payload],
+    );
   }
 
   async uploadFileForLecturers(

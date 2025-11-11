@@ -29,19 +29,16 @@ export interface SendEmailPayload {
 }
 
 export interface SetPasswordSchema {
-  name: string;
   isActivateAccount: boolean;
   setPasswordLink: string;
 }
 
 export interface NotificationSchema {
-  name: string;
   title: string;
   message: string;
 }
 
 export const SetPasswordTemplate = ({
-  name,
   setPasswordLink,
   isActivateAccount,
 }: SetPasswordSchema) => {
@@ -68,7 +65,6 @@ export const SetPasswordTemplate = ({
     </div>
     <div class="content">
       <h3>${isActivateAccount ? 'Activate Your Account' : 'Reset Your Password'}</h3>
-      <p>Hello, ${name},</p>
       <p>Welcome to the OAU College of Health Sciences Results Portal. To complete your registration and access your account, please activate it using the button below.</p>
       <p><a href="${setPasswordLink}" class="button">${isActivateAccount ? 'Activate Account' : 'Reset Password'}</a></p>
       <p>If you didn’t request this account, you can safely ignore this email.</p>
@@ -83,7 +79,6 @@ export const SetPasswordTemplate = ({
 };
 
 export const NotificationTemplate = ({
-  name,
   title,
   message,
 }: NotificationSchema) => {
@@ -110,7 +105,6 @@ export const NotificationTemplate = ({
         </div>
         <div class="content">
             <h3>${title}</h3>
-            <p>Hello, ${name},</p>
             <p>${message}</p>
             <p>For more details, visit the portal:</p>
             <p><a href="${env.FRONTEND_BASE_URL}" class="button">Go to Portal</a></p>
