@@ -74,13 +74,19 @@ export class LecturerService {
     { filename, content }: UploadFileBody,
   ) {
     await this.validateCourseLecturerAccess(lecturerId, userId, true);
-    await this.prisma.file.create({
+    const createdFile = await this.prisma.file.create({
       data: {
         filename,
-        content: Buffer.from(JSON.stringify(content), 'utf-8'),
+        content: Buffer.from(content, 'utf-8'),
         category: FileCategory.REGISTRATIONS,
         userId,
       },
+    });
+
+    await this.messageQueueService.enqueueFile({
+      fileId: createdFile.id,
+      fileCategory: FileCategory.REGISTRATIONS,
+      courseSessionId,
     });
   }
 
@@ -91,13 +97,19 @@ export class LecturerService {
     { filename, content }: UploadFileBody,
   ) {
     await this.validateCourseLecturerAccess(lecturerId, userId, true);
-    await this.prisma.file.create({
+    const createdFile = await this.prisma.file.create({
       data: {
         filename,
-        content: Buffer.from(JSON.stringify(content), 'utf-8'),
+        content: Buffer.from(content, 'utf-8'),
         category: FileCategory.RESULTS,
         userId,
       },
+    });
+
+    await this.messageQueueService.enqueueFile({
+      fileId: createdFile.id,
+      fileCategory: FileCategory.RESULTS,
+      courseSessionId,
     });
   }
 

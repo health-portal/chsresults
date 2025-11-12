@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsObject, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class UploadFileBody {
   @ApiProperty()
@@ -7,6 +7,6 @@ export class UploadFileBody {
   filename: string;
 
   @ApiProperty()
-  @IsObject()
-  content: object;
+  @IsString()
+  content: string;
 }

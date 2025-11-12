@@ -1,14 +1,19 @@
 import { MessageRecord, pgmq } from 'prisma-pgmq';
-import { PrismaClient as DatabaseClient } from 'prisma/client/database';
 import { PrismaClient as MessageQueueClient } from 'prisma/client/message-queue';
-import { QueueTable, SendEmailPayload } from './message-queue.schema';
+import {
+  ParseFilePayload,
+  QueueTable,
+  SendEmailPayload,
+} from './message-queue.schema';
 import { createClient } from 'smtpexpress';
 import { env } from 'src/lib/environment';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from 'src/app.module';
+import { FilesService } from 'src/files/files.service';
 
 const VISIBILITY_TIMEOUT = 60;
 const BATCH_SIZE = 5;
 
-const dbClient = new DatabaseClient();
 const mqClient = new MessageQueueClient();
 const emailClient = createClient({
   projectId: env.SMTPEXPRESS_PROJECT_ID,
@@ -59,4 +64,20 @@ async function processEmailQueue() {
         );
     }),
   );
+}
+
+async function processFileQueue() {
+  const appContext = await NestFactory.createApplicationContext(AppModule);
+  const filesService = appContext.get(FilesService);
+
+  const [record] = await pgmq.read(
+    mqClient,
+    QueueTable.HI_PRIORITY_EMAILS,
+    VISIBILITY_TIMEOUT,
+    1,
+  );
+
+  if (record) {
+    await filesService.parseFile(record.message as unknown as ParseFilePayload);
+  }
 }

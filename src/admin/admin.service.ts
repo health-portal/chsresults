@@ -2,20 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AddAdminBody, UpdateAdminBody } from './admin.schema';
 import { UserRole } from 'prisma/client/database';
-import { TokensService } from 'src/tokens/tokens.service';
-import {
-  EmailSubject,
-  QueueTable,
-  SendEmailPayload,
-  SetPasswordTemplate,
-} from 'src/message-queue/message-queue.schema';
 import { MessageQueueService } from 'src/message-queue/message-queue.service';
 
 @Injectable()
 export class AdminService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly tokensService: TokensService,
     private readonly messageQueueService: MessageQueueService,
   ) {}
 
@@ -28,25 +20,14 @@ export class AdminService {
       },
     });
 
-    const url = await this.tokensService.genActivateAccountUrl({
-      email: createdUser.email,
-      role: UserRole.ADMIN,
-      sub: createdUser.id,
+    await this.messageQueueService.enqueueHiPriorityEmail({
+      isActivateAccount: true,
+      tokenPayload: {
+        email: createdUser.email,
+        role: UserRole.ADMIN,
+        sub: createdUser.id,
+      },
     });
-
-    const payload: SendEmailPayload = {
-      toEmail: createdUser.email,
-      subject: EmailSubject.RESET_PASSWORD,
-      content: SetPasswordTemplate({
-        isActivateAccount: true,
-        setPasswordLink: url,
-      }),
-    };
-
-    await this.messageQueueService.enqueueEmails(
-      QueueTable.HI_PRIORITY_EMAILS,
-      [payload],
-    );
   }
 
   async getAdmins() {

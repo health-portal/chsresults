@@ -15,21 +15,15 @@ import {
 import * as argon2 from 'argon2';
 import { isEmail } from 'class-validator';
 import { UserRole } from 'prisma/client/database';
-import { TokensService } from 'src/tokens/tokens.service';
 import { MessageQueueService } from 'src/message-queue/message-queue.service';
-import {
-  EmailSubject,
-  QueueTable,
-  SendEmailPayload,
-  SetPasswordTemplate,
-} from 'src/message-queue/message-queue.schema';
+import { TokensService } from 'src/tokens/tokens.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly tokensService: TokensService,
     private readonly messageQueueService: MessageQueueService,
+    private readonly tokensService: TokensService,
   ) {}
 
   private async findUserByEmail(email: string, role: UserRole) {
@@ -163,25 +157,14 @@ export class AuthService {
   async requestPasswordReset({ identifier, role }: RequestPasswordResetBody) {
     const foundUser = await this.findUser(identifier, role);
 
-    const url = await this.tokensService.genResetPasswordUrl({
-      email: foundUser.email,
-      role: foundUser.role,
-      sub: foundUser.id,
+    await this.messageQueueService.enqueueHiPriorityEmail({
+      isActivateAccount: true,
+      tokenPayload: {
+        email: foundUser.email,
+        role: foundUser.role,
+        sub: foundUser.id,
+      },
     });
-
-    const payload: SendEmailPayload = {
-      toEmail: foundUser.email,
-      subject: EmailSubject.RESET_PASSWORD,
-      content: SetPasswordTemplate({
-        isActivateAccount: false,
-        setPasswordLink: url,
-      }),
-    };
-
-    await this.messageQueueService.enqueueEmails(
-      QueueTable.HI_PRIORITY_EMAILS,
-      [payload],
-    );
   }
 
   async confirmPasswordReset({ password, tokenString }: SetPasswordBody) {

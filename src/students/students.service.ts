@@ -3,20 +3,12 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateStudentBody, UpdateStudentBody } from './students.schema';
 import { FileCategory, UserRole } from 'prisma/client/database';
 import { UploadFileBody } from 'src/files/files.schema';
-import { TokensService } from 'src/tokens/tokens.service';
 import { MessageQueueService } from 'src/message-queue/message-queue.service';
-import {
-  EmailSubject,
-  QueueTable,
-  SendEmailPayload,
-  SetPasswordTemplate,
-} from 'src/message-queue/message-queue.schema';
 
 @Injectable()
 export class StudentsService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly tokensService: TokensService,
     private readonly messageQueueService: MessageQueueService,
   ) {}
 
@@ -52,38 +44,32 @@ export class StudentsService {
       },
     });
 
-    const url = await this.tokensService.genActivateAccountUrl({
-      email: createdUser.email,
-      role: UserRole.LECTURER,
-      sub: createdUser.id,
+    await this.messageQueueService.enqueueHiPriorityEmail({
+      isActivateAccount: true,
+      tokenPayload: {
+        email: createdUser.email,
+        role: UserRole.ADMIN,
+        sub: createdUser.id,
+      },
     });
-
-    const payload: SendEmailPayload = {
-      toEmail: createdUser.email,
-      content: SetPasswordTemplate({
-        isActivateAccount: true,
-        setPasswordLink: url,
-      }),
-      subject: EmailSubject.ACTIVATE_ACCOUNT,
-    };
-
-    await this.messageQueueService.enqueueEmails(
-      QueueTable.HI_PRIORITY_EMAILS,
-      [payload],
-    );
   }
 
   async uploadFileForStudents(
     userId: string,
     { filename, content }: UploadFileBody,
   ) {
-    await this.prisma.file.create({
+    const createdFile = await this.prisma.file.create({
       data: {
         filename,
-        content: Buffer.from(JSON.stringify(content), 'utf-8'),
+        content: Buffer.from(content, 'utf-8'),
         userId,
         category: FileCategory.STUDENTS,
       },
+    });
+
+    await this.messageQueueService.enqueueFile({
+      fileId: createdFile.id,
+      fileCategory: FileCategory.STUDENTS,
     });
   }
 

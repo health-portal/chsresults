@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ResultType, UserRole } from 'prisma/client/database';
+import { FileCategory, ResultType, UserRole } from 'prisma/client/database';
 import { CreateCourseBody, CreateCoursesRes } from 'src/courses/courses.schema';
 import {
   CreateLecturerBody,
@@ -10,6 +10,11 @@ import {
   UploadResultsRes,
 } from 'src/lecturers/lecturers.schema';
 import { parseCsv } from 'src/lib/csv';
+import {
+  EmailSubject,
+  ParseFilePayload,
+} from 'src/message-queue/message-queue.schema';
+import { MessageQueueService } from 'src/message-queue/message-queue.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateStudentBody,
@@ -18,10 +23,39 @@ import {
 
 @Injectable()
 export class FilesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly messageQueueService: MessageQueueService,
+  ) {}
 
-  async createCourses(file: Express.Multer.File) {
-    const content = file.buffer.toString('utf-8');
+  async parseFile({ fileId, fileCategory, courseSessionId }: ParseFilePayload) {
+    const foundFile = await this.prisma.file.findUnique({
+      where: { id: fileId },
+    });
+
+    if (foundFile) {
+      const content = foundFile.content.toString();
+      switch (fileCategory) {
+        case FileCategory.COURSES:
+          await this.createCourses(content);
+          break;
+        case FileCategory.LECTURERS:
+          await this.createLecturers(content);
+          break;
+        case FileCategory.STUDENTS:
+          await this.createStudents(content);
+          break;
+        case FileCategory.REGISTRATIONS:
+          await this.registerStudents(courseSessionId!, content);
+          break;
+        case FileCategory.RESULTS:
+          await this.uploadResults(courseSessionId!, content);
+          break;
+      }
+    }
+  }
+
+  async createCourses(content: string) {
     const parsedData = await parseCsv(content, CreateCourseBody);
     const result: CreateCoursesRes = { courses: [], ...parsedData };
 
@@ -46,14 +80,13 @@ export class FilesService {
     return result;
   }
 
-  async createLecturers(file: Express.Multer.File) {
-    const content = file.buffer.toString('utf-8');
+  async createLecturers(content: string) {
     const parsedData = await parseCsv(content, CreateLecturerBody);
     const result: CreateLecturersRes = { lecturers: [], ...parsedData };
 
     for (const row of parsedData.validRows) {
       try {
-        await this.prisma.user.create({
+        const createdUser = await this.prisma.user.create({
           data: {
             email: row.email,
             role: UserRole.LECTURER,
@@ -70,6 +103,15 @@ export class FilesService {
           },
         });
 
+        await this.messageQueueService.enqueueHiPriorityEmail({
+          isActivateAccount: true,
+          tokenPayload: {
+            email: createdUser.email,
+            role: UserRole.LECTURER,
+            sub: createdUser.id,
+          },
+        });
+
         result.lecturers.push({ ...row, isCreated: true });
       } catch {
         result.lecturers.push({ ...row, isCreated: false });
@@ -79,14 +121,13 @@ export class FilesService {
     return result;
   }
 
-  async createStudents(file: Express.Multer.File) {
-    const content = file.buffer.toString('utf-8');
+  async createStudents(content: string) {
     const parsedData = await parseCsv(content, CreateStudentBody);
     const result: CreateStudentsRes = { students: [], ...parsedData };
 
     for (const row of parsedData.validRows) {
       try {
-        await this.prisma.user.create({
+        const createdUser = await this.prisma.user.create({
           data: {
             email: row.email,
             role: UserRole.STUDENT,
@@ -106,6 +147,15 @@ export class FilesService {
           },
         });
 
+        await this.messageQueueService.enqueueHiPriorityEmail({
+          isActivateAccount: true,
+          tokenPayload: {
+            email: createdUser.email,
+            role: UserRole.LECTURER,
+            sub: createdUser.id,
+          },
+        });
+
         result.students.push({ ...row, isCreated: true });
       } catch {
         result.students.push({ ...row, isCreated: false });
@@ -115,12 +165,7 @@ export class FilesService {
     return result;
   }
 
-  async registerStudents(
-    lecturerId: string,
-    courseSessionId: string,
-    file: Express.Multer.File,
-  ) {
-    const content = file.buffer.toString('utf-8');
+  async registerStudents(courseSessionId: string, content: string) {
     const parsedData = await parseCsv(content, RegisterStudentBody);
     const result: RegisterStudentsRes = {
       ...parsedData,
@@ -145,12 +190,7 @@ export class FilesService {
     return result;
   }
 
-  async uploadResults(
-    lecturerId: string,
-    courseSessionId: string,
-    file: Express.Multer.File,
-  ) {
-    const content = file.buffer.toString('utf-8');
+  async uploadResults(courseSessionId: string, content: string) {
     const parsedData = await parseCsv(content, UploadResultRow);
     const result: UploadResultsRes = {
       ...parsedData,
@@ -162,6 +202,7 @@ export class FilesService {
       try {
         const foundStudent = await this.prisma.student.findUniqueOrThrow({
           where: { matricNumber },
+          select: { id: true, user: true },
         });
         await this.prisma.enrollment.update({
           where: {
@@ -169,6 +210,14 @@ export class FilesService {
           },
           data: { results: { create: { scores, type: ResultType.INITIAL } } },
         });
+
+        await this.messageQueueService.enqueueLowPriorityEmail({
+          subject: EmailSubject.RESULT_UPLOAD,
+          email: foundStudent.user.email,
+          message: `Your result has been uploaded for the course session ${courseSessionId}.`,
+          title: EmailSubject.RESULT_UPLOAD,
+        });
+
         result.studentsUploadedFor.push(matricNumber);
       } catch {
         result.studentsNotFound.push(matricNumber);

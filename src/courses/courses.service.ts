@@ -4,7 +4,6 @@ import { CreateCourseBody, UpdateCourseBody } from './courses.schema';
 import { UploadFileBody } from 'src/files/files.schema';
 import { FileCategory } from 'prisma/client/database';
 import { MessageQueueService } from 'src/message-queue/message-queue.service';
-import { QueueTable } from 'src/message-queue/message-queue.schema';
 
 @Injectable()
 export class CoursesService {
@@ -40,13 +39,13 @@ export class CoursesService {
     const createdFile = await this.prisma.file.create({
       data: {
         filename,
-        content: Buffer.from(JSON.stringify(content), 'utf-8'),
+        content: Buffer.from(content, 'utf-8'),
         userId,
         category: FileCategory.COURSES,
       },
     });
 
-    await this.messageQueueService.enqueueFile(QueueTable.FILES, {
+    await this.messageQueueService.enqueueFile({
       fileId: createdFile.id,
       fileCategory: FileCategory.COURSES,
     });

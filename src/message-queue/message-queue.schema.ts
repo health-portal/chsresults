@@ -1,4 +1,5 @@
 import { FileCategory } from 'prisma/client/database';
+import { TokenPayload } from 'src/auth/auth.schema';
 import { env } from 'src/lib/environment';
 
 export enum QueueTable {
@@ -30,18 +31,20 @@ export interface SendEmailPayload {
 
 export interface SetPasswordSchema {
   isActivateAccount: boolean;
-  setPasswordLink: string;
+  tokenPayload: TokenPayload;
 }
 
 export interface NotificationSchema {
+  subject: EmailSubject;
+  email: string;
   title: string;
   message: string;
 }
 
-export const SetPasswordTemplate = ({
-  setPasswordLink,
-  isActivateAccount,
-}: SetPasswordSchema) => {
+export const setPasswordTemplate = (
+  isActivateAccount: boolean,
+  url: string,
+) => {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,7 +69,7 @@ export const SetPasswordTemplate = ({
     <div class="content">
       <h3>${isActivateAccount ? 'Activate Your Account' : 'Reset Your Password'}</h3>
       <p>Welcome to the OAU College of Health Sciences Results Portal. To complete your registration and access your account, please activate it using the button below.</p>
-      <p><a href="${setPasswordLink}" class="button">${isActivateAccount ? 'Activate Account' : 'Reset Password'}</a></p>
+      <p><a href="${url}" class="button">${isActivateAccount ? 'Activate Account' : 'Reset Password'}</a></p>
       <p>If you didn’t request this account, you can safely ignore this email.</p>
       <p>Best regards,<br>OAU College of Health Sciences Team</p>
     </div>
@@ -78,10 +81,7 @@ export const SetPasswordTemplate = ({
 </html>`;
 };
 
-export const NotificationTemplate = ({
-  title,
-  message,
-}: NotificationSchema) => {
+export const notificationTemplate = (title: string, message: string) => {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
