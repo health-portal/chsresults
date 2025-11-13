@@ -242,7 +242,41 @@ exports.Prisma.GradingSystemScalarFieldEnum = {
   deletedAt: 'deletedAt',
   name: 'name',
   description: 'description',
-  config: 'config'
+  threshold: 'threshold'
+};
+
+exports.Prisma.GradingFieldScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  label: 'label',
+  description: 'description',
+  variable: 'variable',
+  maxScore: 'maxScore',
+  weight: 'weight',
+  gradingSystemId: 'gradingSystemId'
+};
+
+exports.Prisma.GradingComputationScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  label: 'label',
+  description: 'description',
+  variable: 'variable',
+  expression: 'expression',
+  gradingSystemId: 'gradingSystemId'
+};
+
+exports.Prisma.GradingRangeScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  label: 'label',
+  description: 'description',
+  minScore: 'minScore',
+  maxScore: 'maxScore',
+  gradingSystemId: 'gradingSystemId'
 };
 
 exports.Prisma.CourseLecturerScalarFieldEnum = {
@@ -307,12 +341,12 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
-exports.Prisma.NullableJsonNullValueInput = {
-  DbNull: Prisma.DbNull,
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
-exports.Prisma.JsonNullValueInput = {
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull
 };
 
@@ -396,21 +430,34 @@ exports.Prisma.CourseSessionOrderByRelevanceFieldEnum = {
   sessionId: 'sessionId'
 };
 
-exports.Prisma.JsonNullValueFilter = {
-  DbNull: Prisma.DbNull,
-  JsonNull: Prisma.JsonNull,
-  AnyNull: Prisma.AnyNull
-};
-
-exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-};
-
 exports.Prisma.GradingSystemOrderByRelevanceFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description'
+};
+
+exports.Prisma.GradingFieldOrderByRelevanceFieldEnum = {
+  id: 'id',
+  label: 'label',
+  description: 'description',
+  variable: 'variable',
+  gradingSystemId: 'gradingSystemId'
+};
+
+exports.Prisma.GradingComputationOrderByRelevanceFieldEnum = {
+  id: 'id',
+  label: 'label',
+  description: 'description',
+  variable: 'variable',
+  expression: 'expression',
+  gradingSystemId: 'gradingSystemId'
+};
+
+exports.Prisma.GradingRangeOrderByRelevanceFieldEnum = {
+  id: 'id',
+  label: 'label',
+  description: 'description',
+  gradingSystemId: 'gradingSystemId'
 };
 
 exports.Prisma.CourseLecturerOrderByRelevanceFieldEnum = {
@@ -429,6 +476,17 @@ exports.Prisma.EnrollmentOrderByRelevanceFieldEnum = {
   id: 'id',
   studentId: 'studentId',
   courseSessionId: 'courseSessionId'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
 };
 
 exports.Prisma.ResultOrderByRelevanceFieldEnum = {
@@ -523,6 +581,9 @@ exports.Prisma.ModelName = {
   Course: 'Course',
   CourseSession: 'CourseSession',
   GradingSystem: 'GradingSystem',
+  GradingField: 'GradingField',
+  GradingComputation: 'GradingComputation',
+  GradingRange: 'GradingRange',
   CourseLecturer: 'CourseLecturer',
   CourseSesnDeptAndLevel: 'CourseSesnDeptAndLevel',
   Enrollment: 'Enrollment',

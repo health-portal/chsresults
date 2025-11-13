@@ -4,14 +4,12 @@ import { CreateLecturerBody, UpdateLecturerBody } from './lecturers.schema';
 import { FileCategory, UserRole } from 'prisma/client/database';
 import { UploadFileBody } from 'src/files/files.schema';
 import { MessageQueueService } from 'src/message-queue/message-queue.service';
-import { TokensService } from 'src/tokens/tokens.service';
 
 @Injectable()
 export class LecturersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly messageQueueService: MessageQueueService,
-    private readonly tokensService: TokensService,
   ) {}
 
   async createLecturer({

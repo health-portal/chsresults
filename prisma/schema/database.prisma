@@ -80,10 +80,10 @@ model User {
     password String?
     role     UserRole
 
-    admin     Admin?
-    lecturer  Lecturer?
-    student   Student?
-    files     File[]
+    admin    Admin?
+    lecturer Lecturer?
+    student  Student?
+    files    File[]
 
     @@index([role])
     @@index([deletedAt])
@@ -297,13 +297,71 @@ model GradingSystem {
 
     name        String  @unique
     description String?
-    config      Json?
+    threshold   Float
 
     courseSessions CourseSession[]
+    fields         GradingField[]
+    computations   GradingComputation[]
+    ranges         GradingRange[]
 
     @@index([deletedAt])
     @@index([name])
     @@map("grading_systems")
+}
+
+model GradingField {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    label       String
+    description String
+    variable    String
+    maxScore    Float
+    weight      Float
+
+    gradingSystemId String
+    gradingSystem   GradingSystem @relation(fields: [gradingSystemId], references: [id])
+
+    @@unique([gradingSystemId, label, variable])
+    @@index([label])
+    @@map("grading_fields")
+}
+
+model GradingComputation {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    label       String
+    description String?
+    variable    String
+    expression  String
+
+    gradingSystemId String
+    gradingSystem   GradingSystem @relation(fields: [gradingSystemId], references: [id])
+
+    @@unique([gradingSystemId, label, variable])
+    @@index([label])
+    @@map("grading_computations")
+}
+
+model GradingRange {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    label       String
+    description String?
+    minScore    Float
+    maxScore    Float
+
+    gradingSystemId String
+    gradingSystem   GradingSystem @relation(fields: [gradingSystemId], references: [id])
+
+    @@unique([gradingSystemId, label])
+    @@index([label])
+    @@map("grading_ranges")
 }
 
 model CourseLecturer {
