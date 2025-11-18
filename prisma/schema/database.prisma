@@ -4,7 +4,7 @@ generator dbClient {
 }
 
 datasource db {
-    provider = "mysql"
+    provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
@@ -188,7 +188,7 @@ model Faculty {
     updatedAt DateTime  @updatedAt
     deletedAt DateTime?
 
-    name String @unique @db.VarChar(255)
+    name String @unique
 
     departments Department[]
 
@@ -203,7 +203,7 @@ model Department {
     deletedAt DateTime?
 
     name      String @unique
-    shortName String @unique @db.VarChar(3)
+    shortName String @unique
     maxLevel  Level
 
     facultyId String
@@ -225,7 +225,7 @@ model Session {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    academicYear String   @unique @db.VarChar(50)
+    academicYear String   @unique
     startDate    DateTime
     endDate      DateTime
 
@@ -245,7 +245,7 @@ model Course {
     code        String   @unique
     title       String
     description String
-    units       Int      @db.SmallInt
+    units       Int
     semester    Semester
 
     departmentId String

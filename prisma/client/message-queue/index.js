@@ -108,7 +108,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/victormomodu/Documents/Programming/software-engineering/chsresults/prisma/client/message-queue",
+      "value": "/home/victormomodu/Documents/Programming/Software-Engineering/chsresults/prisma/client/message-queue",
       "fromEnvVar": null
     },
     "config": {
@@ -117,14 +117,14 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "rhel-openssl-3.0.x",
+        "value": "debian-openssl-3.0.x",
         "native": true
       }
     ],
     "previewFeatures": [
       "postgresqlExtensions"
     ],
-    "sourceFilePath": "/home/victormomodu/Documents/Programming/software-engineering/chsresults/prisma/schema/message-queue.prisma",
+    "sourceFilePath": "/home/victormomodu/Documents/Programming/Software-Engineering/chsresults/prisma/schema/message-queue.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -186,8 +186,8 @@ exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
 // file annotations for bundling tools to include these files
-path.join(__dirname, "libquery_engine-rhel-openssl-3.0.x.so.node");
-path.join(process.cwd(), "prisma/client/message-queue/libquery_engine-rhel-openssl-3.0.x.so.node")
+path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
+path.join(process.cwd(), "prisma/client/message-queue/libquery_engine-debian-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "prisma/client/message-queue/schema.prisma")

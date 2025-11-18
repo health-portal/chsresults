@@ -322,162 +322,20 @@ exports.Prisma.NullableJsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
-};
-
-exports.Prisma.UserOrderByRelevanceFieldEnum = {
-  id: 'id',
-  email: 'email',
-  password: 'password'
-};
-
-exports.Prisma.AdminOrderByRelevanceFieldEnum = {
-  id: 'id',
-  name: 'name',
-  phone: 'phone',
-  userId: 'userId'
-};
-
-exports.Prisma.LecturerOrderByRelevanceFieldEnum = {
-  id: 'id',
-  firstName: 'firstName',
-  lastName: 'lastName',
-  otherName: 'otherName',
-  phone: 'phone',
-  title: 'title',
-  qualification: 'qualification',
-  userId: 'userId',
-  departmentId: 'departmentId'
-};
-
-exports.Prisma.LecturerDesignationOrderByRelevanceFieldEnum = {
-  id: 'id',
-  entity: 'entity',
-  lecturerId: 'lecturerId'
-};
-
-exports.Prisma.StudentOrderByRelevanceFieldEnum = {
-  id: 'id',
-  matricNumber: 'matricNumber',
-  firstName: 'firstName',
-  lastName: 'lastName',
-  otherName: 'otherName',
-  admissionYear: 'admissionYear',
-  degree: 'degree',
-  userId: 'userId',
-  departmentId: 'departmentId'
-};
-
-exports.Prisma.FacultyOrderByRelevanceFieldEnum = {
-  id: 'id',
-  name: 'name'
-};
-
-exports.Prisma.DepartmentOrderByRelevanceFieldEnum = {
-  id: 'id',
-  name: 'name',
-  shortName: 'shortName',
-  facultyId: 'facultyId'
-};
-
-exports.Prisma.SessionOrderByRelevanceFieldEnum = {
-  id: 'id',
-  academicYear: 'academicYear'
-};
-
-exports.Prisma.CourseOrderByRelevanceFieldEnum = {
-  id: 'id',
-  code: 'code',
-  title: 'title',
-  description: 'description',
-  departmentId: 'departmentId'
-};
-
-exports.Prisma.CourseSessionOrderByRelevanceFieldEnum = {
-  id: 'id',
-  courseId: 'courseId',
-  gradingSystemId: 'gradingSystemId',
-  sessionId: 'sessionId'
-};
-
-exports.Prisma.GradingSystemOrderByRelevanceFieldEnum = {
-  id: 'id',
-  name: 'name',
-  description: 'description'
-};
-
-exports.Prisma.GradingFieldOrderByRelevanceFieldEnum = {
-  id: 'id',
-  label: 'label',
-  description: 'description',
-  variable: 'variable',
-  gradingSystemId: 'gradingSystemId'
-};
-
-exports.Prisma.GradingComputationOrderByRelevanceFieldEnum = {
-  id: 'id',
-  label: 'label',
-  description: 'description',
-  variable: 'variable',
-  expression: 'expression',
-  gradingSystemId: 'gradingSystemId'
-};
-
-exports.Prisma.GradingRangeOrderByRelevanceFieldEnum = {
-  id: 'id',
-  label: 'label',
-  description: 'description',
-  gradingSystemId: 'gradingSystemId'
-};
-
-exports.Prisma.CourseLecturerOrderByRelevanceFieldEnum = {
-  id: 'id',
-  courseSessionId: 'courseSessionId',
-  lecturerId: 'lecturerId'
-};
-
-exports.Prisma.CourseSesnDeptAndLevelOrderByRelevanceFieldEnum = {
-  id: 'id',
-  departmentId: 'departmentId',
-  courseSessionId: 'courseSessionId'
-};
-
-exports.Prisma.EnrollmentOrderByRelevanceFieldEnum = {
-  id: 'id',
-  studentId: 'studentId',
-  courseSessionId: 'courseSessionId'
 };
 
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
-};
-
-exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-};
-
-exports.Prisma.ResultOrderByRelevanceFieldEnum = {
-  id: 'id',
-  enrollmentId: 'enrollmentId'
-};
-
-exports.Prisma.FileOrderByRelevanceFieldEnum = {
-  id: 'id',
-  filename: 'filename',
-  userId: 'userId'
-};
-
-exports.Prisma.AuditLogOrderByRelevanceFieldEnum = {
-  id: 'id',
-  actorInfo: 'actorInfo',
-  action: 'action',
-  entity: 'entity',
-  entityId: 'entityId'
 };
 exports.UserRole = exports.$Enums.UserRole = {
   ADMIN: 'ADMIN',
@@ -574,7 +432,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/victormomodu/Documents/Programming/software-engineering/chsresults/prisma/client/database",
+      "value": "/home/victormomodu/Documents/Programming/Software-Engineering/chsresults/prisma/client/database",
       "fromEnvVar": null
     },
     "config": {
@@ -583,12 +441,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "rhel-openssl-3.0.x",
+        "value": "debian-openssl-3.0.x",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/victormomodu/Documents/Programming/software-engineering/chsresults/prisma/schema/database.prisma",
+    "sourceFilePath": "/home/victormomodu/Documents/Programming/Software-Engineering/chsresults/prisma/schema/database.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -601,7 +459,7 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "mysql",
+  "activeProvider": "postgresql",
   "inlineDatasources": {
     "db": {
       "url": {
@@ -610,8 +468,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator dbClient {\n  provider = \"prisma-client-js\"\n  output   = \"../client/database\"\n}\n\ndatasource db {\n  provider = \"mysql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum UserRole {\n  ADMIN\n  LECTURER\n  STUDENT\n}\n\nenum Gender {\n  MALE\n  FEMALE\n}\n\nenum StudentStatus {\n  ACTIVE\n  SUSPENDED\n  WITHDRAWN\n  GRADUATED\n  DEFERRED\n}\n\nenum Semester {\n  HARMATTAN\n  RAIN\n  ACADEMIC_YEAR\n}\n\nenum LecturerRole {\n  PROVOST\n  DEAN\n  HOD\n  PART_ADVISER\n}\n\nenum FileCategory {\n  RESULTS\n  LECTURERS\n  COURSES\n  STUDENTS\n  REGISTRATIONS\n}\n\nenum EnrollmentStatus {\n  PASSED\n  FAILED\n  ENROLLED\n  ABSENT\n}\n\nenum Level {\n  LVL_100\n  LVL_200\n  LVL_300\n  LVL_400\n  LVL_500\n  LVL_600\n  LVL_700\n}\n\nenum ResultType {\n  INITIAL\n  RESIT\n}\n\nmodel User {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  email    String   @unique\n  password String?\n  role     UserRole\n\n  admin    Admin?\n  lecturer Lecturer?\n  student  Student?\n  files    File[]\n\n  @@index([role])\n  @@index([deletedAt])\n  @@map(\"users\")\n}\n\nmodel Admin {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  name  String\n  phone String?\n\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id])\n\n  @@index([name])\n  @@index([deletedAt])\n  @@map(\"admins\")\n}\n\nmodel Lecturer {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  firstName     String\n  lastName      String\n  otherName     String?\n  phone         String? @unique\n  title         String?\n  qualification String?\n\n  userId          String                @unique\n  user            User                  @relation(fields: [userId], references: [id])\n  departmentId    String\n  department      Department            @relation(fields: [departmentId], references: [id])\n  designations    LecturerDesignation[]\n  coursesLectured CourseLecturer[]\n\n  @@index([departmentId])\n  @@index([lastName])\n  @@index([deletedAt])\n  @@map(\"lecturers\")\n}\n\nmodel LecturerDesignation {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n\n  entity String\n  role   LecturerRole\n\n  lecturerId String?\n  lecturer   Lecturer? @relation(fields: [lecturerId], references: [id])\n\n  @@unique([entity, role], name: \"designation\")\n  @@index([role])\n  @@index([lecturerId])\n  @@map(\"lecturer_designations\")\n}\n\nmodel Student {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  matricNumber  String        @unique\n  firstName     String\n  lastName      String\n  otherName     String?\n  admissionYear String\n  level         Level\n  gender        Gender\n  degree        String\n  status        StudentStatus @default(ACTIVE)\n\n  userId       String     @unique\n  user         User       @relation(fields: [userId], references: [id])\n  departmentId String\n  department   Department @relation(fields: [departmentId], references: [id])\n\n  enrollments Enrollment[]\n\n  @@index([departmentId])\n  @@index([level])\n  @@index([status])\n  @@index([matricNumber])\n  @@index([deletedAt])\n  @@index([departmentId, level])\n  @@index([departmentId, status])\n  @@map(\"students\")\n}\n\nmodel Faculty {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  name String @unique @db.VarChar(255)\n\n  departments Department[]\n\n  @@index([deletedAt])\n  @@map(\"faculties\")\n}\n\nmodel Department {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  name      String @unique\n  shortName String @unique @db.VarChar(3)\n  maxLevel  Level\n\n  facultyId String\n  faculty   Faculty @relation(fields: [facultyId], references: [id])\n\n  lecturers            Lecturer[]\n  students             Student[]\n  courseDeptsAndLevels CourseSesnDeptAndLevel[]\n  courses              Course[]\n\n  @@index([facultyId])\n  @@index([deletedAt])\n  @@index([name])\n  @@map(\"departments\")\n}\n\nmodel Session {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  academicYear String   @unique @db.VarChar(50)\n  startDate    DateTime\n  endDate      DateTime\n\n  courseSessions CourseSession[]\n\n  @@index([startDate])\n  @@index([endDate])\n  @@map(\"sessions\")\n}\n\nmodel Course {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  code        String   @unique\n  title       String\n  description String\n  units       Int      @db.SmallInt\n  semester    Semester\n\n  departmentId String\n  department   Department @relation(fields: [departmentId], references: [id])\n\n  courseSessions CourseSession[]\n\n  @@index([deletedAt])\n  @@index([departmentId])\n  @@index([semester])\n  @@index([code])\n  @@map(\"courses\")\n}\n\nmodel CourseSession {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  isApproved  Boolean   @default(false)\n  approvedAt  DateTime?\n  isPublished Boolean   @default(false)\n  publishedAt DateTime?\n\n  courseId        String\n  course          Course        @relation(fields: [courseId], references: [id])\n  gradingSystemId String\n  gradingSystem   GradingSystem @relation(fields: [gradingSystemId], references: [id])\n  sessionId       String\n  session         Session       @relation(fields: [sessionId], references: [id])\n\n  lecturers      CourseLecturer[]\n  enrollments    Enrollment[]\n  deptsAndLevels CourseSesnDeptAndLevel[]\n\n  @@unique([courseId, sessionId], name: \"uniqueCourseSession\")\n  @@index([courseId])\n  @@index([sessionId])\n  @@index([isApproved])\n  @@index([isPublished])\n  @@map(\"course_sessions\")\n}\n\nmodel GradingSystem {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  name        String  @unique\n  description String?\n  threshold   Float\n\n  courseSessions CourseSession[]\n  fields         GradingField[]\n  computations   GradingComputation[]\n  ranges         GradingRange[]\n\n  @@index([deletedAt])\n  @@index([name])\n  @@map(\"grading_systems\")\n}\n\nmodel GradingField {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  label       String\n  description String\n  variable    String\n  maxScore    Float\n  weight      Float\n\n  gradingSystemId String\n  gradingSystem   GradingSystem @relation(fields: [gradingSystemId], references: [id])\n\n  @@unique([gradingSystemId, label, variable])\n  @@index([label])\n  @@map(\"grading_fields\")\n}\n\nmodel GradingComputation {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  label       String\n  description String?\n  variable    String\n  expression  String\n\n  gradingSystemId String\n  gradingSystem   GradingSystem @relation(fields: [gradingSystemId], references: [id])\n\n  @@unique([gradingSystemId, label, variable])\n  @@index([label])\n  @@map(\"grading_computations\")\n}\n\nmodel GradingRange {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  label       String\n  description String?\n  minScore    Float\n  maxScore    Float\n\n  gradingSystemId String\n  gradingSystem   GradingSystem @relation(fields: [gradingSystemId], references: [id])\n\n  @@unique([gradingSystemId, label])\n  @@index([label])\n  @@map(\"grading_ranges\")\n}\n\nmodel CourseLecturer {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  isCoordinator Boolean @default(false)\n\n  courseSessionId String\n  courseSession   CourseSession @relation(fields: [courseSessionId], references: [id])\n  lecturerId      String\n  lecturer        Lecturer      @relation(fields: [lecturerId], references: [id])\n\n  @@unique([courseSessionId, lecturerId], name: \"uniqueCourseSessionLecturer\")\n  @@index([courseSessionId])\n  @@index([lecturerId])\n  @@index([isCoordinator])\n  @@map(\"course_lecturers\")\n}\n\nmodel CourseSesnDeptAndLevel {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  level Level\n\n  departmentId    String\n  department      Department    @relation(fields: [departmentId], references: [id])\n  courseSessionId String\n  courseSession   CourseSession @relation(fields: [courseSessionId], references: [id])\n\n  @@unique([courseSessionId, departmentId, level], name: \"uniqueCourseSesnDeptAndLevel\")\n  @@index([courseSessionId])\n  @@index([departmentId])\n  @@index([level])\n  @@map(\"course_session_department_levels\")\n}\n\nmodel Enrollment {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  status EnrollmentStatus @default(ENROLLED)\n\n  studentId       String\n  student         Student       @relation(fields: [studentId], references: [id])\n  courseSessionId String\n  courseSession   CourseSession @relation(fields: [courseSessionId], references: [id])\n\n  results Result[]\n\n  @@unique([studentId, courseSessionId], name: \"uniqueEnrollment\")\n  @@index([studentId])\n  @@index([courseSessionId])\n  @@index([status])\n  @@map(\"enrollments\")\n}\n\nmodel Result {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  scores Json\n  type   ResultType\n\n  enrollmentId String\n  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id])\n\n  @@unique([enrollmentId, type], name: \"uniqueResult\")\n  @@index([enrollmentId])\n  @@map(\"results\")\n}\n\nmodel File {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  deletedAt DateTime?\n\n  filename     String\n  content      Bytes\n  isCompressed Boolean      @default(false)\n  category     FileCategory\n\n  userId String\n  user   User   @relation(fields: [userId], references: [id])\n\n  @@map(\"files\")\n}\n\nmodel AuditLog {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n\n  actorInfo String\n  action    String\n  entity    String\n  entityId  String\n  details   Json?\n\n  @@index([entity, entityId])\n  @@index([action])\n  @@index([createdAt])\n  @@map(\"audit_logs\")\n}\n",
-  "inlineSchemaHash": "5f688a5f27b06a9275d44db876787802216adea7d14d77ad965208749ff98e6c",
+  "inlineSchema": "generator dbClient {\n  provider = \"prisma-client-js\"\n  output   = \"../client/database\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum UserRole {\n  ADMIN\n  LECTURER\n  STUDENT\n}\n\nenum Gender {\n  MALE\n  FEMALE\n}\n\nenum StudentStatus {\n  ACTIVE\n  SUSPENDED\n  WITHDRAWN\n  GRADUATED\n  DEFERRED\n}\n\nenum Semester {\n  HARMATTAN\n  RAIN\n  ACADEMIC_YEAR\n}\n\nenum LecturerRole {\n  PROVOST\n  DEAN\n  HOD\n  PART_ADVISER\n}\n\nenum FileCategory {\n  RESULTS\n  LECTURERS\n  COURSES\n  STUDENTS\n  REGISTRATIONS\n}\n\nenum EnrollmentStatus {\n  PASSED\n  FAILED\n  ENROLLED\n  ABSENT\n}\n\nenum Level {\n  LVL_100\n  LVL_200\n  LVL_300\n  LVL_400\n  LVL_500\n  LVL_600\n  LVL_700\n}\n\nenum ResultType {\n  INITIAL\n  RESIT\n}\n\nmodel User {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  email    String   @unique\n  password String?\n  role     UserRole\n\n  admin    Admin?\n  lecturer Lecturer?\n  student  Student?\n  files    File[]\n\n  @@index([role])\n  @@index([deletedAt])\n  @@map(\"users\")\n}\n\nmodel Admin {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  name  String\n  phone String?\n\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id])\n\n  @@index([name])\n  @@index([deletedAt])\n  @@map(\"admins\")\n}\n\nmodel Lecturer {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  firstName     String\n  lastName      String\n  otherName     String?\n  phone         String? @unique\n  title         String?\n  qualification String?\n\n  userId          String                @unique\n  user            User                  @relation(fields: [userId], references: [id])\n  departmentId    String\n  department      Department            @relation(fields: [departmentId], references: [id])\n  designations    LecturerDesignation[]\n  coursesLectured CourseLecturer[]\n\n  @@index([departmentId])\n  @@index([lastName])\n  @@index([deletedAt])\n  @@map(\"lecturers\")\n}\n\nmodel LecturerDesignation {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n\n  entity String\n  role   LecturerRole\n\n  lecturerId String?\n  lecturer   Lecturer? @relation(fields: [lecturerId], references: [id])\n\n  @@unique([entity, role], name: \"designation\")\n  @@index([role])\n  @@index([lecturerId])\n  @@map(\"lecturer_designations\")\n}\n\nmodel Student {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  matricNumber  String        @unique\n  firstName     String\n  lastName      String\n  otherName     String?\n  admissionYear String\n  level         Level\n  gender        Gender\n  degree        String\n  status        StudentStatus @default(ACTIVE)\n\n  userId       String     @unique\n  user         User       @relation(fields: [userId], references: [id])\n  departmentId String\n  department   Department @relation(fields: [departmentId], references: [id])\n\n  enrollments Enrollment[]\n\n  @@index([departmentId])\n  @@index([level])\n  @@index([status])\n  @@index([matricNumber])\n  @@index([deletedAt])\n  @@index([departmentId, level])\n  @@index([departmentId, status])\n  @@map(\"students\")\n}\n\nmodel Faculty {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  name String @unique\n\n  departments Department[]\n\n  @@index([deletedAt])\n  @@map(\"faculties\")\n}\n\nmodel Department {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  name      String @unique\n  shortName String @unique\n  maxLevel  Level\n\n  facultyId String\n  faculty   Faculty @relation(fields: [facultyId], references: [id])\n\n  lecturers            Lecturer[]\n  students             Student[]\n  courseDeptsAndLevels CourseSesnDeptAndLevel[]\n  courses              Course[]\n\n  @@index([facultyId])\n  @@index([deletedAt])\n  @@index([name])\n  @@map(\"departments\")\n}\n\nmodel Session {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  academicYear String   @unique\n  startDate    DateTime\n  endDate      DateTime\n\n  courseSessions CourseSession[]\n\n  @@index([startDate])\n  @@index([endDate])\n  @@map(\"sessions\")\n}\n\nmodel Course {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  code        String   @unique\n  title       String\n  description String\n  units       Int\n  semester    Semester\n\n  departmentId String\n  department   Department @relation(fields: [departmentId], references: [id])\n\n  courseSessions CourseSession[]\n\n  @@index([deletedAt])\n  @@index([departmentId])\n  @@index([semester])\n  @@index([code])\n  @@map(\"courses\")\n}\n\nmodel CourseSession {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  isApproved  Boolean   @default(false)\n  approvedAt  DateTime?\n  isPublished Boolean   @default(false)\n  publishedAt DateTime?\n\n  courseId        String\n  course          Course        @relation(fields: [courseId], references: [id])\n  gradingSystemId String\n  gradingSystem   GradingSystem @relation(fields: [gradingSystemId], references: [id])\n  sessionId       String\n  session         Session       @relation(fields: [sessionId], references: [id])\n\n  lecturers      CourseLecturer[]\n  enrollments    Enrollment[]\n  deptsAndLevels CourseSesnDeptAndLevel[]\n\n  @@unique([courseId, sessionId], name: \"uniqueCourseSession\")\n  @@index([courseId])\n  @@index([sessionId])\n  @@index([isApproved])\n  @@index([isPublished])\n  @@map(\"course_sessions\")\n}\n\nmodel GradingSystem {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  deletedAt DateTime?\n\n  name        String  @unique\n  description String?\n  threshold   Float\n\n  courseSessions CourseSession[]\n  fields         GradingField[]\n  computations   GradingComputation[]\n  ranges         GradingRange[]\n\n  @@index([deletedAt])\n  @@index([name])\n  @@map(\"grading_systems\")\n}\n\nmodel GradingField {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  label       String\n  description String\n  variable    String\n  maxScore    Float\n  weight      Float\n\n  gradingSystemId String\n  gradingSystem   GradingSystem @relation(fields: [gradingSystemId], references: [id])\n\n  @@unique([gradingSystemId, label, variable])\n  @@index([label])\n  @@map(\"grading_fields\")\n}\n\nmodel GradingComputation {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  label       String\n  description String?\n  variable    String\n  expression  String\n\n  gradingSystemId String\n  gradingSystem   GradingSystem @relation(fields: [gradingSystemId], references: [id])\n\n  @@unique([gradingSystemId, label, variable])\n  @@index([label])\n  @@map(\"grading_computations\")\n}\n\nmodel GradingRange {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  label       String\n  description String?\n  minScore    Float\n  maxScore    Float\n\n  gradingSystemId String\n  gradingSystem   GradingSystem @relation(fields: [gradingSystemId], references: [id])\n\n  @@unique([gradingSystemId, label])\n  @@index([label])\n  @@map(\"grading_ranges\")\n}\n\nmodel CourseLecturer {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  isCoordinator Boolean @default(false)\n\n  courseSessionId String\n  courseSession   CourseSession @relation(fields: [courseSessionId], references: [id])\n  lecturerId      String\n  lecturer        Lecturer      @relation(fields: [lecturerId], references: [id])\n\n  @@unique([courseSessionId, lecturerId], name: \"uniqueCourseSessionLecturer\")\n  @@index([courseSessionId])\n  @@index([lecturerId])\n  @@index([isCoordinator])\n  @@map(\"course_lecturers\")\n}\n\nmodel CourseSesnDeptAndLevel {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  level Level\n\n  departmentId    String\n  department      Department    @relation(fields: [departmentId], references: [id])\n  courseSessionId String\n  courseSession   CourseSession @relation(fields: [courseSessionId], references: [id])\n\n  @@unique([courseSessionId, departmentId, level], name: \"uniqueCourseSesnDeptAndLevel\")\n  @@index([courseSessionId])\n  @@index([departmentId])\n  @@index([level])\n  @@map(\"course_session_department_levels\")\n}\n\nmodel Enrollment {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  status EnrollmentStatus @default(ENROLLED)\n\n  studentId       String\n  student         Student       @relation(fields: [studentId], references: [id])\n  courseSessionId String\n  courseSession   CourseSession @relation(fields: [courseSessionId], references: [id])\n\n  results Result[]\n\n  @@unique([studentId, courseSessionId], name: \"uniqueEnrollment\")\n  @@index([studentId])\n  @@index([courseSessionId])\n  @@index([status])\n  @@map(\"enrollments\")\n}\n\nmodel Result {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  scores Json\n  type   ResultType\n\n  enrollmentId String\n  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id])\n\n  @@unique([enrollmentId, type], name: \"uniqueResult\")\n  @@index([enrollmentId])\n  @@map(\"results\")\n}\n\nmodel File {\n  id        String    @id @default(uuid())\n  createdAt DateTime  @default(now())\n  deletedAt DateTime?\n\n  filename     String\n  content      Bytes\n  isCompressed Boolean      @default(false)\n  category     FileCategory\n\n  userId String\n  user   User   @relation(fields: [userId], references: [id])\n\n  @@map(\"files\")\n}\n\nmodel AuditLog {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now())\n\n  actorInfo String\n  action    String\n  entity    String\n  entityId  String\n  details   Json?\n\n  @@index([entity, entityId])\n  @@index([action])\n  @@index([createdAt])\n  @@map(\"audit_logs\")\n}\n",
+  "inlineSchemaHash": "59e1d3c430a011d849b98b2ba7bf6bc663590609342e22f69bea637b295be5b2",
   "copyEngine": true
 }
 config.dirname = '/'

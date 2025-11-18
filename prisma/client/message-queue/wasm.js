@@ -107,7 +107,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/victormomodu/Documents/Programming/software-engineering/chsresults/prisma/client/message-queue",
+      "value": "/home/victormomodu/Documents/Programming/Software-Engineering/chsresults/prisma/client/message-queue",
       "fromEnvVar": null
     },
     "config": {
@@ -116,14 +116,14 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "rhel-openssl-3.0.x",
+        "value": "debian-openssl-3.0.x",
         "native": true
       }
     ],
     "previewFeatures": [
       "postgresqlExtensions"
     ],
-    "sourceFilePath": "/home/victormomodu/Documents/Programming/software-engineering/chsresults/prisma/schema/message-queue.prisma",
+    "sourceFilePath": "/home/victormomodu/Documents/Programming/Software-Engineering/chsresults/prisma/schema/message-queue.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
